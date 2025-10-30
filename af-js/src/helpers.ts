@@ -32,20 +32,29 @@ export const convertFromIOSCoordinates = (x: number, y: number): { x: number, y:
  * Converts iOS child coordinates relative to a container with a bottom-anchored frame
  * 
  * In iOS Cocos2D:
- * - Container sprites have anchor point (0.5, 0.5) by default (center)
- * - Children are positioned relative to the container's center
- * - The frame is 234 pixels tall in iOS coords (468 in Phaser)
+ * - Sprites have anchor point (0.5, 0.5) by default (center)
+ * - Children are positioned relative to the parent's anchor point
+ * - The main tray frame is 234 pixels tall in iOS coords (468 in Phaser)
  * 
  * In Phaser:
- * - We set frame origin to (0.5, 1) (bottom-center)
+ * - We set frame origin to (0.5, 1) (bottom-center) 
  * - Y=0 is at the BOTTOM of the frame
- * - Y=-468 would be at the TOP of the frame
+ * - Negative Y values go UPWARD from the bottom
  * 
- * To convert: iOS Y relative to center needs to be shifted by half frame height (234),
- * then negated for Phaser's upward direction, then scaled.
+ * Conversion:
+ * - iOS Y relative to center: Y=0 is center, Y=117 is top, Y=-117 is bottom
+ * - Phaser Y relative to bottom: Y=0 is bottom, Y=-468 is top
+ * - Distance from bottom in iOS = (frameHeightIOS/2) - iosY
+ * - In Phaser (negative = upward): -(distanceFromBottom * SCALE)
+ * - Simplified: (iosY - frameHeightIOS/2) * SCALE
+ * 
+ * Example: iOS Y=-25 (25 below center)
+ * - Distance from bottom = 117 - (-25) = 142
+ * - Phaser Y = -142 * 2 = -284
+ * - Or: (-25 - 117) * 2 = -284 ✓
  * 
  * @param iosX - X coordinate in iOS system relative to container center
- * @param iosY - Y coordinate in iOS system relative to container center  
+ * @param iosY - Y coordinate in iOS system relative to container center
  * @param frameHeightIOS - Height of the frame in iOS coordinates (default 234 for main tray)
  * @returns Object with scaled coordinates for Phaser container with bottom-center origin
  */
@@ -56,14 +65,11 @@ export const convertIOSChildCoordinates = (
 ): { x: number, y: number } => {
   const SCALE_FACTOR = 2;
   
-  // Scale X coordinate (simple multiplication)
+  // Scale X coordinate
   const phaserX = iosX * SCALE_FACTOR;
   
-  // Convert Y: shift from center-relative to bottom-relative, negate for upward direction, then scale
-  // In iOS: Y=0 is at center, Y=-117 is at bottom  
-  // In Phaser: Y=0 is at bottom, Y=-234 is at top (after scaling)
-  // Formula: phaserY = -(iosY + frameHeightIOS/2) * SCALE_FACTOR
-  const phaserY = -(iosY + frameHeightIOS / 2) * SCALE_FACTOR;
+  // Convert Y from center-relative to bottom-relative, then scale
+  const phaserY = (iosY - frameHeightIOS / 2) * SCALE_FACTOR;
   
   return { x: phaserX, y: phaserY };
 }
