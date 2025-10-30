@@ -1,0 +1,25 @@
+{
+  "name": "Gotcha",
+  "version": "0.1.0",
+  "description": "Gotcha' Prototype",
+  "main": "index.js",
+  "author": "Clint Herron",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "copy-webpack-plugin": "6.2.1",
+    "ts-loader": "8.2.0",
+    "typescript": "^4.5.2",
+    "webpack": "4.42.1",
+    "webpack-cli": "3.3.11",
+    "webpack-dev-server": "3.10.3"
+  },
+  "scripts": {
+    "build": "webpack",
+    "dev": "webpack-dev-server"
+  },
+  "dependencies": {
+    "phaser": "^3.55.2",
+    "ts-bus": "^2.3.1"
+  }
+}

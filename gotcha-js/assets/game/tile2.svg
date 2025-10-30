@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="349.721 355.828 62.99 68.663" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <symbol id="w" viewBox="0 -54.3 100.6 54.3">
+    <linearGradient id="ah" x2="100.6" y1="-27.15" y2="-27.15" gradientUnits="userSpaceOnUse">
+      <stop offset="0"/>
+      <stop stop-opacity="0" offset="1"/>
+    </linearGradient>
+    <polygon points="100.6 -54.3 0 -54.3 0 0 100.6 0" clip-rule="evenodd" fill="url(#ah)" fill-rule="evenodd"/>
+  </symbol>
+  <linearGradient id="an" x1="43.412" x2="101.94" y1="-46.05" y2="-46.05" gradientTransform="matrix(0.6172, 0.7868, -0.7868, 0.6172, 88.781748, -10.113925)" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#694D30" offset="0"/>
+    <stop stop-color="#4D3B2B" offset="1"/>
+  </linearGradient>
+  <linearGradient id="ao" x1="44.445" x2="100.91" y1="-46.065" y2="-46.065" gradientTransform="matrix(0.6172, 0.7868, -0.7868, 0.6172, 88.781531, -10.113524)" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#3B2D21" offset="0"/>
+    <stop stop-color="#4D3823" offset="1"/>
+  </linearGradient>
+  <linearGradient id="ap" x1="45.463" x2="99.896" y1="-46.045" y2="-46.045" gradientTransform="matrix(0.6173, 0.7867, -0.7867, 0.6173, 88.782028, -10.113927)" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#694D30" offset="0"/>
+    <stop stop-color="#4D3B2B" offset="1"/>
+  </linearGradient>
+  <linearGradient id="aa" x1="47.098" x2="98.255" y1="-46.085" y2="-46.085" gradientTransform="matrix(0.6172, 0.7868, -0.7868, 0.6172, 88.78182, -10.113459)" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#3B2D21" offset="0"/>
+    <stop stop-color="#4D3823" offset="1"/>
+  </linearGradient>
+  <linearGradient id="ab" x1="48.788" x2="96.349" y1="-46.032" y2="-46.032" gradientTransform="matrix(0.6171, 0.7869, -0.7869, 0.6171, 88.781626, -10.113576)" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#E6E2DC" offset="0"/>
+    <stop stop-color="#C8C4BF" offset="1"/>
+  </linearGradient>
+  <symbol id="x" viewBox="0 -27.9 28.8 27.9">
+    <polygon points="0 -27.9 0 0 28.8 0 28.8 -0.3 0.5 -0.3 0.5 -27.9" clip-rule="evenodd" fill-rule="evenodd"/>
+  </symbol>
+  <symbol id="v" viewBox="0 -24.55 35.55 24.55">
+    <path d="m35.55-7.25c-8.2-0.633-15.7-2.883-22.5-6.75-4.933-2.8-9.283-6.317-13.05-10.55v24.55h35.55v-7.25z" clip-rule="evenodd" fill="#fff" fill-rule="evenodd"/>
+  </symbol>
+  <use transform="matrix(0, 0.147726, 1.15866, 0, 349.79599, 409.629883)" width="100.6" height="54.3" xlink:href="#w"/>
+  <rect x="349.721" y="355.828" width="62.92" height="64.393" clip-rule="evenodd" fill="url(#an)" fill-rule="evenodd"/>
+  <rect x="350.633" y="357.091" width="61.097" height="61.798" clip-rule="evenodd" fill="url(#ao)" fill-rule="evenodd"/>
+  <rect x="351.545" y="358.353" width="59.273" height="59.343" clip-rule="evenodd" fill="url(#ap)" fill-rule="evenodd"/>
+  <rect x="353.088" y="360.317" width="56.257" height="55.345" clip-rule="evenodd" fill="url(#aa)" fill-rule="evenodd"/>
+  <rect x="355.052" y="362.141" width="52.049" height="51.627" clip-rule="evenodd" fill="url(#ab)" fill-rule="evenodd"/>
+  <use transform="matrix(1.768177, 0, 0, -1.770849, 355.437042, 412.118439)" width="28.8" height="27.9" enable-background="new" opacity=".3789" style="" xlink:href="#x"/>
+  <polygon points="405.783 412.14 355.989 412.14 355.989 411.166 405.167 411.166 405.167 363.241 405.783 363.241" clip-rule="evenodd" fill="#fff" fill-rule="evenodd" style=""/>
+  <use transform="matrix(1.402906, 0, 0, -1.402906, 356.314423, 397.70517)" width="35.55" height="24.55" enable-background="new" opacity=".4688" xlink:href="#v"/>
+</svg>
