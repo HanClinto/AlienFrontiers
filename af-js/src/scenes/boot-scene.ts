@@ -70,6 +70,7 @@ export class BootScene extends Phaser.Scene {
      * is currently active, so they can be accessed anywhere.
      */
     private loadAssets() {
+        // Load UI assets
         this.load.setPath('assets/ui/');
 
         // Load main menu assets
@@ -90,5 +91,75 @@ export class BootScene extends Phaser.Scene {
         this.load.image('btn_back_pushed', 'menu_back_pushed-ipadhd.png');
         this.load.image('btn_blank', 'menu_button_blank-ipadhd.png');
         this.load.image('btn_blank_pushed', 'menu_button_blank_pushed-ipadhd.png');
+
+        // Load game assets
+        this.load.setPath('assets/game/');
+
+        // Game board
+        this.load.image('game_board', 'af_ipad_board-ipadhd.png');
+
+        // Player tray frames
+        this.load.image('player_tab_large', 'hud_port_player_tab_large-ipadhd.png');
+        this.load.image('player_tab_full', 'hud_port_player_tab_full-ipadhd.png');
+        this.load.image('player_tab_full_RO', 'hud_port_player_tab_full_RO-ipadhd.png');
+
+        // Tray overlays
+        this.load.image('port_corner_tint', 'hud_port_corner_tint-ipadhd.png');
+        this.load.image('port_corner_tint_mini', 'hud_port_corner_tint_mini-ipadhd.png');
+        this.load.image('port_edge_tint', 'hud_port_edge_tint-ipadhd.png');
+
+        // Buttons
+        this.load.image('button_roll_up', 'button_roll_up-ipadhd.png');
+        this.load.image('button_roll_down', 'button_roll_down-ipadhd.png');
+        this.load.image('button_roll_glow', 'button_roll_glow-ipadhd.png');
+        this.load.image('tray_btn_undo', 'tray_btn_undo-ipadhd.png');
+        this.load.image('tray_btn_undo_active', 'tray_btn_undo_active-ipadhd.png');
+        this.load.image('tray_btn_undo_inactive', 'tray_btn_undo_inactive-ipadhd.png');
+        this.load.image('tray_btn_redo', 'tray_btn_redo-ipadhd.png');
+        this.load.image('tray_btn_redo_active', 'tray_btn_redo_active-ipadhd.png');
+        this.load.image('tray_btn_redo_inactive', 'tray_btn_redo_inactive-ipadhd.png');
+        this.load.image('tray_btn_done', 'tray_btn_done-ipadhd.png');
+        this.load.image('tray_btn_done_active', 'tray_btn_done_active-ipadhd.png');
+        this.load.image('tray_btn_done_inactive', 'tray_btn_done_inactive-ipadhd.png');
+        this.load.image('tray_btn_done_glow', 'tray_btn_done_glow-ipadhd.png');
+        this.load.image('menu_button_68', 'menu_button_68-ipadhd.png');
+        this.load.image('menu_button_68_active', 'menu_button_68_active-ipadhd.png');
+        this.load.image('ondark_button', 'ondark_button-ipadhd.png');
+        this.load.image('ondark_button_active', 'ondark_button_active-ipadhd.png');
+
+        // Resource icons
+        this.load.image('icon_ore', 'icon_ore-ipadhd.png');
+        this.load.image('icon_fuel', 'icon_fuel-ipadhd.png');
+
+        // Colony sprites for each player color
+        this.load.image('colony_red', 'hud_colony_red-ipadhd.png');
+        this.load.image('colony_green', 'hud_colony_green-ipadhd.png');
+        this.load.image('colony_blue', 'hud_colony_blue-ipadhd.png');
+        this.load.image('colony_yellow', 'hud_colony_yellow-ipadhd.png');
+
+        // Die sprites for each player color
+        this.load.image('die_red', 'hud_die_red-ipadhd.png');
+        this.load.image('die_green', 'hud_die_green-ipadhd.png');
+        this.load.image('die_blue', 'hud_die_blue-ipadhd.png');
+        this.load.image('die_yellow', 'hud_die_yellow-ipadhd.png');
+
+        // Tech card trays
+        this.load.image('card_tray_horiz', 'hud_card_tray_white_horiz-ipadhd.png');
+        this.load.image('card_tray_vert', 'hud_card_tray_white_vert-ipadhd.png');
+        this.load.image('card_tray_vert_mini', 'hud_card_tray_mini_white_vert-ipadhd.png');
+        this.load.image('card_tray_shadow_horiz', 'hud_card_tray_shadow_horiz-ipadhd.png');
+        this.load.image('card_tray_shadow_vert', 'hud_card_tray_shadow_vert-ipadhd.png');
+
+        // Raid buttons
+        this.load.image('hud_button_ro_up', 'hud_button_ro_up-ipadhd.png');
+        this.load.image('hud_button_ro_up_active', 'hud_button_ro_up_active-ipadhd.png');
+        this.load.image('hud_button_ro_up_inactive', 'hud_button_ro_up_inactive-ipadhd.png');
+        this.load.image('hud_button_ro_down', 'hud_button_ro_down-ipadhd.png');
+        this.load.image('hud_button_ro_down_active', 'hud_button_ro_down_active-ipadhd.png');
+        this.load.image('hud_button_ro_down_inactive', 'hud_button_ro_down_inactive-ipadhd.png');
+        
+        // Note: The original bitmap font (DIN_Tech_12-ipadhd.fnt) uses BMFont text format,
+        // but Phaser 3 expects XML format. For now, we'll use system fonts.
+        // TODO: Convert the font to XML format or use WebFont loader for DIN-Black.ttf
     }
 }

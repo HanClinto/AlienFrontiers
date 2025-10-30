@@ -27,3 +27,24 @@ export const convertFromIOSCoordinates = (x: number, y: number): { x: number, y:
   
   return { x: phaserX, y: phaserY };
 }
+
+/**
+ * Converts a color from iOS format to web hex format
+ * @param r - Red (0-255)
+ * @param g - Green (0-255)
+ * @param b - Blue (0-255)
+ * @returns Hex color string
+ */
+export const colorToHex = (r: number, g: number, b: number): number => {
+  return (r << 16) | (g << 8) | b;
+}
+
+/**
+ * Player colors from the original game
+ */
+export const PLAYER_COLORS = [
+  0x952034, // Red (Player 1)
+  0x007226, // Green (Player 2)
+  0x005A96, // Blue (Player 3)
+  0xFFC200, // Yellow (Player 4)
+];
