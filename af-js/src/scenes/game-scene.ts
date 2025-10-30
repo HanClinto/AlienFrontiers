@@ -62,14 +62,21 @@ export class GameScene extends Phaser.Scene {
    */
   private createMainPlayerTray(): void {
     // Original iOS: uiFrame.position = ccp(768 * 0.5, -117)
-    const pos = convertFromIOSCoordinates(768 * 0.5, -117);
+    // The frame is 750x234 in iOS coords (1500x468 in Phaser), centered at Y=-117 (half height below bottom)
+    // This makes the top edge sit exactly at the bottom screen edge (Y=0 in iOS)
+    // In Phaser (top-left origin), we want the frame top to align with screen bottom
+    // Container at Y=2048, frame sprite (centered at 0,0 in container) will have top at 2048-234=1814
+    const posX = (768 * 0.5) * 2; // Center horizontally
+    const posY = GAME_HEIGHT; // Position at bottom edge
 
-    const trayContainer = this.add.container(pos.x, pos.y);
+    const trayContainer = this.add.container(posX, posY);
     this.mainPlayerTray = trayContainer;
 
     // Add frame sprite
     // Original iOS: frameSprite.position = ccp(0, 0)
+    // Frame should extend upward from the container position at the bottom edge
     const frameSprite = this.add.image(0, 0, 'player_tab_large');
+    frameSprite.setOrigin(0.5, 1); // Anchor at bottom-center so it extends upward
     trayContainer.add(frameSprite);
 
     // Roll button
