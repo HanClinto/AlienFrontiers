@@ -266,7 +266,8 @@ export class GameScene extends Phaser.Scene {
 
   /**
    * Creates a single mini player tray
-   * Original iOS positioning: ccp(768 * 0.5 - (numPlayers * 0.5 - playerIndex - 0.5) * (width + 5), 1024 + height)
+   * Original iOS: activePosition Y = 1024 + (expanded ? 0 : 380)
+   * With frame anchored at bottom (0.5, 1), this shows a tab at the top
    */
   private createMiniPlayerTray(playerIndex: number): PlayerTrayData {
     const trayContainer = this.add.container(0, 0);
@@ -276,14 +277,28 @@ export class GameScene extends Phaser.Scene {
     frameSprite.setOrigin(0.5, 1);
     trayContainer.add(frameSprite);
 
-    // Calculate inactive position (off-screen at top)
+    // Calculate positions
     const frameWidth = frameSprite.width;
     const frameHeight = frameSprite.height;
     const spacing = 5 * 2; // Scale spacing
-    const inactiveX = GAME_WIDTH * 0.5 - (this.numPlayers * 0.5 - playerIndex - 0.5) * (frameWidth + spacing);
+    
+    // X position (centered based on number of players and index)
+    // iOS: 768 * 0.5 - (numPlayers * 0.5 - playerIndex - 0.5) * (width + 5)
+    const posX = GAME_WIDTH * 0.5 - (this.numPlayers * 0.5 - playerIndex - 0.5) * (frameWidth + spacing);
+    
+    // Y position when NOT expanded (showing tab at top)
+    // iOS activePosition: Y = 1024 + 380 (bottom of frame)
+    // Frame is 498 pixels tall (iOS: 249), so top is at 1024 + 380 - 249 = 1155
+    // Visible portion: 1155 - 1024 = 131 pixels (in Phaser: 262)
+    // In Phaser with top-left origin, container at Y = 262 shows this tab
+    const slideDistance = 380 * 2; // 380 pixels in iOS = 760 in Phaser
+    const activeY = frameHeight - slideDistance; // Position showing tab at top
+    
+    // Inactive position (fully off-screen)
     const inactiveY = -frameHeight;
 
-    trayContainer.setPosition(inactiveX, inactiveY);
+    // Start in active position (showing tab)
+    trayContainer.setPosition(posX, activeY);
 
     // Player score label
     // Original iOS: playerScore.position = CGPointMake(74 - 148 + 35 + 35 + 35 + 35 - 2, 4 + 30 - 443)
@@ -383,20 +398,20 @@ export class GameScene extends Phaser.Scene {
 
   /**
    * Toggles a mini player tray between expanded and collapsed states
-   * Original iOS: Slides 380 pixels
+   * Original iOS: Slides 380 pixels (760 in Phaser)
    */
   private toggleMiniPlayerTray(tray: PlayerTrayData): void {
     tray.expanded = !tray.expanded;
 
     const frameSprite = tray.container.getAt(0) as Phaser.GameObjects.Image;
     const frameHeight = frameSprite.height;
-    const slideAmount = 380 * 2; // Scale the slide amount
+    const slideAmount = 380 * 2; // 380 iOS pixels = 760 Phaser pixels
 
-    // Calculate positions
-    const spacing = 5 * 2;
-    const baseX = GAME_WIDTH * 0.5 - (this.numPlayers * 0.5 - tray.playerIndex - 0.5) * (frameSprite.width + spacing);
-    const collapsedY = -frameHeight;
-    const expandedY = collapsedY + slideAmount;
+    // Calculate Y positions
+    // Collapsed: showing tab at top (frameHeight - slideAmount)
+    // Expanded: fully visible at top (0)
+    const collapsedY = frameHeight - slideAmount;
+    const expandedY = 0;
 
     const targetY = tray.expanded ? expandedY : collapsedY;
 
