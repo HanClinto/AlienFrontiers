@@ -1,5 +1,6 @@
-import { CENTER_X, CENTER_Y, GAME_HEIGHT, GAME_WIDTH } from '../main';
+import { CENTER_X, CENTER_Y, GAME_HEIGHT } from '../main';
 import { ImageButton } from '../ui/image-button';
+import { convertFromIOSCoordinates } from '../helpers';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -9,6 +10,7 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 
 /**
  * The main menu scene that shows the game title, background, and menu buttons.
+ * Uses coordinate conversion from original iOS game (SceneMainMenuiPad.m)
  */
 export class MainMenuScene extends Phaser.Scene {
   constructor() {
@@ -23,28 +25,27 @@ export class MainMenuScene extends Phaser.Scene {
     const bgScale = GAME_HEIGHT / background.height;
     background.setScale(bgScale);
 
-    // Add title logo at the top
-    const title = this.add.image(CENTER_X, 300, 'title');
-    
-    // Scale title to fit width with some padding
-    const titleScale = (GAME_WIDTH * 0.8) / title.width;
-    title.setScale(titleScale);
+    // Add title logo - original iOS: (384, 900)
+    const titlePos = convertFromIOSCoordinates(384, 900);
+    this.add.image(titlePos.x, titlePos.y, 'title');
 
-    // Calculate button positions (similar to original iOS positions)
-    const startY = 1200; // Lower on screen, matching reference image
-    const spacing = 160; // Space between buttons
-
-    // Create menu buttons using pre-rendered images
-    new ImageButton(this, CENTER_X, startY, 'btn_play', 'btn_play_pushed', () => {
+    // Create menu buttons using original iOS coordinates
+    // Play button - original iOS: (384, 600)
+    const playPos = convertFromIOSCoordinates(384, 600);
+    new ImageButton(this, playPos.x, playPos.y, 'btn_play', 'btn_play_pushed', () => {
       this.scene.start('PlayerSetup');
     });
 
-    new ImageButton(this, CENTER_X, startY + spacing, 'btn_rules', 'btn_rules_pushed', () => {
+    // Rules button - original iOS: (384, 520)
+    const rulesPos = convertFromIOSCoordinates(384, 520);
+    new ImageButton(this, rulesPos.x, rulesPos.y, 'btn_rules', 'btn_rules_pushed', () => {
       console.log('Quick Rules button clicked');
       // TODO: Implement Quick Rules scene
     });
 
-    new ImageButton(this, CENTER_X, startY + spacing * 2, 'btn_achievements', 'btn_achievements_pushed', () => {
+    // Achievements button - original iOS: (384, 450)
+    const achievementsPos = convertFromIOSCoordinates(384, 450);
+    new ImageButton(this, achievementsPos.x, achievementsPos.y, 'btn_achievements', 'btn_achievements_pushed', () => {
       console.log('Achievements button clicked');
       // TODO: Implement Achievements scene
     });
