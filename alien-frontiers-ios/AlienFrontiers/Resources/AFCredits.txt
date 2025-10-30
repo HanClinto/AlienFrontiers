@@ -1,0 +1,297 @@
+
+
+Alien Frontiers iPad 
+Presented by Clever Mojo Games
+in collaboration with HanClinto Games
+
+Original Game:
+Tory Niemann
+
+Graphic Design:
+Karim Chakroun
+
+App Development:
+Clint Herron
+Kevin Gillette
+Raymond Cook
+
+Art:
+Mark Maxwell
+
+Music:
+Arnold Nesis
+
+Special Thanks:
+David MacKenzie
+KickStarter
+BoardGameGeek
+
+App Testers:
+Adam Kunsemiller;Andrew Thiery
+Andy Wong;Brandon Freels
+Bryan Fischer;Chris Kirkman
+Dale Medhurst;Daniel W. Johnson
+Darrell Louder;Dennis Sell
+Dennis Worley;Eric Leath
+Erik Anderson;Gunther Schmidl
+Jeff Bourbeau;Jennifer Hackler
+Jerome Decker;Jim McMahon
+John Fischer;Jonathan Borzilleri
+Marlon de Silva;Michael
+Paco Garcia;Ryan Metzler
+Shawn Kirkham;Shawn Niemann
+Shawn Storie;SirJAGman
+Stephen Schaffer;Tim Alexander
+Todd Heidenreich;Tory Niemann
+Xander Mol;
+
+
+A special thank you goes out to
+all of our Kickstarter backers 
+who supported the development of this app
+
+Thank you for making this dream a reality!
+
+Admirals of the Fleet:
+Shawn and Kristin Niemann
+
+Commodores:
+Brett Bozeman
+Decker Jérôme
+Jonathan Borzilleri
+Tim Alexander
+Todd Heidenreich
+
+Captains:
+Andreas Froening
+Bendik Vedeler
+Brent Disbrow
+Corey Stewart
+Daniel W. Johnson
+Dennis "Mopedimus" Sell
+Dennis Worley
+Gabriel Roginic
+Giliar de Fries Perez
+James Smith
+Jim Lewallen
+Jonathan A. Gillett
+Kat Trabert
+Kristofer "Veldrin" Bengtsson
+Matt Wolfe
+Michael Black
+Michael Shumate
+Muffit Mirthworks
+Ralph Isaak
+Scott anderson
+Shawn Purtell
+Stephen D Schaffer
+Xander Mol
+
+Commanders:
+David Hoffman
+Duke Ritenhouse
+Jason Trott
+Raúl Almagro Orihuela
+Shawn Anderson
+Tory Niemann
+Will Urban
+Xabier Guitián Dominguez
+
+Lieutenants:
+Cascadia Games LLC
+Christopher Szikas
+Dave Neumann
+Erik Anderson
+Gareth P. McSorley
+Kyle Olson
+Remi Stebenne
+Shane W. Zehnder
+Steven Stumbris
+Zac Johnston
+
+Lieutenants J.G.:
+Amanda C. Smith;Andrew Larcher
+Andrew Thiery;Ben Franco
+Benjamin & Michele Bernocco;Branson Strawderman
+Brian Goebel Strange;Cameron Fletcher
+Cynthia L Rexford;Daniel Palmer
+Dano McArdle;Dante & Alex Broggi
+David M. Lewis;David Mitchell
+Donald Wheeler;Doug Hilton
+Elliot Kravitz;George E Campbell
+Greg Taylor;Infinite Dreams Gaming
+Jack;Jacob Skowronek
+Jeff James;John B. Boucher
+John Radic;Keith Collins
+Kevin S. Casper;Kurt Schwartz
+Liam Routt;Mark Ashton
+Markus Vernon;Mathue Faulkner
+Matt Nantais;Mauro A. Reis
+Michael J Kennedy;Michael Weinand
+Paul E. Matthews;R. Truax
+Richard Cross and family;Richard Hirsch
+Roger Grim;Ryan & Rus Syfargo
+Scott Gowell;Sean "ProfBeard" Kelly
+Stuart Campbell;Tristan Ostrowski
+
+Ensigns:
+Adam Schuster;Alan "Izzyman" Lee
+Arnaldo "Kurono" Lefebre;Bill Rafter
+Brad Morris;Bradford Benn, Evil Genius
+Chris Meyer;Christof Sigel
+Christopher K. Davis;David Headquist
+David R. Black;Davin Nathanson
+Dice Hate Me;Gary Blatt
+George Ramos;Gerald Rüscher
+Gerrit Geens;gmu
+Jim Horvath;Jim McMahon
+Joshua Beale;Justin Lance
+Kevin Bertram;KevM
+Locutus;Matt Leitzen
+Mercedes (Mandy Tong);Mike McCann
+Misha Nosiara;Paul Calvi
+Paul Waton;Stephen Whitford
+
+Platoons:
+Aaron Nessim;Buddah, SNERT & J;C. Joshua Villines
+Butner Brimberry;Nicole Durant;Dennis Lesica
+Erick Miller;Desiree Miller;Seven Miller
+Erin McKee;Jonathan "Digitalbeing" Logan;Kevin Bender
+Lee Stanford;Mark Hebert;Morten Monrad Pedersen
+Cameron "Magicmoper" Higley;Leon "Mag8man" Higley;Addison "Donkeyfish" Higley
+Luke Reeves;Nathaniel Reeves;Madeleine Reeves
+Ouimette Family;Paul Dobbins;Robert Bassett
+Robert Weiman;Rodney Loyd;Shaminder Dhillon
+Tom Davis
+
+Enlisted:
+Aaron Sullivan;Adam Juda;Aeterlux
+Alan Gerding;Alex Markov;Alex Vandertol
+Alex Wilgus;Alistair Warmington;Ananda Gupta
+Anders Alling Pedersen;André "Takras" Nordstrand;Andrew "Chryton" Mauney
+Andrew Cowie;Andrew Holder;Angus Looney
+Anonymous;Anthony Tedesco;AronBC
+Attila;Ben Braine;Ben Potter
+Ben Sones;Benjamin Groves;Bill "Shijuro" Hand
+Bill Wiles;Bo Gotthardt;Bob Bobbert
+Bobby "Gang of Seven" Griggs;Brad Sheehan;Brad Smoley
+Brandon Miquel;Brett Orr;Brian Douglas Gass
+Brian Frahm;Brian Miller;Bspooky
+Cade Kachelmeier;Carl Hommel;Carter Cliff
+Casey Nguyen;Charlie Fudgey;Cheap Trick
+Chris "MAZ" Marsden;Chris "Ziggy" Monser;Chris (Ronin) Nenzel
+Chris Schock;Christophe MOUCHEL;Christopher Copac
+Christopher Daley;Christopher Mason;Christopher Richardson
+Christopher Stueck;Chuck Davis;Chuck Hughes
+Colby Jack Pepperton;Colin Ewen;Court "HedgeWizard" Dimon
+Craig Whitehead;Dan Gadigian;Daniel Ryrfeldt
+Daniel Solis;Daniel Zuccarelli;Darrell Louder
+Darren Butler;Dave & Jenn Aber;Dave Chambers (ROMWBA)
+Dave Rohrl;David;David Cederberg
+David Dyer;David Grant;David McSorley
+David Noonan;David Reed;David Reilly
+David Rouillon;David Simmer II;David Wetzel
+Dennis Frank;Derek Kupper;Derrek B Kyzar
+DJ Brookshire;DjFunky;Don Clevenger
+Doug Herring;Doug McMillan;Douglas Fein
+DrEdLocke;Drew (Andrew) South;Drew Scott
+Eric Buetikofer;Eric Foldenauer;Eric Hutchison
+Eric L Weaver;Eric Raabe;Eric W. Lund
+Erik Ny;Eurion Kemish;Evan Nordgren
+Evan Stasko;eznark;Fabio Ritrovato
+Farmer Harv;Frank Boosman;Fraser Grant
+Fred Heis;Fred MacKenzie;Frostier
+Game Salute;Gary "Xantiriad" Blower;Geb Buxton
+Geoff Bowers;Geoff Van Praet;Glenn Moen
+Gnox;Graham Sim;Gramenos Gregoriadis
+Grant Lindsay;Greg D;Greg Leask
+Greg Lindsley;Greg Skaggs;Greg Ullrich
+harro willemsen;Helge Løkås;Jack Gulick
+Jam Ku;James Czaja;James Gerbino
+James Haner;James T Williams;Jamie Fitzgerald
+Jason Bovee;Jason Buchanan;Jason Emerson
+Jason Jensen;Jason Peters;Jason Simpson
+Jason Torres;Jeff "Capt. Monkeyboy" Sonnentag;Jayson Wehrend
+Jeff Jones;Jeff Tabian;Jeffery W. Hastings
+Jeffrey Norman Bourbeau;Jennifer Skahen;Jeremy 'Frontier' Hinton
+jerseydvd;Jesse Stoner;JF Paradis
+Jim Moss;JL Alexander;Joanne Haswell
+Joe Cappello;Joel Green;John C. Signorino
+John du Bois;john guthrie;John Morrow
+John P McKeon;John Sadri;John So
+John Stonebraker;John Tillinghast;Jon Hylsberg
+Jon Paul Duvall;Jonny Ryan;Jordan Booth
+Joseph Rossi;Josh Rensch;Josh Tempkin
+Joshua Howard;Joshua S. Calandrillo;Jude Greer
+Justin Martinez;Justin Schibanoff;Kari Herrington
+Kavitha Nadarajah;KC and Rita Humphrey;Ken Davis
+Ken Grazier;Ken Somerville;Kenneth Dean
+Kenny Coleman;Kenny Rosenberg;Kent Reuber
+Kevin Duffy;Kevin Johnson;Kevin Seachrist
+Kristin Firth;Laurence Rocketeer O'Brien;Lawrence Franchini
+Lee Sweeney;Living Worlds Games;Loo Yuxian
+Lukas Mathis;Malcolm "G Hoppy" Gin;Marc Maier
+Marc Majcher;Marcio Chammas;Marco ten Brinke
+Mark "Geese" Blanco;Mark "TIETS" Tietsort;Mark Farbus
+Mark J Schneider;Mark Kalmes;Mark Steen
+Mark Wignall;Mark Wilder;Martin Soderberg
+Marty Charles;Marty Devine;Matt "PowerTrader" Williams
+Matt Boehland;Matt Buckingham;Matt Morgan
+Matthew Cook;Matthew D. Gandy;Matthew Dobervich
+Matthew J. Tucker, Geekmaster;Matthew Keeley;MD
+Michael 'Dog' Robinson;Michael Hirsch;Michael Isbell
+Michael McCollum;Mike Burt;Mike Mestemaker
+Mike Mondle;Mike Schneider;Mikolaj Laczynski
+Miquel Jornet;MJ Kuchenbrod;MRB
+Mun Liong;MycroftJCF;Nathan K. Miller
+Nelson Pires;Nick Fluck;Nick Goede
+Nicolas Brassard;Nigel "Kravex" Edwards;Nik Billings
+Norm Tardi;Pascal Lachance;Pascal Tremblay
+Paul Benson;Paul Bridges;Paul D. Beasi
+Paul Haban;Pedro Sim-Sim;peregrine nicholls
+Pete Hopkins;Pete Sellers;Philip van Schalkwyk
+Piotr Burzykowski;Preston Thomas;Quantum Arrangers
+Ralph bartle;Ralph Mazza;Ralph Severson
+Ramon Korner;Randy McKinney;Randy Mosiondz
+Ranger Dave Ross;Remy Porter;Reuven Fischer
+Richard Fluxk;Richard J Harris;Richard Newby
+Robert B;Robert Boismier;Robert Schulz
+Robert Wells;Roberto "Gattolardo" Zaghis;Roberto R Lopez
+Rolf Laun;Ron Temske;Roy Levien
+Ryan LaGasse;Ryan Sarsany;Samuel and Zachary Kaplan
+Sarn Aska;Scot Ryder;Scott & Ronan de Silva
+Scott Allen;Scott W. Finkelstein;Sean P. Tompkins
+Sean Victor;Sebastian Scholz;Sebastian Stoecklein
+Seth Jay Goldberg;Shawn Plummer;Shawn Weaver
+Simon Davis;Simon Dorfman;Simon Drouin
+Sledge Hammer;Solar Jetman;Spider Wormuth
+Stefan Sautter;Stefan Winkler;Stephen Conway
+Stephen Elliott;Steve Barba;Steven C. Brown
+Steven K. Watkins;Stuart Watson;Suzi R
+Sven Sierwald;Sylvain Rancourt;Tad Runkle
+Terry C. Cooley;The Newnham Family;Thomas Scroggs
+Tim Bendicion;Tim Schroeder;Timothy Dobbins
+Timothy J. Lashley;Tom "Dreamshadow" Tjarks;Tomoo Aikawa
+Tor Edvin Dahl;Tor Iver Wilhelmsen;Torgamous
+Trevor NYC;Trevor Woodbridge;Tuomo Syvänperä
+Urayoan Irizarry;Vincent Calhoun;Walter O'Hara
+Warren Sistrom;Webxero;Will Cooper
+William Bussick;William Miller;Wyatt Bode
+Yann Serre;Yeh Fang;yiyas
+zarathud;Zsolt Botykai a.k.a. hiperlink;Zultor
+Dr. Abdullatif Lingawi;Jamie Patterson;
+
+
+
+
+Thank YOU for playing!
+
+
+
+
+
+
+
+
+
+

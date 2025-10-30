@@ -1,0 +1,144 @@
+Android debugging notes:
+
+When I got to the step that says: "Open a terminal, go to your build/android/LoomAndroidDemo folder and run ndk-gdb (this will create app_process and other needed files in later step)"
+
+Because I already had my Android device plugged in, GDB didn't know who to connect to.  We might want to change that step to explicitly target the emulator, with the -e command line option.
+
+Once I did that, I got the following long error message (but it started GDB):
+
+lappy-i7:LoomAndroidDemo clint$ ndk-gdb -e
+GNU gdb 6.6
+Copyright (C) 2006 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you are
+welcome to change it and/or distribute copies of it under certain conditions.
+Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for details.
+This GDB was configured as "--host=i686-apple-darwin --target=arm-elf-linux".
+(no debugging symbols found)
+Error while mapping shared library sections:
+/system/bin/linker: No such file or directory.
+Error while mapping shared library sections:
+libstdc++.so: No such file or directory.
+Error while mapping shared library sections:
+libm.so: No such file or directory.
+Error while mapping shared library sections:
+liblog.so: No such file or directory.
+Error while mapping shared library sections:
+libcutils.so: No such file or directory.
+Error while mapping shared library sections:
+libz.so: No such file or directory.
+Error while mapping shared library sections:
+libutils.so: No such file or directory.
+Error while mapping shared library sections:
+libbinder.so: No such file or directory.
+Error while mapping shared library sections:
+libexpat.so: No such file or directory.
+Error while mapping shared library sections:
+libcrypto.so: No such file or directory.
+Error while mapping shared library sections:
+libgabi++.so: No such file or directory.
+Error while mapping shared library sections:
+libicuuc.so: No such file or directory.
+Error while mapping shared library sections:
+libicui18n.so: No such file or directory.
+Error while mapping shared library sections:
+libssl.so: No such file or directory.
+Error while mapping shared library sections:
+libstlport.so: No such file or directory.
+Error while mapping shared library sections:
+libnativehelper.so: No such file or directory.
+Error while mapping shared library sections:
+libnetutils.so: No such file or directory.
+Error while mapping shared library sections:
+libGLESv2_dbg.so: No such file or directory.
+Error while mapping shared library sections:
+libEGL.so: No such file or directory.
+Error while mapping shared library sections:
+libwpa_client.so: No such file or directory.
+Error while mapping shared library sections:
+libhardware_legacy.so: No such file or directory.
+Error while mapping shared library sections:
+libpixelflinger.so: No such file or directory.
+Error while mapping shared library sections:
+libhardware.so: No such file or directory.
+Error while mapping shared library sections:
+libemoji.so: No such file or directory.
+Error while mapping shared library sections:
+libjpeg.so: No such file or directory.
+Error while mapping shared library sections:
+libskia.so: No such file or directory.
+Error while mapping shared library sections:
+libui.so: No such file or directory.
+Error while mapping shared library sections:
+libGLESv2.so: No such file or directory.
+Error while mapping shared library sections:
+libgui.so: No such file or directory.
+Error while mapping shared library sections:
+libcamera_client.so: No such file or directory.
+Error while mapping shared library sections:
+libsqlite.so: No such file or directory.
+Error while mapping shared library sections:
+libdvm.so: No such file or directory.
+Error while mapping shared library sections:
+libGLESv1_CM.so: No such file or directory.
+Error while mapping shared library sections:
+libETC1.so: No such file or directory.
+Error while mapping shared library sections:
+libsonivox.so: No such file or directory.
+Error while mapping shared library sections:
+libstagefright_foundation.so: No such file or directory.
+Error while mapping shared library sections:
+libmedia.so: No such file or directory.
+Error while mapping shared library sections:
+libnfc_ndef.so: No such file or directory.
+Error while mapping shared library sections:
+libusbhost.so: No such file or directory.
+Error while mapping shared library sections:
+libharfbuzz.so: No such file or directory.
+Error while mapping shared library sections:
+libhwui.so: No such file or directory.
+Error while mapping shared library sections:
+libandroid_runtime.so: No such file or directory.
+Error while mapping shared library sections:
+libvorbisidec.so: No such file or directory.
+Error while mapping shared library sections:
+libstagefright_yuv.so: No such file or directory.
+Error while mapping shared library sections:
+libdrmframework.so: No such file or directory.
+Error while mapping shared library sections:
+libchromium_net.so: No such file or directory.
+Error while mapping shared library sections:
+libstagefright_amrnb_common.so: No such file or directory.
+Error while mapping shared library sections:
+libstagefright_enc_common.so: No such file or directory.
+Error while mapping shared library sections:
+libstagefright_avc_common.so: No such file or directory.
+Error while mapping shared library sections:
+libstagefright.so: No such file or directory.
+Error while mapping shared library sections:
+libmtp.so: No such file or directory.
+Error while mapping shared library sections:
+libexif.so: No such file or directory.
+Error while mapping shared library sections:
+libmedia_jni.so: No such file or directory.
+Error while mapping shared library sections:
+libbcc.so: No such file or directory.
+Error while mapping shared library sections:
+libbcinfo.so: No such file or directory.
+Error while mapping shared library sections:
+libRS.so: No such file or directory.
+Error while mapping shared library sections:
+librs_jni.so: No such file or directory.
+Error while mapping shared library sections:
+libandroid.so: No such file or directory.
+Error while mapping shared library sections:
+libwebcore.so: No such file or directory.
+(no debugging symbols found)
+warning: Unable to find dynamic linker breakpoint function.
+GDB will be unable to debug shared library initializers
+and track explicitly loaded dynamic code.
+warning: shared library handler failed to enable breakpoint
+0x400115cc in __futex_syscall3 ()
+   from /Users/clint/Development/github/EngineCo/build/android/LoomAndroidDemo/obj/local/armeabi/libc.so
+(gdb) 
+
