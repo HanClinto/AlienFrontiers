@@ -25,7 +25,7 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
     },
 
-    mode: process.env.NODE_ENV == 'production' ? 'production' : 'development',
+    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
 
     devServer: {
         contentBase: path.resolve(__dirname, 'dist'),

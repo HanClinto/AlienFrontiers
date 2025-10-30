@@ -1,4 +1,10 @@
 export class MenuButton {
+  private static readonly BUTTON_DEFAULT_COLOR = 0xcccccc;
+  private static readonly BUTTON_HOVER_COLOR = 0xffffff;
+  private static readonly BUTTON_PRESSED_COLOR = 0xaaaaaa;
+  private static readonly BUTTON_STROKE_WIDTH = 4;
+  private static readonly BUTTON_STROKE_COLOR = 0xffffff;
+
   private rectangle: Phaser.GameObjects.Rectangle;
   private text: Phaser.GameObjects.Text;
 
@@ -12,10 +18,10 @@ export class MenuButton {
     height: number = 80
   ) {
     // Create rounded rectangle background
-    this.rectangle = scene.add.rectangle(x, y, width, height, 0xcccccc);
+    this.rectangle = scene.add.rectangle(x, y, width, height, MenuButton.BUTTON_DEFAULT_COLOR);
     this.rectangle.setOrigin(0, 0);
     this.rectangle.setInteractive({ useHandCursor: true });
-    this.rectangle.setStrokeStyle(4, 0xffffff);
+    this.rectangle.setStrokeStyle(MenuButton.BUTTON_STROKE_WIDTH, MenuButton.BUTTON_STROKE_COLOR);
 
     // Create text
     this.text = scene.add.text(x + width / 2, y + height / 2, text, {
@@ -28,19 +34,19 @@ export class MenuButton {
 
     // Add hover effects
     this.rectangle.on('pointerover', () => {
-      this.rectangle.setFillStyle(0xffffff);
+      this.rectangle.setFillStyle(MenuButton.BUTTON_HOVER_COLOR);
     });
 
     this.rectangle.on('pointerout', () => {
-      this.rectangle.setFillStyle(0xcccccc);
+      this.rectangle.setFillStyle(MenuButton.BUTTON_DEFAULT_COLOR);
     });
 
     this.rectangle.on('pointerdown', () => {
-      this.rectangle.setFillStyle(0xaaaaaa);
+      this.rectangle.setFillStyle(MenuButton.BUTTON_PRESSED_COLOR);
     });
 
     this.rectangle.on('pointerup', () => {
-      this.rectangle.setFillStyle(0xffffff);
+      this.rectangle.setFillStyle(MenuButton.BUTTON_HOVER_COLOR);
       onClick();
     });
   }
