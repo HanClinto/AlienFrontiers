@@ -217,3 +217,8 @@ xcuserdata/
 ####
 # UNKNOWN: recommended by others, but I can't discover what these files are
 #
+
+# JavaScript/Node.js
+af-js/node_modules/
+af-js/dist/
+af-js/package-lock.json

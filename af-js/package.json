@@ -1,0 +1,25 @@
+{
+  "name": "AlienFrontiers",
+  "version": "0.1.0",
+  "description": "Alien Frontiers: Kickstarter Edition for Web",
+  "main": "index.js",
+  "author": "Clint Herron",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "copy-webpack-plugin": "6.2.1",
+    "ts-loader": "8.0.0",
+    "typescript": "4.1.5",
+    "webpack": "4.42.1",
+    "webpack-cli": "3.3.11",
+    "webpack-dev-server": "3.10.3"
+  },
+  "scripts": {
+    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack",
+    "dev": "NODE_OPTIONS=--openssl-legacy-provider webpack-dev-server"
+  },
+  "dependencies": {
+    "phaser": "^3.55.2",
+    "ts-bus": "^2.3.1"
+  }
+}
