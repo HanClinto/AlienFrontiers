@@ -20,6 +20,7 @@ But hopefully this is a way of letting this stay alive for those of us who loved
 # Project Technology
 
 * I want this project to use a minimum of dependencies. I don't even like NPM, but if I need to use it so that I have decent access to things like Phaser, then that's fine. But if I can do it in pure HTML + Javascript, then that's very tempting for me also.
+* The original project used Cocos2D, and there is (apparently?) a Cocos2D-X which can compile for HTML. I don't know if it's worth trying to leverage this or not, but it's something to consider before porting it to another framework or library.
 
 # Reference implementations
 
