@@ -1,6 +1,7 @@
 import { GAME_WIDTH, GAME_HEIGHT } from '../main';
-import { convertFromIOSCoordinates, PLAYER_COLORS } from '../helpers';
+import { convertFromIOSCoordinates, convertIOSChildCoordinates, PLAYER_COLORS } from '../helpers';
 import { ImageButton } from '../ui/image-button';
+import { LabeledButton } from '../ui/labeled-button';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -79,28 +80,29 @@ export class GameScene extends Phaser.Scene {
     frameSprite.setOrigin(0.5, 1); // Anchor at bottom-center so it extends upward
     trayContainer.add(frameSprite);
 
-    // Roll button
+    // Roll button with label
     // Original iOS: rollButton.position = ccp(635 - 375, 92 - 117)
-    const rollBtnX = (635 - 375) * 2;
-    const rollBtnY = (92 - 117) * 2;
-    const rollButton = new ImageButton(
+    const rollBtnPos = convertIOSChildCoordinates(635 - 375, 92 - 117);
+    const rollButton = new LabeledButton(
       this,
-      rollBtnX,
-      rollBtnY,
+      rollBtnPos.x,
+      rollBtnPos.y,
       'button_roll_up',
       'button_roll_down',
+      'ROLL',
+      '#000000',
+      32,
       () => this.onRollButtonTapped()
     );
     trayContainer.add(rollButton.getContainer());
 
     // Undo button
     // Original iOS: undoButton.position = ccp(693 - 375 - 122 + 3, 126 - 117 - 82 - 2)
-    const undoBtnX = (693 - 375 - 122 + 3) * 2;
-    const undoBtnY = (126 - 117 - 82 - 2) * 2;
+    const undoBtnPos = convertIOSChildCoordinates(693 - 375 - 122 + 3, 126 - 117 - 82 - 2);
     const undoButton = new ImageButton(
       this,
-      undoBtnX,
-      undoBtnY,
+      undoBtnPos.x,
+      undoBtnPos.y,
       'tray_btn_undo',
       'tray_btn_undo_active',
       () => this.onUndoButtonTapped()
@@ -109,12 +111,11 @@ export class GameScene extends Phaser.Scene {
 
     // Redo button
     // Original iOS: redoButton.position = ccp(577 - 375 + 37 + 3, 126 - 117 - 82 - 2)
-    const redoBtnX = (577 - 375 + 37 + 3) * 2;
-    const redoBtnY = (126 - 117 - 82 - 2) * 2;
+    const redoBtnPos = convertIOSChildCoordinates(577 - 375 + 37 + 3, 126 - 117 - 82 - 2);
     const redoButton = new ImageButton(
       this,
-      redoBtnX,
-      redoBtnY,
+      redoBtnPos.x,
+      redoBtnPos.y,
       'tray_btn_redo',
       'tray_btn_redo_active',
       () => this.onRedoButtonTapped()
@@ -123,35 +124,32 @@ export class GameScene extends Phaser.Scene {
 
     // Done button
     // Original iOS: doneButton.position = ccp(693 - 375 - 16 + 3, 128 - 80 - 117 - 4 - 2)
-    const doneBtnX = (693 - 375 - 16 + 3) * 2;
-    const doneBtnY = (128 - 80 - 117 - 4 - 2) * 2;
+    const doneBtnPos = convertIOSChildCoordinates(693 - 375 - 16 + 3, 128 - 80 - 117 - 4 - 2);
     const doneButton = new ImageButton(
       this,
-      doneBtnX,
-      doneBtnY,
+      doneBtnPos.x,
+      doneBtnPos.y,
       'tray_btn_done',
       'tray_btn_done_active',
       () => this.onDoneButtonTapped()
     );
     trayContainer.add(doneButton.getContainer());
 
-    // Player number label
+    // Player score label (upper right corner of tray)
     // Original iOS: label.position = CGPointMake(705 - 375, 193 - 117)
-    const playerNumX = (705 - 375) * 2;
-    const playerNumY = (193 - 117) * 2;
-    const playerNumLabel = this.add.text(playerNumX, playerNumY, (this.currentPlayer + 1).toString(), {
+    const playerScorePos = convertIOSChildCoordinates(705 - 375, 193 - 117);
+    const playerScoreLabel = this.add.text(playerScorePos.x, playerScorePos.y, '0', {
       fontFamily: 'Arial',
       fontSize: '84px',
       color: '#ffffff',
     });
-    playerNumLabel.setOrigin(0.5, 0.5);
-    trayContainer.add(playerNumLabel);
+    playerScoreLabel.setOrigin(0.5, 0.5);
+    trayContainer.add(playerScoreLabel);
 
     // Resource labels
     // Ore label - Original iOS: oreLabel.position = CGPointMake(706 - 375 - 148, 182 + 22 - 117)
-    const oreLabelX = (706 - 375 - 148) * 2;
-    const oreLabelY = (182 + 22 - 117) * 2;
-    const oreLabel = this.add.text(oreLabelX, oreLabelY, '0', {
+    const oreLabelPos = convertIOSChildCoordinates(706 - 375 - 148, 182 + 22 - 117);
+    const oreLabel = this.add.text(oreLabelPos.x, oreLabelPos.y, '0', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
@@ -160,9 +158,8 @@ export class GameScene extends Phaser.Scene {
     trayContainer.add(oreLabel);
 
     // Fuel label - Original iOS: fuelLabel.position = CGPointMake(706 - 375 - 148 + 35, 182 + 22 - 117)
-    const fuelLabelX = (706 - 375 - 148 + 35) * 2;
-    const fuelLabelY = (182 + 22 - 117) * 2;
-    const fuelLabel = this.add.text(fuelLabelX, fuelLabelY, '2', {
+    const fuelLabelPos = convertIOSChildCoordinates(706 - 375 - 148 + 35, 182 + 22 - 117);
+    const fuelLabel = this.add.text(fuelLabelPos.x, fuelLabelPos.y, '2', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
@@ -171,9 +168,8 @@ export class GameScene extends Phaser.Scene {
     trayContainer.add(fuelLabel);
 
     // Colony label - Original iOS: colonyLabel.position = CGPointMake(706 - 375 - 148 + 35 + 35, 182 + 22 - 117)
-    const colonyLabelX = (706 - 375 - 148 + 35 + 35) * 2;
-    const colonyLabelY = (182 + 22 - 117) * 2;
-    const colonyLabel = this.add.text(colonyLabelX, colonyLabelY, '3', {
+    const colonyLabelPos = convertIOSChildCoordinates(706 - 375 - 148 + 35 + 35, 182 + 22 - 117);
+    const colonyLabel = this.add.text(colonyLabelPos.x, colonyLabelPos.y, '3', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
@@ -182,9 +178,8 @@ export class GameScene extends Phaser.Scene {
     trayContainer.add(colonyLabel);
 
     // Dice label - Original iOS: diceLabel.position = CGPointMake(706 - 375 - 148 + 35 + 35 + 35, 182 + 22 - 117)
-    const diceLabelX = (706 - 375 - 148 + 35 + 35 + 35) * 2;
-    const diceLabelY = (182 + 22 - 117) * 2;
-    const diceLabel = this.add.text(diceLabelX, diceLabelY, '5', {
+    const diceLabelPos = convertIOSChildCoordinates(706 - 375 - 148 + 35 + 35 + 35, 182 + 22 - 117);
+    const diceLabel = this.add.text(diceLabelPos.x, diceLabelPos.y, '5', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
@@ -193,63 +188,64 @@ export class GameScene extends Phaser.Scene {
     trayContainer.add(diceLabel);
 
     // Colony sprite (red player)
-    const colonySprite = this.add.image(colonyLabelX + 2, colonyLabelY - 54, 'colony_red');
+    const colonySprite = this.add.image(colonyLabelPos.x + 2, colonyLabelPos.y - 54, 'colony_red');
     trayContainer.add(colonySprite);
 
     // Die sprite (red player)
-    const dieSprite = this.add.image(diceLabelX + 2, diceLabelY - 54, 'die_red');
+    const dieSprite = this.add.image(diceLabelPos.x + 2, diceLabelPos.y - 54, 'die_red');
     trayContainer.add(dieSprite);
 
     // Tech card tray
     // Original iOS: cardTray.position = CGPointMake(706 - 375 - 148 - 349, 182 - 21 - 117 + 3)
-    const cardTrayX = (706 - 375 - 148 - 349) * 2;
-    const cardTrayY = (182 - 21 - 117 + 3) * 2;
-    const cardTray = this.add.image(cardTrayX, cardTrayY, 'card_tray_horiz');
+    const cardTrayPos = convertIOSChildCoordinates(706 - 375 - 148 - 349, 182 - 21 - 117 + 3);
+    const cardTray = this.add.image(cardTrayPos.x, cardTrayPos.y, 'card_tray_horiz');
     cardTray.setOrigin(0, 1);
     trayContainer.add(cardTray);
 
     // Corner overlay with color tint
     // Original iOS: cornerOverlay.position = ccp(67 + 640 - 375, 186 - 117)
-    const cornerX = (67 + 640 - 375) * 2;
-    const cornerY = (186 - 117) * 2;
-    const cornerOverlay = this.add.image(cornerX, cornerY, 'port_corner_tint');
+    const cornerPos = convertIOSChildCoordinates(67 + 640 - 375, 186 - 117);
+    const cornerOverlay = this.add.image(cornerPos.x, cornerPos.y, 'port_corner_tint');
     cornerOverlay.setTint(PLAYER_COLORS[this.currentPlayer]);
     cornerOverlay.setBlendMode(Phaser.BlendModes.MULTIPLY);
     trayContainer.add(cornerOverlay);
 
     // Edge overlay with color tint
     // Original iOS: edgeOverlay.position = ccp(67 - 21 - 25 - 375, 186 - 68 - 117)
-    const edgeX = (67 - 21 - 25 - 375) * 2;
-    const edgeY = (186 - 68 - 117) * 2;
-    const edgeOverlay = this.add.image(edgeX, edgeY, 'port_edge_tint');
+    const edgePos = convertIOSChildCoordinates(67 - 21 - 25 - 375, 186 - 68 - 117);
+    const edgeOverlay = this.add.image(edgePos.x, edgePos.y, 'port_edge_tint');
     edgeOverlay.setTint(PLAYER_COLORS[this.currentPlayer]);
     edgeOverlay.setBlendMode(Phaser.BlendModes.MULTIPLY);
     trayContainer.add(edgeOverlay);
 
-    // Menu button
+    // Menu button with label
     // Original iOS: menuButton.position = ccp(67 - 21 - 25 - 375 + 94 - 40, 126 - 117 - 82 - 2)
-    const menuBtnX = (67 - 21 - 25 - 375 + 94 - 40) * 2;
-    const menuBtnY = (126 - 117 - 82 - 2) * 2;
-    const menuButton = new ImageButton(
+    const menuBtnPos = convertIOSChildCoordinates(67 - 21 - 25 - 375 + 94 - 40, 126 - 117 - 82 - 2);
+    const menuButton = new LabeledButton(
       this,
-      menuBtnX,
-      menuBtnY,
+      menuBtnPos.x,
+      menuBtnPos.y,
       'menu_button_68',
       'menu_button_68_active',
+      'MENU',
+      '#000000',
+      22,
       () => this.onMenuButtonTapped()
     );
     trayContainer.add(menuButton.getContainer());
 
-    // Help button
+    // Help button with label
     // Original iOS: helpButton.position = ccp(67 - 21 - 25 - 375 + 94 + 40, 126 - 117 - 82 - 2)
-    const helpBtnX = (67 - 21 - 25 - 375 + 94 + 40) * 2;
-    const helpBtnY = (126 - 117 - 82 - 2) * 2;
-    const helpButton = new ImageButton(
+    const helpBtnPos = convertIOSChildCoordinates(67 - 21 - 25 - 375 + 94 + 40, 126 - 117 - 82 - 2);
+    const helpButton = new LabeledButton(
       this,
-      helpBtnX,
-      helpBtnY,
+      helpBtnPos.x,
+      helpBtnPos.y,
       'menu_button_68',
       'menu_button_68_active',
+      'HELP',
+      '#000000',
+      22,
       () => this.onHelpButtonTapped()
     );
     trayContainer.add(helpButton.getContainer());
@@ -291,9 +287,8 @@ export class GameScene extends Phaser.Scene {
 
     // Player score label
     // Original iOS: playerScore.position = CGPointMake(74 - 148 + 35 + 35 + 35 + 35 - 2, 4 + 30 - 443)
-    const scoreX = (74 - 148 + 35 + 35 + 35 + 35 - 2) * 2;
-    const scoreY = (4 + 30 - 443) * 2;
-    const scoreLabel = this.add.text(scoreX, scoreY, '0', {
+    const scorePos = convertIOSChildCoordinates(74 - 148 + 35 + 35 + 35 + 35 - 2, 4 + 30 - 443);
+    const scoreLabel = this.add.text(scorePos.x, scorePos.y, '0', {
       fontFamily: 'Arial',
       fontSize: '84px',
       color: '#ffffff',
@@ -302,9 +297,8 @@ export class GameScene extends Phaser.Scene {
     trayContainer.add(scoreLabel);
 
     // Resource labels (ore, fuel, colony, dice)
-    const oreLabelX = (75 - 148 - 2) * 2;
-    const oreLabelY = (0 - 17 + 30 - 443) * 2;
-    const oreLabel = this.add.text(oreLabelX, oreLabelY, '0', {
+    const oreLabelPos = convertIOSChildCoordinates(75 - 148 - 2, 0 - 17 + 30 - 443);
+    const oreLabel = this.add.text(oreLabelPos.x, oreLabelPos.y, '0', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
@@ -312,9 +306,8 @@ export class GameScene extends Phaser.Scene {
     oreLabel.setOrigin(0.5, 0.5);
     trayContainer.add(oreLabel);
 
-    const fuelLabelX = (73 - 148 + 35 - 2) * 2;
-    const fuelLabelY = (0 - 17 + 30 - 443) * 2;
-    const fuelLabel = this.add.text(fuelLabelX, fuelLabelY, '2', {
+    const fuelLabelPos = convertIOSChildCoordinates(73 - 148 + 35 - 2, 0 - 17 + 30 - 443);
+    const fuelLabel = this.add.text(fuelLabelPos.x, fuelLabelPos.y, '2', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
@@ -322,9 +315,8 @@ export class GameScene extends Phaser.Scene {
     fuelLabel.setOrigin(0.5, 0.5);
     trayContainer.add(fuelLabel);
 
-    const colonyLabelX = (71 - 148 + 35 + 35 - 2) * 2;
-    const colonyLabelY = (0 - 17 + 30 - 443) * 2;
-    const colonyLabel = this.add.text(colonyLabelX, colonyLabelY, '3', {
+    const colonyLabelPos = convertIOSChildCoordinates(71 - 148 + 35 + 35 - 2, 0 - 17 + 30 - 443);
+    const colonyLabel = this.add.text(colonyLabelPos.x, colonyLabelPos.y, '3', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
@@ -332,9 +324,8 @@ export class GameScene extends Phaser.Scene {
     colonyLabel.setOrigin(0.5, 0.5);
     trayContainer.add(colonyLabel);
 
-    const diceLabelX = (70 - 148 + 35 + 35 + 35 - 2) * 2;
-    const diceLabelY = (0 - 17 + 30 - 443) * 2;
-    const diceLabel = this.add.text(diceLabelX, diceLabelY, '5', {
+    const diceLabelPos = convertIOSChildCoordinates(70 - 148 + 35 + 35 + 35 - 2, 0 - 17 + 30 - 443);
+    const diceLabel = this.add.text(diceLabelPos.x, diceLabelPos.y, '5', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
@@ -346,23 +337,21 @@ export class GameScene extends Phaser.Scene {
     const colorNames = ['red', 'green', 'blue', 'yellow'];
     const colorName = colorNames[playerIndex];
 
-    const colonySprite = this.add.image(colonyLabelX, colonyLabelY + 48, `colony_${colorName}`);
+    const colonySprite = this.add.image(colonyLabelPos.x, colonyLabelPos.y + 48, `colony_${colorName}`);
     trayContainer.add(colonySprite);
 
-    const dieSprite = this.add.image(diceLabelX, diceLabelY + 48, `die_${colorName}`);
+    const dieSprite = this.add.image(diceLabelPos.x, diceLabelPos.y + 48, `die_${colorName}`);
     trayContainer.add(dieSprite);
 
     // Tech card tray (vertical mini)
-    const cardTrayX = (-182 * 0.5 + 3) * 2;
-    const cardTrayY = (-223 + 114) * 2;
-    const cardTray = this.add.image(cardTrayX, cardTrayY, 'card_tray_vert_mini');
+    const cardTrayPos = convertIOSChildCoordinates(-182 * 0.5 + 3, -223 + 114);
+    const cardTray = this.add.image(cardTrayPos.x, cardTrayPos.y, 'card_tray_vert_mini');
     cardTray.setOrigin(0, 1);
     trayContainer.add(cardTray);
 
     // Corner overlay with color tint
-    const cornerX = (67 - 1) * 2;
-    const cornerY = (0 + 30 - 443) * 2;
-    const cornerOverlay = this.add.image(cornerX, cornerY, 'port_corner_tint_mini');
+    const cornerPos = convertIOSChildCoordinates(67 - 1, 0 + 30 - 443);
+    const cornerOverlay = this.add.image(cornerPos.x, cornerPos.y, 'port_corner_tint_mini');
     cornerOverlay.setTint(PLAYER_COLORS[playerIndex]);
     cornerOverlay.setBlendMode(Phaser.BlendModes.MULTIPLY);
     trayContainer.add(cornerOverlay);

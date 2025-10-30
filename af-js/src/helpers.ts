@@ -29,6 +29,28 @@ export const convertFromIOSCoordinates = (x: number, y: number): { x: number, y:
 }
 
 /**
+ * Converts iOS child coordinates relative to a container positioned at the bottom
+ * In iOS, children are positioned relative to container's anchor point (center by default)
+ * When we use origin (0.5, 1) for the container in Phaser, we need to adjust Y coordinates
+ * 
+ * @param iosX - X coordinate in iOS system relative to container
+ * @param iosY - Y coordinate in iOS system relative to container
+ * @returns Object with scaled coordinates for Phaser container with bottom-center origin
+ */
+export const convertIOSChildCoordinates = (iosX: number, iosY: number): { x: number, y: number } => {
+  const SCALE_FACTOR = 2;
+  
+  // Scale X coordinate (simple multiplication)
+  const phaserX = iosX * SCALE_FACTOR;
+  
+  // In iOS, Y is relative to container center. In Phaser with origin(0.5, 1), 
+  // Y=0 is at the bottom of the container. We need to negate Y to flip it.
+  const phaserY = -iosY * SCALE_FACTOR;
+  
+  return { x: phaserX, y: phaserY };
+}
+
+/**
  * Converts a color from iOS format to web hex format
  * @param r - Red (0-255)
  * @param g - Green (0-255)
