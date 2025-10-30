@@ -187,20 +187,20 @@ export class GameScene extends Phaser.Scene {
     diceLabel.setOrigin(0.5, 0.5);
     trayContainer.add(diceLabel);
 
-    // Colony sprite (red player)
-    const colonySprite = this.add.image(colonyLabelPos.x + 2, colonyLabelPos.y - 54, 'colony_red');
-    trayContainer.add(colonySprite);
-
-    // Die sprite (red player)
-    const dieSprite = this.add.image(diceLabelPos.x + 2, diceLabelPos.y - 54, 'die_red');
-    trayContainer.add(dieSprite);
-
-    // Tech card tray
+    // Tech card tray (must be first/bottom-most layer per UILayerTagCardTray = 0)
     // Original iOS: cardTray.position = CGPointMake(706 - 375 - 148 - 349, 182 - 21 - 117 + 3)
     const cardTrayPos = convertIOSChildCoordinates(706 - 375 - 148 - 349, 182 - 21 - 117 + 3);
     const cardTray = this.add.image(cardTrayPos.x, cardTrayPos.y, 'card_tray_horiz');
-    cardTray.setOrigin(0, 1);
+    cardTray.setOrigin(0, 0.5);
     trayContainer.add(cardTray);
+
+    // Colony sprite (red player)
+    const colonySprite = this.add.image(colonyLabelPos.x + 2, colonyLabelPos.y + 54, 'colony_red');
+    trayContainer.add(colonySprite);
+
+    // Die sprite (red player)
+    const dieSprite = this.add.image(diceLabelPos.x + 2, diceLabelPos.y + 54, 'die_red');
+    trayContainer.add(dieSprite);
 
     // Corner overlay with color tint
     // Original iOS: cornerOverlay.position = ccp(67 + 640 - 375, 186 - 117)
@@ -286,19 +286,18 @@ export class GameScene extends Phaser.Scene {
     // iOS: 768 * 0.5 - (numPlayers * 0.5 - playerIndex - 0.5) * (width + 5)
     const posX = GAME_WIDTH * 0.5 - (this.numPlayers * 0.5 - playerIndex - 0.5) * (frameWidth + spacing);
     
-    // Y position when NOT expanded (showing tab at top)
-    // iOS activePosition: Y = 1024 + 380 (bottom of frame)
-    // Frame is 498 pixels tall (iOS: 249), so top is at 1024 + 380 - 249 = 1155
-    // Visible portion: 1155 - 1024 = 131 pixels (in Phaser: 262)
-    // In Phaser with top-left origin, container at Y = 262 shows this tab
+    // Y position when NOT expanded (showing only small tab at top)
+    // iOS activePosition (not expanded): Y = 1024 + 380 (bottom of frame 380 pixels above screen top)
+    // Frame is 498 pixels tall (iOS: 249), so visible portion is minimal
+    // In Phaser with top-left origin and frame origin at bottom, we need negative Y
     const slideDistance = 380 * 2; // 380 pixels in iOS = 760 in Phaser
-    const activeY = frameHeight - slideDistance; // Position showing tab at top
+    const collapsedY = -slideDistance; // Negative Y shows tab at top
     
-    // Inactive position (fully off-screen)
-    const inactiveY = -frameHeight;
+    // Expanded position (fully visible, slid down)
+    const expandedY = 0; // At top edge
 
-    // Start in active position (showing tab)
-    trayContainer.setPosition(posX, activeY);
+    // Start in collapsed position (showing tab, NOT expanded)
+    trayContainer.setPosition(posX, collapsedY);
 
     // Player score label
     // Original iOS: playerScore.position = CGPointMake(74 - 148 + 35 + 35 + 35 + 35 - 2, 4 + 30 - 443)
@@ -399,18 +398,17 @@ export class GameScene extends Phaser.Scene {
   /**
    * Toggles a mini player tray between expanded and collapsed states
    * Original iOS: Slides 380 pixels (760 in Phaser)
+   * Collapsed = showing small tab, Expanded = fully visible slid down
    */
   private toggleMiniPlayerTray(tray: PlayerTrayData): void {
     tray.expanded = !tray.expanded;
 
-    const frameSprite = tray.container.getAt(0) as Phaser.GameObjects.Image;
-    const frameHeight = frameSprite.height;
     const slideAmount = 380 * 2; // 380 iOS pixels = 760 Phaser pixels
 
     // Calculate Y positions
-    // Collapsed: showing tab at top (frameHeight - slideAmount)
-    // Expanded: fully visible at top (0)
-    const collapsedY = frameHeight - slideAmount;
+    // Collapsed: mostly off-screen, showing tab (-760)
+    // Expanded: fully visible, slid down (0)
+    const collapsedY = -slideAmount;
     const expandedY = 0;
 
     const targetY = tray.expanded ? expandedY : collapsedY;
