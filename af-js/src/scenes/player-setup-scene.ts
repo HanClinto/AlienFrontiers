@@ -66,7 +66,7 @@ export class PlayerSetupScene extends Phaser.Scene {
     const playPos = convertFromIOSCoordinates(384, 600);
     new ImageButton(this, playPos.x, playPos.y, 'btn_play', 'btn_play_pushed', () => {
       console.log('Starting game with configs:', this.playerConfigs.slice(0, this.numPlayers));
-      // TODO: Start the actual game scene
+      this.scene.start('Game', { numPlayers: this.numPlayers, playerConfigs: this.playerConfigs });
     });
 
     // Number of players button - original iOS: (384, 525)
