@@ -39,18 +39,24 @@ export const game = new Phaser.Game(gameConfig);
 exposeDebugAPI(game);
 
 // Support URL parameters to start at specific scene
-// Usage: ?scene=Game or ?scene=PlayerSetup
+// Usage: ?scene=game or ?scene=playersetup
 const startScene = getStartScene();
 if (startScene) {
   game.events.once('ready', () => {
     const sceneKey = startScene.charAt(0).toUpperCase() + startScene.slice(1);
-    console.log(`Starting at scene: ${sceneKey} (from URL parameter)`);
+    console.log(`URL parameter detected: will navigate to ${sceneKey} after assets load`);
     
-    // Stop boot scene and start requested scene
-    setTimeout(() => {
-      game.scene.stop('Boot');
-      const data = sceneKey === 'Game' ? { numPlayers: 2 } : {};
-      game.scene.start(sceneKey, data);
-    }, 100);
+    // Wait for Boot scene to finish loading assets, then navigate
+    const bootScene = game.scene.getScene('Boot');
+    if (bootScene) {
+      bootScene.events.once('create', () => {
+        // Give boot scene time to load assets
+        setTimeout(() => {
+          console.log(`Assets loaded, navigating to: ${sceneKey}`);
+          const data = sceneKey === 'Game' ? { numPlayers: 2 } : {};
+          game.scene.start(sceneKey, data);
+        }, 100);
+      });
+    }
   });
 }
