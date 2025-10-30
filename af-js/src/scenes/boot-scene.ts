@@ -76,12 +76,19 @@ export class BootScene extends Phaser.Scene {
         this.load.image('background', 'af_ipad_gui_bg-ipadhd.png');
         this.load.image('title', 'af_title-ipadhd.png');
 
-        // Load button images
+        // Load main menu button images
         this.load.image('btn_play', 'menu_play_big-ipadhd.png');
         this.load.image('btn_play_pushed', 'menu_play_big_pushed-ipadhd.png');
         this.load.image('btn_rules', 'menu_rules-ipadhd.png');
         this.load.image('btn_rules_pushed', 'menu_rules_pushed-ipadhd.png');
         this.load.image('btn_achievements', 'menu_achievements.png');
         this.load.image('btn_achievements_pushed', 'menu_achievements_pushed.png');
+
+        // Load player setup scene assets
+        this.load.image('title_game_setup', 'af_game_setup-ipadhd.png');
+        this.load.image('btn_back', 'menu_back-ipadhd.png');
+        this.load.image('btn_back_pushed', 'menu_back_pushed-ipadhd.png');
+        this.load.image('btn_blank', 'menu_button_blank-ipadhd.png');
+        this.load.image('btn_blank_pushed', 'menu_button_blank_pushed-ipadhd.png');
     }
 }
