@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import Scenes from './scenes';
+import { exposeDebugAPI, getStartScene } from './debug';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
     active: false,
@@ -33,3 +34,23 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
 };
 
 export const game = new Phaser.Game(gameConfig);
+
+// Expose debug API for testing
+exposeDebugAPI(game);
+
+// Support URL parameters to start at specific scene
+// Usage: ?scene=Game or ?scene=PlayerSetup
+const startScene = getStartScene();
+if (startScene) {
+  game.events.once('ready', () => {
+    const sceneKey = startScene.charAt(0).toUpperCase() + startScene.slice(1);
+    console.log(`Starting at scene: ${sceneKey} (from URL parameter)`);
+    
+    // Stop boot scene and start requested scene
+    setTimeout(() => {
+      game.scene.stop('Boot');
+      const data = sceneKey === 'Game' ? { numPlayers: 2 } : {};
+      game.scene.start(sceneKey, data);
+    }, 100);
+  });
+}
