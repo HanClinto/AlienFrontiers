@@ -29,42 +29,49 @@ export class ImageButton {
     this.container.add(this.normalImage);
     this.container.add(this.pushedImage);
 
-    // Set up interaction handlers
-    this.normalImage.on('pointerover', () => {
-      // Subtle scale effect on hover
-      scene.tweens.add({
-        targets: this.container,
-        scale: 1.05,
-        duration: 100,
-        ease: 'Power2'
+    // Set up interaction handlers on both images so events work regardless of which is visible
+    const setupInteraction = (image: Phaser.GameObjects.Image) => {
+      image.on('pointerover', () => {
+        // Subtle scale effect on hover
+        scene.tweens.add({
+          targets: this.container,
+          scale: 1.05,
+          duration: 100,
+          ease: 'Power2'
+        });
       });
-    });
 
-    this.normalImage.on('pointerout', () => {
-      // Reset scale
-      scene.tweens.add({
-        targets: this.container,
-        scale: 1.0,
-        duration: 100,
-        ease: 'Power2'
+      image.on('pointerout', () => {
+        // Reset scale
+        scene.tweens.add({
+          targets: this.container,
+          scale: 1.0,
+          duration: 100,
+          ease: 'Power2'
+        });
+        // Show normal state
+        this.normalImage.setVisible(true);
+        this.pushedImage.setVisible(false);
       });
-      // Show normal state
-      this.normalImage.setVisible(true);
-      this.pushedImage.setVisible(false);
-    });
 
-    this.normalImage.on('pointerdown', () => {
-      // Show pushed state
-      this.normalImage.setVisible(false);
-      this.pushedImage.setVisible(true);
-    });
+      image.on('pointerdown', () => {
+        // Show pushed state
+        this.normalImage.setVisible(false);
+        this.pushedImage.setVisible(true);
+      });
 
-    this.normalImage.on('pointerup', () => {
-      // Show normal state
-      this.normalImage.setVisible(true);
-      this.pushedImage.setVisible(false);
-      onClick();
-    });
+      image.on('pointerup', () => {
+        // Show normal state
+        this.normalImage.setVisible(true);
+        this.pushedImage.setVisible(false);
+        onClick();
+      });
+    };
+
+    setupInteraction(this.normalImage);
+    // Make pushed image interactive too so events fire even when it's visible
+    this.pushedImage.setInteractive({ useHandCursor: true });
+    setupInteraction(this.pushedImage);
   }
 
   public setVisible(visible: boolean): void {

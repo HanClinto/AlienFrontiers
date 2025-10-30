@@ -48,27 +48,28 @@ export class PlayerSetupScene extends Phaser.Scene {
     const bgScale = GAME_HEIGHT / background.height;
     background.setScale(bgScale);
 
-    // Add "GAME SETUP" title
-    const title = this.add.image(CENTER_X, 900, 'title_game_setup');
-    const titleScale = (GAME_WIDTH * 0.7) / title.width;
-    title.setScale(titleScale);
+    // Original iOS coordinates (768x1024) * 2 = our coordinates (1536x2048)
+    const SCALE_FACTOR = 2;
 
-    // Back button (top left)
-    new ImageButton(this, 200, 974, 'btn_back', 'btn_back_pushed', () => {
+    // Add "GAME SETUP" title - original: (384, 900)
+    this.add.image(384 * SCALE_FACTOR, 900 * SCALE_FACTOR, 'title_game_setup');
+
+    // Back button - original: (100, 974)
+    new ImageButton(this, 100 * SCALE_FACTOR, 974 * SCALE_FACTOR, 'btn_back', 'btn_back_pushed', () => {
       this.scene.start('MainMenu');
     });
 
-    // Play button (center)
-    new ImageButton(this, CENTER_X, 1200, 'btn_play', 'btn_play_pushed', () => {
+    // Play button - original: (384, 600)
+    new ImageButton(this, 384 * SCALE_FACTOR, 600 * SCALE_FACTOR, 'btn_play', 'btn_play_pushed', () => {
       console.log('Starting game with configs:', this.playerConfigs.slice(0, this.numPlayers));
       // TODO: Start the actual game scene
     });
 
-    // Number of players button
+    // Number of players button - original: (384, 525)
     this.numPlayersButton = new LabeledButton(
       this,
-      CENTER_X,
-      1050,
+      384 * SCALE_FACTOR,
+      525 * SCALE_FACTOR,
       'btn_blank',
       'btn_blank_pushed',
       this.numPlayers.toString(),
@@ -83,17 +84,12 @@ export class PlayerSetupScene extends Phaser.Scene {
       }
     );
 
-    // Create player buttons (2x2 grid)
-    const gridCenterX = CENTER_X;
-    const gridCenterY = 800;
-    const gridSpacingX = 200;
-    const gridSpacingY = 150;
-
-    // Player 1 (top-left)
+    // Player buttons using original iOS coordinates
+    // Player 1 - original: (384 - 100, 400) = (284, 400)
     this.playerButtons[0] = new LabeledButton(
       this,
-      gridCenterX - gridSpacingX / 2,
-      gridCenterY,
+      (384 - 100) * SCALE_FACTOR,
+      400 * SCALE_FACTOR,
       'btn_blank',
       'btn_blank_pushed',
       this.playerConfigs[0].controller,
@@ -102,11 +98,11 @@ export class PlayerSetupScene extends Phaser.Scene {
       () => this.cyclePlayerController(0)
     );
 
-    // Player 2 (top-right)
+    // Player 2 - original: (384 + 100, 400) = (484, 400)
     this.playerButtons[1] = new LabeledButton(
       this,
-      gridCenterX + gridSpacingX / 2,
-      gridCenterY,
+      (384 + 100) * SCALE_FACTOR,
+      400 * SCALE_FACTOR,
       'btn_blank',
       'btn_blank_pushed',
       this.playerConfigs[1].controller,
@@ -115,11 +111,11 @@ export class PlayerSetupScene extends Phaser.Scene {
       () => this.cyclePlayerController(1)
     );
 
-    // Player 3 (bottom-left)
+    // Player 3 - original: (384 - 100, 400 - 75) = (284, 325)
     this.playerButtons[2] = new LabeledButton(
       this,
-      gridCenterX - gridSpacingX / 2,
-      gridCenterY + gridSpacingY,
+      (384 - 100) * SCALE_FACTOR,
+      (400 - 75) * SCALE_FACTOR,
       'btn_blank',
       'btn_blank_pushed',
       this.playerConfigs[2].controller,
@@ -128,11 +124,11 @@ export class PlayerSetupScene extends Phaser.Scene {
       () => this.cyclePlayerController(2)
     );
 
-    // Player 4 (bottom-right)
+    // Player 4 - original: (384 + 100, 400 - 75) = (484, 325)
     this.playerButtons[3] = new LabeledButton(
       this,
-      gridCenterX + gridSpacingX / 2,
-      gridCenterY + gridSpacingY,
+      (384 + 100) * SCALE_FACTOR,
+      (400 - 75) * SCALE_FACTOR,
       'btn_blank',
       'btn_blank_pushed',
       this.playerConfigs[3].controller,
