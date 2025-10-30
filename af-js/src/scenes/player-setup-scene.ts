@@ -1,6 +1,7 @@
 import { CENTER_X, CENTER_Y, GAME_HEIGHT, GAME_WIDTH } from '../main';
 import { ImageButton } from '../ui/image-button';
 import { LabeledButton } from '../ui/labeled-button';
+import { convertFromIOSCoordinates } from '../helpers';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -48,28 +49,32 @@ export class PlayerSetupScene extends Phaser.Scene {
     const bgScale = GAME_HEIGHT / background.height;
     background.setScale(bgScale);
 
-    // Original iOS coordinates (768x1024) * 2 = our coordinates (1536x2048)
-    const SCALE_FACTOR = 2;
+    // Convert iOS coordinates (768x1024, bottom-left origin) to Phaser (1536x2048, top-left origin)
+    // Using utility function that handles scaling and Y-axis inversion
 
-    // Add "GAME SETUP" title - original: (384, 900)
-    this.add.image(384 * SCALE_FACTOR, 900 * SCALE_FACTOR, 'title_game_setup');
+    // Add "GAME SETUP" title - original iOS: (384, 900)
+    const titlePos = convertFromIOSCoordinates(384, 900);
+    this.add.image(titlePos.x, titlePos.y, 'title_game_setup');
 
-    // Back button - original: (100, 974)
-    new ImageButton(this, 100 * SCALE_FACTOR, 974 * SCALE_FACTOR, 'btn_back', 'btn_back_pushed', () => {
+    // Back button - original iOS: (100, 974)
+    const backPos = convertFromIOSCoordinates(100, 974);
+    new ImageButton(this, backPos.x, backPos.y, 'btn_back', 'btn_back_pushed', () => {
       this.scene.start('MainMenu');
     });
 
-    // Play button - original: (384, 600)
-    new ImageButton(this, 384 * SCALE_FACTOR, 600 * SCALE_FACTOR, 'btn_play', 'btn_play_pushed', () => {
+    // Play button - original iOS: (384, 600)
+    const playPos = convertFromIOSCoordinates(384, 600);
+    new ImageButton(this, playPos.x, playPos.y, 'btn_play', 'btn_play_pushed', () => {
       console.log('Starting game with configs:', this.playerConfigs.slice(0, this.numPlayers));
       // TODO: Start the actual game scene
     });
 
-    // Number of players button - original: (384, 525)
+    // Number of players button - original iOS: (384, 525)
+    const numPlayersPos = convertFromIOSCoordinates(384, 525);
     this.numPlayersButton = new LabeledButton(
       this,
-      384 * SCALE_FACTOR,
-      525 * SCALE_FACTOR,
+      numPlayersPos.x,
+      numPlayersPos.y,
       'btn_blank',
       'btn_blank_pushed',
       this.numPlayers.toString(),
@@ -85,11 +90,12 @@ export class PlayerSetupScene extends Phaser.Scene {
     );
 
     // Player buttons using original iOS coordinates
-    // Player 1 - original: (384 - 100, 400) = (284, 400)
+    // Player 1 - original iOS: (284, 400)
+    const player1Pos = convertFromIOSCoordinates(384 - 100, 400);
     this.playerButtons[0] = new LabeledButton(
       this,
-      (384 - 100) * SCALE_FACTOR,
-      400 * SCALE_FACTOR,
+      player1Pos.x,
+      player1Pos.y,
       'btn_blank',
       'btn_blank_pushed',
       this.playerConfigs[0].controller,
@@ -98,11 +104,12 @@ export class PlayerSetupScene extends Phaser.Scene {
       () => this.cyclePlayerController(0)
     );
 
-    // Player 2 - original: (384 + 100, 400) = (484, 400)
+    // Player 2 - original iOS: (484, 400)
+    const player2Pos = convertFromIOSCoordinates(384 + 100, 400);
     this.playerButtons[1] = new LabeledButton(
       this,
-      (384 + 100) * SCALE_FACTOR,
-      400 * SCALE_FACTOR,
+      player2Pos.x,
+      player2Pos.y,
       'btn_blank',
       'btn_blank_pushed',
       this.playerConfigs[1].controller,
@@ -111,11 +118,12 @@ export class PlayerSetupScene extends Phaser.Scene {
       () => this.cyclePlayerController(1)
     );
 
-    // Player 3 - original: (384 - 100, 400 - 75) = (284, 325)
+    // Player 3 - original iOS: (284, 325)
+    const player3Pos = convertFromIOSCoordinates(384 - 100, 325);
     this.playerButtons[2] = new LabeledButton(
       this,
-      (384 - 100) * SCALE_FACTOR,
-      (400 - 75) * SCALE_FACTOR,
+      player3Pos.x,
+      player3Pos.y,
       'btn_blank',
       'btn_blank_pushed',
       this.playerConfigs[2].controller,
@@ -124,11 +132,12 @@ export class PlayerSetupScene extends Phaser.Scene {
       () => this.cyclePlayerController(2)
     );
 
-    // Player 4 - original: (384 + 100, 400 - 75) = (484, 325)
+    // Player 4 - original iOS: (484, 325)
+    const player4Pos = convertFromIOSCoordinates(384 + 100, 325);
     this.playerButtons[3] = new LabeledButton(
       this,
-      (384 + 100) * SCALE_FACTOR,
-      (400 - 75) * SCALE_FACTOR,
+      player4Pos.x,
+      player4Pos.y,
       'btn_blank',
       'btn_blank_pushed',
       this.playerConfigs[3].controller,
