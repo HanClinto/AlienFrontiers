@@ -1,5 +1,5 @@
 import { CENTER_X, CENTER_Y, GAME_HEIGHT, GAME_WIDTH } from '../main';
-import { MenuButton } from '../ui/menu-button';
+import { ImageButton } from '../ui/image-button';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
@@ -30,26 +30,23 @@ export class MainMenuScene extends Phaser.Scene {
     const titleScale = (GAME_WIDTH * 0.8) / title.width;
     title.setScale(titleScale);
 
-    // Calculate button positions
-    const buttonWidth = 600;
-    const buttonHeight = 100;
-    const buttonX = CENTER_X - buttonWidth / 2;
-    const startY = CENTER_Y + 200;
-    const spacing = 150;
+    // Calculate button positions (similar to original iOS positions)
+    const startY = 1200; // Lower on screen, matching reference image
+    const spacing = 160; // Space between buttons
 
-    // Create menu buttons
-    new MenuButton(this, buttonX, startY, 'PLAY', () => {
+    // Create menu buttons using pre-rendered images
+    new ImageButton(this, CENTER_X, startY, 'btn_play', 'btn_play_pushed', () => {
       this.scene.start('PlayerSetup');
-    }, buttonWidth, buttonHeight);
+    });
 
-    new MenuButton(this, buttonX, startY + spacing, 'QUICK RULES', () => {
+    new ImageButton(this, CENTER_X, startY + spacing, 'btn_rules', 'btn_rules_pushed', () => {
       console.log('Quick Rules button clicked');
       // TODO: Implement Quick Rules scene
-    }, buttonWidth, buttonHeight);
+    });
 
-    new MenuButton(this, buttonX, startY + spacing * 2, 'ACHIEVEMENTS', () => {
+    new ImageButton(this, CENTER_X, startY + spacing * 2, 'btn_achievements', 'btn_achievements_pushed', () => {
       console.log('Achievements button clicked');
       // TODO: Implement Achievements scene
-    }, buttonWidth, buttonHeight);
+    });
   }
 }
