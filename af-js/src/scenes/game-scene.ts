@@ -745,6 +745,10 @@ export class GameScene extends Phaser.Scene {
       this.handleCycleTechCards();
     };
     
+    // Show it by default and update with current cards
+    this.updateAlienArtifactDisplay();
+    this.alienArtifactDisplay.show();
+    
     console.log('Created Alien Artifact display');
   }
 

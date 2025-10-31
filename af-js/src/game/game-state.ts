@@ -86,6 +86,24 @@ export class GameState {
     if (players.length > 0) {
       this.phase.activePlayerId = players[0].id;
     }
+
+    // Deal starting tech cards (1 per player)
+    this.dealStartingTechCards();
+  }
+
+  /**
+   * Deal one starting tech card to each player
+   * Called during game initialization
+   */
+  private dealStartingTechCards(): void {
+    const players = this.playerManager.getPlayersInTurnOrder();
+    players.forEach(player => {
+      const card = this.techCardManager.drawCard();
+      if (card) {
+        player.alienTechCards.push(card.id);
+        console.log(`Dealt starting card ${card.name} to ${player.name}`);
+      }
+    });
   }
 
   /**

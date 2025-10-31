@@ -216,11 +216,11 @@ export const DICE_AREA = {
 
 /**
  * Tech card hand position
- * Position near the Alien Artifact (right side of board, upper area)
+ * Position at bottom of screen for player's hand
  */
 export const TECH_CARD_HAND = {
-    x: 1250,  // Right side, near Alien Artifact
-    y: 650,   // Upper-middle area
+    x: 20,    // Left edge with small margin
+    y: 1850,  // Bottom of screen (2048 - 180 - 18 for margin)
     cardSpacing: 120,
     maxCards: 6,
 };

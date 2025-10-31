@@ -19,30 +19,53 @@ export class TechCardManager {
 
   /**
    * Initialize the deck with all tech cards
+   * Based on original iOS game composition: 22 cards total
+   * - 1x each: AlienCity, AlienMonument (VP cards)
+   * - 2x each: BoosterPod, StasisBeam, PolarityDevice, GravityManipulator (die manipulation)
+   * - 2x each: OrbitalTeleporter, DataCrystal (colony manipulation)
+   * - 2x each: PlasmaCannon, HolographicDecoy (combat/defense)
+   * - 2x each: ResourceCache (resource generation)
+   * Note: TemporalWarper is implemented but not added (commented out in iOS)
    */
   private initializeDeck(): void {
-    // Create one instance of each implemented tech card
     this.deck = [
-      // Victory Point Cards
+      // Victory Point Cards (1 each)
       new TechCards.AlienCity(),
       new TechCards.AlienMonument(),
       
-      // Die Manipulation Cards
+      // Die Manipulation Cards (2 each)
       new TechCards.BoosterPod(),
+      new TechCards.BoosterPod(),
+      
       new TechCards.StasisBeam(),
+      new TechCards.StasisBeam(),
+      
       new TechCards.PolarityDevice(),
-      new TechCards.TemporalWarper(),
+      new TechCards.PolarityDevice(),
+      
+      // TemporalWarper is implemented but commented out in iOS
+      // new TechCards.TemporalWarper(),
+      // new TechCards.TemporalWarper(),
+      
+      new TechCards.GravityManipulator(),
       new TechCards.GravityManipulator(),
       
-      // Colony Manipulation Cards
+      // Colony Manipulation Cards (2 each)
       new TechCards.OrbitalTeleporter(),
+      new TechCards.OrbitalTeleporter(),
+      
+      new TechCards.DataCrystal(),
       new TechCards.DataCrystal(),
       
-      // Combat/Defense Cards
+      // Combat/Defense Cards (2 each)
       new TechCards.PlasmaCannon(),
+      new TechCards.PlasmaCannon(),
+      
+      new TechCards.HolographicDecoy(),
       new TechCards.HolographicDecoy(),
       
-      // Resource Cards
+      // Resource Cards (2 each)
+      new TechCards.ResourceCache(),
       new TechCards.ResourceCache(),
     ];
   }
@@ -146,6 +169,24 @@ export class TechCardManager {
     return cardIds
       .map(id => this.getCardById(id))
       .filter((card): card is TechCard => card !== null);
+  }
+
+  /**
+   * Draw a card from the deck
+   * Returns null if deck is empty
+   */
+  drawCard(): TechCard | null {
+    if (this.deck.length === 0) {
+      // Shuffle discard pile back into deck if available
+      if (this.discardPile.length > 0) {
+        this.deck = [...this.discardPile];
+        this.discardPile = [];
+        this.shuffle();
+      } else {
+        return null;
+      }
+    }
+    return this.deck.pop() || null;
   }
 
   /**
