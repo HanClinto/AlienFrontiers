@@ -161,20 +161,26 @@ describe('GameState', () => {
       expect(gameState.isGameOver()).toBe(false);
     });
 
-    test('should return true when a player reaches 8 VP', () => {
+    test('should return true when a player places 10 colonies', () => {
       const playerManager = gameState.getPlayerManager();
       
-      // Give player 8 VP through colonies
+      // Give player 10 colonies (note: addColony prevents duplicates, so use unique locations)
       const colonies = [
         'asimov_crater', 'burroughs_desert', 'heinlein_plains',
-        'bradbury_plateau', 'clarke_mountains', 'niven_valley',
-        'herbert_valley'
+        'bradbury_plateau', 'herbert_valley', 'lem_badlands',
+        'pohl_foothills', 'van_vogt_mountains'
       ];
       
       colonies.forEach((colony: any) => {
         playerManager.addColony('p1', colony);
       });
-      playerManager.addAlienTechCard('p1', 'tech-1');
+      
+      // Manually add 2 more to reach 10
+      const player = playerManager.getPlayer('p1');
+      if (player) {
+        player.colonies.push('asimov_crater' as any);
+        player.colonies.push('asimov_crater' as any);
+      }
       
       expect(gameState.isGameOver()).toBe(true);
     });
@@ -191,9 +197,25 @@ describe('GameState', () => {
 
     test('should return player with highest VP', () => {
       const playerManager = gameState.getPlayerManager();
-      playerManager.addColony('p1', 'asimov_crater' as any);
-      playerManager.addColony('p2', 'burroughs_desert' as any);
-      playerManager.addColony('p2', 'heinlein_plains' as any);
+      
+      // Give p1 10 colonies to end game
+      const p1 = playerManager.getPlayer('p1');
+      if (p1) {
+        for (let i = 0; i < 10; i++) {
+          p1.colonies.push('asimov_crater' as any);
+        }
+      }
+      
+      // Give p2 more VP
+      const p2 = playerManager.getPlayer('p2');
+      if (p2) {
+        p2.victoryPoints.total = 15;
+      }
+      
+      const p1Player = playerManager.getPlayer('p1');
+      if (p1Player) {
+        p1Player.victoryPoints.total = 12;
+      }
       
       const winners = gameState.getWinners();
       expect(winners).toHaveLength(1);
@@ -202,8 +224,25 @@ describe('GameState', () => {
 
     test('should return multiple winners in case of tie', () => {
       const playerManager = gameState.getPlayerManager();
-      playerManager.addColony('p1', 'asimov_crater' as any);
-      playerManager.addColony('p2', 'burroughs_desert' as any);
+      
+      // Give p1 10 colonies to end game
+      const p1 = playerManager.getPlayer('p1');
+      if (p1) {
+        for (let i = 0; i < 10; i++) {
+          p1.colonies.push('asimov_crater' as any);
+        }
+        p1.victoryPoints.total = 15;
+      }
+      
+      // Give p2 same VP
+      const p2 = playerManager.getPlayer('p2');
+      if (p2) {
+        p2.victoryPoints.total = 15;
+        // Same resources for complete tie
+        p2.alienTechCards = p1?.alienTechCards || [];
+        p2.resources.ore = p1?.resources.ore || 0;
+        p2.resources.fuel = p1?.resources.fuel || 0;
+      }
       
       const winners = gameState.getWinners();
       expect(winners).toHaveLength(2);

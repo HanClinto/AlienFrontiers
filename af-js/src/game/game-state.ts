@@ -8,6 +8,24 @@ import { ShipManager, Ship } from './ship';
 import { PlayerManager, Player } from './player';
 import { FacilityManager } from './facility-manager';
 import { OrbitalFacility, FacilityExecutionResult } from './facilities/base-facility';
+import { TerritoryManager } from './territory-manager';
+import { Territory, TerritoryType, FieldType } from './territory';
+import { 
+  TechCard, 
+  TechCardType,
+  AlienCity,
+  AlienMonument,
+  BoosterPod,
+  StasisBeam,
+  PolarityDevice,
+  TemporalWarper,
+  GravityManipulator,
+  OrbitalTeleporter,
+  DataCrystal,
+  PlasmaCannon,
+  HolographicDecoy,
+  ResourceCache
+} from './tech-cards';
 
 /**
  * Main game state class
@@ -17,6 +35,9 @@ export class GameState {
   private shipManager: ShipManager;
   private playerManager: PlayerManager;
   private facilityManager: FacilityManager;
+  private territoryManager: TerritoryManager;
+  private techCardDeck: TechCard[];
+  private techCardDiscard: TechCard[];
   private phase: GamePhase;
   private gameId: string;
 
@@ -25,11 +46,17 @@ export class GameState {
     this.shipManager = new ShipManager();
     this.playerManager = new PlayerManager();
     this.facilityManager = new FacilityManager();
+    this.territoryManager = new TerritoryManager();
+    this.techCardDeck = [];
+    this.techCardDiscard = [];
     this.phase = {
       current: TurnPhase.ROLL_DICE,
       activePlayerId: '',
       roundNumber: 1
     };
+    
+    // Initialize tech card deck
+    this.initializeTechCardDeck();
   }
 
   /**
@@ -100,6 +127,193 @@ export class GameState {
   }
 
   /**
+   * Get territory manager (read-only access)
+   */
+  getTerritoryManager(): TerritoryManager {
+    return this.territoryManager;
+  }
+
+  /**
+   * Get a specific territory by ID
+   */
+  getTerritory(territoryId: string): Territory | undefined {
+    return this.territoryManager.getTerritory(territoryId);
+  }
+
+  /**
+   * Get all territories
+   */
+  getAllTerritories(): Territory[] {
+    return this.territoryManager.getAllTerritories();
+  }
+
+  /**
+   * Place colony on a territory
+   * Costs 3 ore + 1 fuel (reduced by 1 ore if player controls Bradbury Plateau)
+   */
+  placeColonyOnTerritory(playerId: string, territoryId: string): boolean {
+    const territory = this.territoryManager.getTerritory(territoryId);
+    if (!territory) return false;
+    
+    const player = this.playerManager.getPlayer(playerId);
+    if (!player) return false;
+    
+    // Calculate colony cost (3 ore + 1 fuel by default)
+    let oreCost = 3;
+    const fuelCost = 1;
+    
+    // Bradbury Plateau bonus reduces ore cost by 1
+    if (this.territoryManager.hasBradburyPlateauBonus(playerId)) {
+      oreCost -= 1;
+    }
+    
+    // Check if player can afford the colony
+    if (player.resources.ore < oreCost || player.resources.fuel < fuelCost) {
+      return false;
+    }
+    
+    // Deduct resources
+    player.resources.ore -= oreCost;
+    player.resources.fuel -= fuelCost;
+    
+    // Place colony on territory
+    const success = territory.placeColony(playerId);
+    if (!success) {
+      // Refund resources if placement failed
+      player.resources.ore += oreCost;
+      player.resources.fuel += fuelCost;
+      return false;
+    }
+    
+    // Add colony to player's colonies array (using territory ID as ColonyLocation)
+    this.playerManager.addColony(playerId, territoryId as any);
+    
+    return true;
+  }
+
+  /**
+   * Move field generator to territory
+   */
+  placeFieldGenerator(fieldType: FieldType, territoryId: string): boolean {
+    return this.territoryManager.placeFieldGenerator(fieldType, territoryId);
+  }
+
+  /**
+   * Draw a tech card
+   */
+  drawTechCard(playerId: string): TechCard | null {
+    if (this.techCardDeck.length === 0) {
+      // Shuffle discard pile back into deck
+      this.techCardDeck = [...this.techCardDiscard];
+      this.techCardDiscard = [];
+      this.shuffleTechCardDeck();
+    }
+    
+    if (this.techCardDeck.length === 0) return null;
+    
+    const card = this.techCardDeck.pop()!;
+    const player = this.playerManager.getPlayer(playerId);
+    if (player) {
+      card.setOwner(player);
+      player.alienTechCards.push(card.id);
+    }
+    
+    return card;
+  }
+
+  /**
+   * Discard a tech card
+   */
+  discardTechCard(card: TechCard): boolean {
+    const owner = card.getOwner();
+    if (!owner) return false;
+    
+    const player = this.playerManager.getPlayer(owner.id);
+    if (!player) return false;
+    
+    const index = player.alienTechCards.indexOf(card.id);
+    if (index === -1) return false;
+    
+    player.alienTechCards.splice(index, 1);
+    card.setOwner(null);
+    this.techCardDiscard.push(card);
+    
+    return true;
+  }
+
+  /**
+   * Get tech card deck size
+   */
+  getTechCardDeckSize(): number {
+    return this.techCardDeck.length;
+  }
+
+  /**
+   * Get tech card discard pile size
+   */
+  getTechCardDiscardSize(): number {
+    return this.techCardDiscard.length;
+  }
+
+  /**
+   * Initialize tech card deck with all cards
+   * Based on original game composition:
+   * - 1x AlienCity, 1x AlienMonument (VP cards)
+   * - 2x each: BoosterPod, StasisBeam, PolarityDevice, TemporalWarper, GravityManipulator (die manipulation)
+   * - 2x each: OrbitalTeleporter, DataCrystal (colony manipulation)
+   * - 2x each: PlasmaCannon, HolographicDecoy (combat/defense)
+   * - 2x ResourceCache (resource generation)
+   * Total: 22 cards
+   */
+  private initializeTechCardDeck(): void {
+    this.techCardDeck = [];
+    
+    // Victory point cards (1 each)
+    this.techCardDeck.push(new AlienCity());
+    this.techCardDeck.push(new AlienMonument());
+    
+    // Die manipulation cards (2 each)
+    for (let i = 0; i < 2; i++) {
+      this.techCardDeck.push(new BoosterPod());
+      this.techCardDeck.push(new StasisBeam());
+      this.techCardDeck.push(new PolarityDevice());
+      this.techCardDeck.push(new TemporalWarper());
+      this.techCardDeck.push(new GravityManipulator());
+    }
+    
+    // Colony manipulation cards (2 each)
+    for (let i = 0; i < 2; i++) {
+      this.techCardDeck.push(new OrbitalTeleporter());
+      this.techCardDeck.push(new DataCrystal());
+    }
+    
+    // Combat/defense cards (2 each)
+    for (let i = 0; i < 2; i++) {
+      this.techCardDeck.push(new PlasmaCannon());
+      this.techCardDeck.push(new HolographicDecoy());
+    }
+    
+    // Resource generation cards (2 each)
+    for (let i = 0; i < 2; i++) {
+      this.techCardDeck.push(new ResourceCache());
+    }
+    
+    // Shuffle the deck
+    this.shuffleTechCardDeck();
+  }
+
+  /**
+   * Shuffle tech card deck
+   */
+  private shuffleTechCardDeck(): void {
+    for (let i = this.techCardDeck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this.techCardDeck[i], this.techCardDeck[j]] = 
+        [this.techCardDeck[j], this.techCardDeck[i]];
+    }
+  }
+
+  /**
    * Get a specific facility by ID
    */
   getFacility(facilityId: string): OrbitalFacility | undefined {
@@ -115,6 +329,7 @@ export class GameState {
 
   /**
    * Advance to next turn phase
+   * Automatically handles phase-specific actions
    */
   advancePhase(): void {
     const phaseOrder: TurnPhase[] = [
@@ -131,9 +346,68 @@ export class GameState {
     if (currentIndex < phaseOrder.length - 1) {
       // Move to next phase in current turn
       this.phase.current = phaseOrder[currentIndex + 1];
+      
+      // Execute automatic phase actions
+      this.executePhaseActions();
     } else {
       // End of turn - move to next player
       this.advanceToNextPlayer();
+    }
+  }
+
+  /**
+   * Execute automatic actions for current phase
+   */
+  private executePhaseActions(): void {
+    const player = this.getActivePlayer();
+    if (!player) return;
+
+    switch (this.phase.current) {
+      case TurnPhase.ROLL_DICE:
+        // Apply start-of-turn territory bonuses
+        this.territoryManager.applyStartOfTurnBonuses(player);
+        break;
+
+      case TurnPhase.COLLECT_RESOURCES:
+        // Resource collection is handled by facilities during RESOLVE_ACTIONS
+        // This phase is for collecting from other sources
+        break;
+
+      case TurnPhase.END_TURN:
+        // Enforce discard to 8 resources
+        this.enforceResourceLimit(player);
+        break;
+    }
+  }
+
+  /**
+   * Enforce 8-resource limit at end of turn
+   * Player must discard excess resources
+   */
+  private enforceResourceLimit(player: Player): void {
+    const totalResources = player.resources.fuel + player.resources.ore + player.resources.energy;
+    const maxResources = 8;
+
+    if (totalResources > maxResources) {
+      const excess = totalResources - maxResources;
+      // For now, just discard ore first, then fuel, then energy
+      // TODO: Let player choose which resources to discard
+      
+      let remaining = excess;
+      if (player.resources.ore > 0) {
+        const toDiscard = Math.min(remaining, player.resources.ore);
+        player.resources.ore -= toDiscard;
+        remaining -= toDiscard;
+      }
+      if (remaining > 0 && player.resources.fuel > 0) {
+        const toDiscard = Math.min(remaining, player.resources.fuel);
+        player.resources.fuel -= toDiscard;
+        remaining -= toDiscard;
+      }
+      if (remaining > 0 && player.resources.energy > 0) {
+        const toDiscard = Math.min(remaining, player.resources.energy);
+        player.resources.energy -= toDiscard;
+      }
     }
   }
 
@@ -266,20 +540,48 @@ export class GameState {
   }
 
   /**
-   * Check if game is over (any player has 8+ VP)
+   * Check if game is over
+   * Game ends when any player places their final colony (10 colonies placed)
    */
   isGameOver(): boolean {
     const players = this.playerManager.getAllPlayers();
-    return players.some(player => this.playerManager.hasWon(player.id));
+    // Check if any player has placed all 10 colonies
+    return players.some(player => player.colonies.length >= 10);
   }
 
   /**
    * Get winner(s) - players with highest VP when game ends
+   * Ties are broken by: 1) tech card count, 2) ore count, 3) fuel count
    */
   getWinners(): Player[] {
+    if (!this.isGameOver()) {
+      return [];
+    }
+
     const players = this.playerManager.getAllPlayers();
     const maxVP = Math.max(...players.map(p => p.victoryPoints.total));
-    return players.filter(p => p.victoryPoints.total === maxVP);
+    let winners = players.filter(p => p.victoryPoints.total === maxVP);
+
+    // Break ties if needed
+    if (winners.length > 1) {
+      // First tiebreaker: tech card count
+      const maxTechCards = Math.max(...winners.map(p => p.alienTechCards.length));
+      winners = winners.filter(p => p.alienTechCards.length === maxTechCards);
+
+      if (winners.length > 1) {
+        // Second tiebreaker: ore count
+        const maxOre = Math.max(...winners.map(p => p.resources.ore));
+        winners = winners.filter(p => p.resources.ore === maxOre);
+
+        if (winners.length > 1) {
+          // Third tiebreaker: fuel count
+          const maxFuel = Math.max(...winners.map(p => p.resources.fuel));
+          winners = winners.filter(p => p.resources.fuel === maxFuel);
+        }
+      }
+    }
+
+    return winners;
   }
 
   /**
