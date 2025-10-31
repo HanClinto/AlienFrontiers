@@ -1,21 +1,69 @@
 import { convertIOSChildCoordinates, PLAYER_COLORS } from '../helpers';
 import { ImageButton } from '../ui/image-button';
 import { LabeledButton } from '../ui/labeled-button';
+import { Player } from '../game/player';
 
 /**
  * Main player HUD layer shown at the bottom of the screen
  * Based on LayerHUDPort.m from the original iOS implementation
+ * 
+ * Phase 5: Now connected to game state for real-time resource/colony display
  */
 export class PlayerHUDLayer {
   private scene: Phaser.Scene;
   private container: Phaser.GameObjects.Container;
   private playerIndex: number;
+  
+  // Phase 5: Resource and stat labels
+  private playerScoreLabel: Phaser.GameObjects.Text | null = null;
+  private oreLabel: Phaser.GameObjects.Text | null = null;
+  private fuelLabel: Phaser.GameObjects.Text | null = null;
+  private colonyLabel: Phaser.GameObjects.Text | null = null;
+  private diceLabel: Phaser.GameObjects.Text | null = null;
+  
+  // Phase 7: Bradbury Plateau re-roll button
+  private rerollButton: LabeledButton | null = null;
+  private rerollAvailable: boolean = false;
 
   constructor(scene: Phaser.Scene, playerIndex: number = 0) {
     this.scene = scene;
     this.playerIndex = playerIndex;
-    this.container = scene.add.container(768 * 2, 1024 * 2); // Center-bottom position
+    
+    // iOS LayerHUDPort.m line 84:
+    //   uiFrame.position = ccp(768 * 0.5, -117) initially, then animates to
+    //   ccp(uiFrame.position.x, 234 * 0.5 - 19) = (384, 98)
+    // 
+    // The HUD frame sprite is 1500×468 pixels
+    // 234 = 468/2 (half-height at @1x scale)
+    // Position: 234 * 0.5 - 19 = 117 - 19 = 98 from bottom (center of frame)
+    //
+    // iOS coords (1536×2048 @2x): Y=98 from bottom
+    // Phaser coords: Y = (2048 - 98) = 1950 from top
+    // X: 768 * 0.5 = 384 iOS @1x = 768 Phaser @2x
+    this.container = scene.add.container(768, 1950); // Correct position matching iOS
     this.createHUD();
+  }
+  
+  /**
+   * Phase 5: Update display with current player state
+   */
+  public updatePlayerState(player: Player): void {
+    if (this.oreLabel) {
+      this.oreLabel.setText(player.resources.ore.toString());
+    }
+    if (this.fuelLabel) {
+      this.fuelLabel.setText(player.resources.fuel.toString());
+    }
+    if (this.colonyLabel) {
+      this.colonyLabel.setText(player.colonies.length.toString());
+    }
+    if (this.diceLabel) {
+      // TODO: Get actual ship count when ships are visible
+      this.diceLabel.setText('3'); // Placeholder
+    }
+    if (this.playerScoreLabel) {
+      this.playerScoreLabel.setText(player.victoryPoints.total.toString());
+    }
   }
 
   private createHUD(): void {
@@ -83,50 +131,50 @@ export class PlayerHUDLayer {
 
     // Player score label
     const playerScorePos = convertIOSChildCoordinates(705 - 375, 193 - 117);
-    const playerScoreLabel = this.scene.add.text(playerScorePos.x, playerScorePos.y, '0', {
+    this.playerScoreLabel = this.scene.add.text(playerScorePos.x, playerScorePos.y, '0', {
       fontFamily: 'Arial',
       fontSize: '84px',
       color: '#ffffff',
     });
-    playerScoreLabel.setOrigin(0.5, 0.5);
-    this.container.add(playerScoreLabel);
+    this.playerScoreLabel.setOrigin(0.5, 0.5);
+    this.container.add(this.playerScoreLabel);
 
     // Resource labels
     const oreLabelPos = convertIOSChildCoordinates(706 - 375 - 148, 182 + 22 - 117);
-    const oreLabel = this.scene.add.text(oreLabelPos.x, oreLabelPos.y, '0', {
+    this.oreLabel = this.scene.add.text(oreLabelPos.x, oreLabelPos.y, '0', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
     });
-    oreLabel.setOrigin(0.5, 0.5);
-    this.container.add(oreLabel);
+    this.oreLabel.setOrigin(0.5, 0.5);
+    this.container.add(this.oreLabel);
 
     const fuelLabelPos = convertIOSChildCoordinates(706 - 375 - 148 + 35, 182 + 22 - 117);
-    const fuelLabel = this.scene.add.text(fuelLabelPos.x, fuelLabelPos.y, '2', {
+    this.fuelLabel = this.scene.add.text(fuelLabelPos.x, fuelLabelPos.y, '0', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
     });
-    fuelLabel.setOrigin(0.5, 0.5);
-    this.container.add(fuelLabel);
+    this.fuelLabel.setOrigin(0.5, 0.5);
+    this.container.add(this.fuelLabel);
 
     const colonyLabelPos = convertIOSChildCoordinates(706 - 375 - 148 + 35 + 35, 182 + 22 - 117);
-    const colonyLabel = this.scene.add.text(colonyLabelPos.x, colonyLabelPos.y, '3', {
+    this.colonyLabel = this.scene.add.text(colonyLabelPos.x, colonyLabelPos.y, '0', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
     });
-    colonyLabel.setOrigin(0.5, 0.5);
-    this.container.add(colonyLabel);
+    this.colonyLabel.setOrigin(0.5, 0.5);
+    this.container.add(this.colonyLabel);
 
     const diceLabelPos = convertIOSChildCoordinates(706 - 375 - 148 + 35 + 35 + 35, 182 + 22 - 117);
-    const diceLabel = this.scene.add.text(diceLabelPos.x, diceLabelPos.y, '5', {
+    this.diceLabel = this.scene.add.text(diceLabelPos.x, diceLabelPos.y, '0', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
     });
-    diceLabel.setOrigin(0.5, 0.5);
-    this.container.add(diceLabel);
+    this.diceLabel.setOrigin(0.5, 0.5);
+    this.container.add(this.diceLabel);
 
     // Colony and die sprites
     const colorNames = ['red', 'green', 'blue', 'yellow'];
@@ -167,6 +215,22 @@ export class PlayerHUDLayer {
     );
     this.container.add(menuButton.getContainer());
 
+    // Phase 7: Re-roll button (Bradbury Plateau bonus)
+    const rerollButtonPos = convertIOSChildCoordinates(635 - 375 + 120, 92 - 117);
+    this.rerollButton = new LabeledButton(
+      this.scene,
+      rerollButtonPos.x,
+      rerollButtonPos.y,
+      'menu_button_68',
+      'menu_button_68_active',
+      'RE-ROLL',
+      '#ffffff',
+      18,
+      () => this.onRerollClicked()
+    );
+    this.rerollButton.getContainer().setVisible(false); // Hidden by default
+    this.container.add(this.rerollButton.getContainer());
+
     // Help button
     const helpButtonPos = convertIOSChildCoordinates(67 - 21 - 25 - 375 + 94 + 40, 126 - 117 - 82 - 2);
     const helpButton = new LabeledButton(
@@ -181,6 +245,37 @@ export class PlayerHUDLayer {
       () => console.log('Help clicked')
     );
     this.container.add(helpButton.getContainer());
+  }
+
+  /**
+   * Phase 7: Set re-roll button visibility and availability
+   */
+  public setRerollAvailable(available: boolean): void {
+    this.rerollAvailable = available;
+    if (this.rerollButton) {
+      this.rerollButton.getContainer().setVisible(available);
+      if (!available) {
+        // Grey out if used
+        this.rerollButton.getContainer().setAlpha(0.5);
+      } else {
+        this.rerollButton.getContainer().setAlpha(1.0);
+      }
+    }
+  }
+
+  /**
+   * Phase 7: Callback for re-roll button click
+   */
+  private onRerollClicked(): void {
+    // This will be set by GameScene
+    console.log('Re-roll button clicked');
+  }
+
+  /**
+   * Phase 7: Set callback for re-roll button
+   */
+  public setRerollCallback(callback: () => void): void {
+    this.onRerollClicked = callback;
   }
 
   public getContainer(): Phaser.GameObjects.Container {

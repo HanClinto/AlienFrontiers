@@ -1,9 +1,12 @@
 import { GAME_WIDTH } from '../main';
 import { convertIOSChildCoordinates, PLAYER_COLORS } from '../helpers';
+import { Player } from '../game/player';
 
 /**
  * Mini player HUD layer shown at the top of the screen for non-active players
  * Based on LayerPortPlayerMiniHUD.m from the original iOS implementation
+ * 
+ * Phase 5: Now connected to game state for real-time resource/colony display
  */
 export class MiniPlayerHUDLayer {
   private scene: Phaser.Scene;
@@ -11,6 +14,13 @@ export class MiniPlayerHUDLayer {
   private playerIndex: number;
   private numPlayers: number;
   private expanded: boolean = false;
+  
+  // Phase 5: Resource and stat labels
+  private scoreLabel: Phaser.GameObjects.Text | null = null;
+  private oreLabel: Phaser.GameObjects.Text | null = null;
+  private fuelLabel: Phaser.GameObjects.Text | null = null;
+  private colonyLabel: Phaser.GameObjects.Text | null = null;
+  private diceLabel: Phaser.GameObjects.Text | null = null;
 
   constructor(scene: Phaser.Scene, playerIndex: number, numPlayers: number) {
     this.scene = scene;
@@ -21,6 +31,28 @@ export class MiniPlayerHUDLayer {
     this.createMiniHUD();
     this.positionTray();
   }
+  
+  /**
+   * Phase 5: Update display with current player state
+   */
+  public updatePlayerState(player: Player): void {
+    if (this.oreLabel) {
+      this.oreLabel.setText(player.resources.ore.toString());
+    }
+    if (this.fuelLabel) {
+      this.fuelLabel.setText(player.resources.fuel.toString());
+    }
+    if (this.colonyLabel) {
+      this.colonyLabel.setText(player.colonies.length.toString());
+    }
+    if (this.diceLabel) {
+      // TODO: Get actual ship count when ships are visible
+      this.diceLabel.setText('3'); // Placeholder
+    }
+    if (this.scoreLabel) {
+      this.scoreLabel.setText(player.victoryPoints.total.toString());
+    }
+  }
 
   private createMiniHUD(): void {
     // Frame sprite (bottom-anchored)
@@ -30,50 +62,50 @@ export class MiniPlayerHUDLayer {
 
     // Player score label
     const scorePos = convertIOSChildCoordinates(74 - 148 + 35 + 35 + 35 + 35 - 2, 4 + 30 - 443, 498);
-    const scoreLabel = this.scene.add.text(scorePos.x, scorePos.y, '0', {
+    this.scoreLabel = this.scene.add.text(scorePos.x, scorePos.y, '0', {
       fontFamily: 'Arial',
       fontSize: '84px',
       color: '#ffffff',
     });
-    scoreLabel.setOrigin(0.5, 0.5);
-    this.container.add(scoreLabel);
+    this.scoreLabel.setOrigin(0.5, 0.5);
+    this.container.add(this.scoreLabel);
 
     // Resource labels
     const oreLabelPos = convertIOSChildCoordinates(75 - 148 - 2, 0 - 17 + 30 - 443, 498);
-    const oreLabel = this.scene.add.text(oreLabelPos.x, oreLabelPos.y, '0', {
+    this.oreLabel = this.scene.add.text(oreLabelPos.x, oreLabelPos.y, '0', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
     });
-    oreLabel.setOrigin(0.5, 0.5);
-    this.container.add(oreLabel);
+    this.oreLabel.setOrigin(0.5, 0.5);
+    this.container.add(this.oreLabel);
 
     const fuelLabelPos = convertIOSChildCoordinates(73 - 148 + 35 - 2, 0 - 17 + 30 - 443, 498);
-    const fuelLabel = this.scene.add.text(fuelLabelPos.x, fuelLabelPos.y, '2', {
+    this.fuelLabel = this.scene.add.text(fuelLabelPos.x, fuelLabelPos.y, '0', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
     });
-    fuelLabel.setOrigin(0.5, 0.5);
-    this.container.add(fuelLabel);
+    this.fuelLabel.setOrigin(0.5, 0.5);
+    this.container.add(this.fuelLabel);
 
     const colonyLabelPos = convertIOSChildCoordinates(71 - 148 + 35 + 35 - 2, 0 - 17 + 30 - 443, 498);
-    const colonyLabel = this.scene.add.text(colonyLabelPos.x, colonyLabelPos.y, '3', {
+    this.colonyLabel = this.scene.add.text(colonyLabelPos.x, colonyLabelPos.y, '0', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
     });
-    colonyLabel.setOrigin(0.5, 0.5);
-    this.container.add(colonyLabel);
+    this.colonyLabel.setOrigin(0.5, 0.5);
+    this.container.add(this.colonyLabel);
 
     const diceLabelPos = convertIOSChildCoordinates(70 - 148 + 35 + 35 + 35 - 2, 0 - 17 + 30 - 443, 498);
-    const diceLabel = this.scene.add.text(diceLabelPos.x, diceLabelPos.y, '5', {
+    this.diceLabel = this.scene.add.text(diceLabelPos.x, diceLabelPos.y, '0', {
       fontFamily: 'Arial',
       fontSize: '44px',
       color: '#000000',
     });
-    diceLabel.setOrigin(0.5, 0.5);
-    this.container.add(diceLabel);
+    this.diceLabel.setOrigin(0.5, 0.5);
+    this.container.add(this.diceLabel);
 
     // Colony and die sprites
     const colorNames = ['red', 'green', 'blue', 'yellow'];
@@ -118,19 +150,23 @@ export class MiniPlayerHUDLayer {
     // X position based on player index and total players
     const posX = GAME_WIDTH * 0.5 - (this.numPlayers * 0.5 - this.playerIndex - 0.5) * (frameWidth + spacing);
 
-    // Y position - collapsed state (showing tab)
-    const slideDistance = 380 * 2;
-    const collapsedY = -slideDistance;
+    // Y position - show at top with tab visible
+    // Frame is anchored at bottom (origin 0.5, 1), so Y position is where bottom edge sits
+    // To show tab at top of screen, position the bottom edge at the tab height
+    const visibleTabHeight = 120;  // Increased from 60 to show more of the tab
+    const collapsedY = visibleTabHeight;
 
     this.container.setPosition(posX, collapsedY);
+    this.container.setDepth(1000); // Above board and facilities
   }
 
   public toggle(): void {
     this.expanded = !this.expanded;
 
-    const slideAmount = 380 * 2;
-    const collapsedY = -slideAmount;
-    const expandedY = 0;
+    const frameSprite = this.container.getAt(0) as Phaser.GameObjects.Image;
+    const visibleTabHeight = 120;
+    const collapsedY = visibleTabHeight;  // Show just the tab
+    const expandedY = frameSprite.height;  // Show full frame
 
     const targetY = this.expanded ? expandedY : collapsedY;
 

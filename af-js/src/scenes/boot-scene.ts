@@ -1,8 +1,8 @@
 import { getGameHeight, getGameWidth } from '../helpers';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
-    active: false,
-    visible: false,
+    active: true,
+    visible: true,
     key: 'Boot',
 };
 
@@ -12,9 +12,11 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 export class BootScene extends Phaser.Scene {
     constructor() {
         super(sceneConfig);
+        console.log('BootScene constructor called');
     }
 
     public preload(): void {
+        console.log('BootScene preload called');
         const halfWidth = getGameWidth(this) * 0.5;
         const halfHeight = getGameHeight(this) * 0.5;
 
@@ -58,7 +60,12 @@ export class BootScene extends Phaser.Scene {
             progressBar.destroy();
             progressBarContainer.destroy();
 
+            console.log('All assets loaded successfully');
             this.scene.start('MainMenu');
+        });
+        
+        this.load.on('loaderror', (file: any) => {
+            console.error('Error loading file:', file.key, file.src);
         });
 
         this.loadAssets();
@@ -157,6 +164,18 @@ export class BootScene extends Phaser.Scene {
         this.load.image('hud_button_ro_down', 'hud_button_ro_down-ipadhd.png');
         this.load.image('hud_button_ro_down_active', 'hud_button_ro_down_active-ipadhd.png');
         this.load.image('hud_button_ro_down_inactive', 'hud_button_ro_down_inactive-ipadhd.png');
+
+        // Facility icons
+        this.load.image('icons_sc', 'icons_sc-ipadhd.png');
+        this.load.image('icons_sy', 'icons_sy-ipadhd.png');
+        this.load.image('icons_lm', 'icons_lm-ipadhd.png');
+        this.load.image('icons_cc', 'icons_cc-ipadhd.png');
+        this.load.image('icons_ts', 'icons_ts-ipadhd.png');
+        this.load.image('icons_raiders', 'icons_raiders-ipadhd.png');
+        this.load.image('icons_ch', 'icons_ch-ipadhd.png');
+        this.load.image('icons_om', 'icons_om-ipadhd.png');
+        this.load.image('icons_aa', 'icons_aa-ipadhd.png');
+        this.load.image('dock_normal', 'dock_normal-ipadhd.png');
         
         // Note: The original bitmap font (DIN_Tech_12-ipadhd.fnt) uses BMFont text format,
         // but Phaser 3 expects XML format. For now, we'll use system fonts.
