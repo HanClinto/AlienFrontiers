@@ -14,6 +14,7 @@ import { OrbitalMarket } from './facilities/orbital-market';
 import { MaintenanceBay } from './facilities/maintenance-bay';
 import { AlienArtifact } from './facilities/alien-artifact';
 import { RaidersOutpost } from './facilities/raiders-outpost';
+import { Shipyard } from './facilities/shipyard';
 import { Player } from './player';
 import { Ship } from './ship';
 
@@ -42,7 +43,8 @@ export class FacilityManager {
       new OrbitalMarket(),
       new MaintenanceBay(),
       new AlienArtifact(),
-      new RaidersOutpost()
+      new RaidersOutpost(),
+      new Shipyard()
     ];
 
     facilityInstances.forEach(facility => {
@@ -87,8 +89,9 @@ export class FacilityManager {
 
   /**
    * Execute facility action with docked ships
+   * @param territoryManager Optional territory manager for checking bonuses
    */
-  executeFacilityAction(facilityId: string, player: Player, ships: Ship[]) {
+  executeFacilityAction(facilityId: string, player: Player, ships: Ship[], options?: any) {
     const facility = this.facilities.get(facilityId);
     if (!facility) {
       return {
@@ -97,7 +100,7 @@ export class FacilityManager {
       };
     }
     
-    return facility.execute(player, ships);
+    return facility.execute(player, ships, options);
   }
 
   /**

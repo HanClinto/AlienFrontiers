@@ -40,10 +40,11 @@ export class MaintenanceBay extends OrbitalFacility {
     }];
   }
 
-  execute(player: Player, ships: Ship[]): FacilityExecutionResult {
+  execute(player: Player, ships: Ship[], options?: any): FacilityExecutionResult {
     // No action, no benefit
     return {
       success: true
     };
   }
 }
+

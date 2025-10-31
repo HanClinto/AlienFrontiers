@@ -43,7 +43,7 @@ export class RaidersOutpost extends OrbitalFacility {
     }];
   }
 
-  execute(player: Player, ships: Ship[]): FacilityExecutionResult {
+  execute(player: Player, ships: Ship[], options?: any): FacilityExecutionResult {
     if (!this.canDock(player, ships)) {
       return {
         success: false,
@@ -76,3 +76,4 @@ export class RaidersOutpost extends OrbitalFacility {
     return newValues[0] > dockedValues[0];
   }
 }
+

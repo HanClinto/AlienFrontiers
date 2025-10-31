@@ -19,7 +19,8 @@ export enum FacilityType {
   ORBITAL_MARKET = 'orbital_market',
   RAIDERS_OUTPOST = 'raiders_outpost',
   ALIEN_ARTIFACT = 'alien_artifact',
-  MAINTENANCE_BAY = 'maintenance_bay'
+  MAINTENANCE_BAY = 'maintenance_bay',
+  SHIPYARD = 'shipyard'
 }
 
 /**
@@ -109,7 +110,7 @@ export abstract class OrbitalFacility {
   /**
    * Execute the facility's action with docked ships
    */
-  abstract execute(player: Player, ships: Ship[]): FacilityExecutionResult;
+  abstract execute(player: Player, ships: Ship[], options?: any): FacilityExecutionResult;
 
   /**
    * Dock ships at this facility

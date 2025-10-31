@@ -26,6 +26,10 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
         height: GAME_HEIGHT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
         mode: Phaser.Scale.FIT,
+        // Use SHOW_ALL to ensure full game is visible (may add letterboxing)
+        // Alternative: RESIZE would fill screen but change game dimensions
+        expandParent: true,
+        autoRound: true,
     },
 
     scene: Scenes,
@@ -34,6 +38,8 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
 };
 
 export const game = new Phaser.Game(gameConfig);
+
+console.log('Game initialized', game);
 
 // Expose debug API for testing
 exposeDebugAPI(game);
@@ -60,3 +66,4 @@ if (startScene) {
     }
   });
 }
+ 

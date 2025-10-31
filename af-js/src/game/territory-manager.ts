@@ -259,6 +259,15 @@ export class TerritoryManager {
   }
 
   /**
+   * Check if player has Heinlein Plains bonus
+   */
+  hasHeinleinPlainsBonus(playerId: string): boolean {
+    const territory = this.territories.get(TerritoryType.HEINLEIN_PLAINS);
+    if (!territory) return false;
+    return territory.isControlledBy(playerId) && territory.isBonusActive();
+  }
+
+  /**
    * Check if player has Pohl Foothills bonus
    */
   hasPohlFoothillsBonus(playerId: string): boolean {
@@ -312,6 +321,32 @@ export class TerritoryManager {
       vp += territory.getPositronVP(playerId);
     });
     return vp;
+  }
+
+  /**
+   * Place a colony on a territory
+   * @param playerId Player placing the colony
+   * @param territoryId Territory to place colony on
+   * @returns true if successful, false if not possible
+   */
+  placeColony(playerId: string, territoryId: string): boolean {
+    const territory = this.territories.get(territoryId);
+    if (!territory) return false;
+    
+    return territory.placeColony(playerId);
+  }
+
+  /**
+   * Check if a colony can be placed on a territory
+   * @param playerId Player attempting to place colony
+   * @param territoryId Territory to check
+   * @returns true if placement is possible
+   */
+  canPlaceColony(playerId: string, territoryId: string): boolean {
+    const territory = this.territories.get(territoryId);
+    if (!territory) return false;
+    
+    return territory.canPlaceColony(playerId);
   }
 
   /**

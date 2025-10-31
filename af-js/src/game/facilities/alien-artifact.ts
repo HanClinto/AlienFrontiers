@@ -49,7 +49,7 @@ export class AlienArtifact extends OrbitalFacility {
     return ships.reduce((sum, ship) => sum + (ship.diceValue || 0), 0);
   }
 
-  execute(player: Player, ships: Ship[]): FacilityExecutionResult {
+  execute(player: Player, ships: Ship[], options?: any): FacilityExecutionResult {
     if (!this.canDock(player, ships)) {
       return {
         success: false,
@@ -77,3 +77,4 @@ export class AlienArtifact extends OrbitalFacility {
     return this.getTotalValue(ships) > 7;
   }
 }
+

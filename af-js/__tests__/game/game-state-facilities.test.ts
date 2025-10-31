@@ -19,7 +19,7 @@ describe('GameState Facility Integration', () => {
 
   test('should initialize with facility manager', () => {
     const facilities = gameState.getAllFacilities();
-    expect(facilities).toHaveLength(10);
+    expect(facilities).toHaveLength(11);
   });
 
   test('should get specific facility by ID', () => {
@@ -98,6 +98,6 @@ describe('GameState Facility Integration', () => {
   test('should provide access to facility manager', () => {
     const facilityManager = gameState.getFacilityManager();
     expect(facilityManager).toBeDefined();
-    expect(facilityManager.getAllFacilities()).toHaveLength(10);
+    expect(facilityManager.getAllFacilities()).toHaveLength(11);
   });
 });

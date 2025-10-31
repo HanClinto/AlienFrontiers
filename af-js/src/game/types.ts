@@ -31,11 +31,14 @@ export type ShipLocation =
   | 'solar_converter'
   | 'lunar_mine'
   | 'radon_collector'
+  | 'raiders_outpost'
   | 'colony_constructor'
   | 'colonist_hub'
   | 'terraforming_station'
   | 'orbital_market'
   | 'alien_artifact'
+  | 'maintenance_bay'
+  | 'shipyard'
   | null; // null = in player's pool
 
 /**

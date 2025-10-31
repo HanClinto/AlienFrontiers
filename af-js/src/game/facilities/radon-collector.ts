@@ -44,7 +44,7 @@ export class RadonCollector extends OrbitalFacility {
     }];
   }
 
-  execute(player: Player, ships: Ship[]): FacilityExecutionResult {
+  execute(player: Player, ships: Ship[], options?: any): FacilityExecutionResult {
     if (!this.canDock(player, ships)) {
       return {
         success: false,
@@ -61,3 +61,4 @@ export class RadonCollector extends OrbitalFacility {
     };
   }
 }
+

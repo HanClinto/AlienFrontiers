@@ -26,6 +26,7 @@ import {
   HolographicDecoy,
   ResourceCache
 } from './tech-cards';
+import { TechCardManager } from './tech-card-manager';
 
 /**
  * Main game state class
@@ -36,10 +37,12 @@ export class GameState {
   private playerManager: PlayerManager;
   private facilityManager: FacilityManager;
   private territoryManager: TerritoryManager;
-  private techCardDeck: TechCard[];
-  private techCardDiscard: TechCard[];
+  private techCardManager: TechCardManager;
+  private techCardDeck: TechCard[];  // DEPRECATED: Use techCardManager instead
+  private techCardDiscard: TechCard[];  // DEPRECATED: Use techCardManager instead
   private phase: GamePhase;
   private gameId: string;
+  private bradburyRerollUsed: boolean = false; // Phase 7: Track Bradbury Plateau re-roll usage
 
   constructor(gameId: string) {
     this.gameId = gameId;
@@ -47,6 +50,7 @@ export class GameState {
     this.playerManager = new PlayerManager();
     this.facilityManager = new FacilityManager();
     this.territoryManager = new TerritoryManager();
+    this.techCardManager = new TechCardManager();
     this.techCardDeck = [];
     this.techCardDiscard = [];
     this.phase = {
@@ -222,37 +226,19 @@ export class GameState {
   }
 
   /**
-   * Discard a tech card
-   */
-  discardTechCard(card: TechCard): boolean {
-    const owner = card.getOwner();
-    if (!owner) return false;
-    
-    const player = this.playerManager.getPlayer(owner.id);
-    if (!player) return false;
-    
-    const index = player.alienTechCards.indexOf(card.id);
-    if (index === -1) return false;
-    
-    player.alienTechCards.splice(index, 1);
-    card.setOwner(null);
-    this.techCardDiscard.push(card);
-    
-    return true;
-  }
-
-  /**
    * Get tech card deck size
+   * @deprecated Use techCardManager methods instead
    */
   getTechCardDeckSize(): number {
-    return this.techCardDeck.length;
+    return this.techCardManager.getDeckSize();
   }
 
   /**
    * Get tech card discard pile size
+   * @deprecated Use techCardManager methods instead
    */
   getTechCardDiscardSize(): number {
-    return this.techCardDiscard.length;
+    return this.techCardManager.getDiscardSize();
   }
 
   /**
@@ -368,6 +354,11 @@ export class GameState {
         this.territoryManager.applyStartOfTurnBonuses(player);
         break;
 
+      case TurnPhase.RESOLVE_ACTIONS:
+        // Note: resolveActions() must be called manually during this phase
+        // It will automatically advance to the next phase when complete
+        break;
+
       case TurnPhase.COLLECT_RESOURCES:
         // Resource collection is handled by facilities during RESOLVE_ACTIONS
         // This phase is for collecting from other sources
@@ -447,8 +438,44 @@ export class GameState {
     }
 
     const rolls = this.shipManager.rollDice(this.phase.activePlayerId);
+    this.bradburyRerollUsed = false; // Reset re-roll flag for new turn
     this.advancePhase();
     return rolls;
+  }
+
+  /**
+   * Phase 7: Check if Bradbury Plateau re-roll is available
+   */
+  canUseBradburyReroll(): boolean {
+    if (this.phase.current !== TurnPhase.PLACE_SHIPS) return false;
+    if (this.bradburyRerollUsed) return false;
+    
+    const player = this.getActivePlayer();
+    if (!player) return false;
+    
+    return this.territoryManager.hasBradburyPlateauBonus(player.id);
+  }
+
+  /**
+   * Phase 7: Re-roll a single die using Bradbury Plateau bonus
+   */
+  rerollDie(shipId: string): number | null {
+    if (!this.canUseBradburyReroll()) {
+      return null;
+    }
+
+    const player = this.getActivePlayer();
+    if (!player) return null;
+
+    const ship = this.shipManager.getPlayerShips(player.id).find(s => s.id === shipId);
+    if (!ship || ship.diceValue === null) return null;
+
+    // Re-roll the die
+    const newRoll = (Math.floor(Math.random() * 6) + 1) as 1 | 2 | 3 | 4 | 5 | 6;
+    ship.diceValue = newRoll;
+    this.bradburyRerollUsed = true;
+
+    return newRoll;
   }
 
   /**
@@ -481,7 +508,10 @@ export class GameState {
   /**
    * Execute actions at docked facilities during RESOLVE_ACTIONS phase
    */
-  resolveActions(): Map<string, FacilityExecutionResult> {
+  resolveActions(
+    territorySelections?: Map<string, string>,
+    raidersChoices?: { choice: 'resources' | 'tech'; targetPlayerId?: string; resources?: { ore: number; fuel: number; energy: number } }
+  ): Map<string, FacilityExecutionResult> {
     if (this.phase.current !== TurnPhase.RESOLVE_ACTIONS) {
       throw new Error('Can only resolve actions during RESOLVE_ACTIONS phase');
     }
@@ -505,12 +535,137 @@ export class GameState {
 
     // Execute each facility's action
     shipsByFacility.forEach((ships, facilityId) => {
-      const result = this.facilityManager.executeFacilityAction(facilityId, player, ships);
+      // Prepare facility options (e.g., territory bonuses)
+      const options: any = {};
+      
+      // Orbital Market: Check Heinlein Plains bonus (1:1 trade ratio)
+      if (facilityId === 'orbital_market') {
+        options.hasHeinleinPlains = this.territoryManager.hasHeinleinPlainsBonus(player.id);
+      }
+      
+      // Shipyard: Pass current ship count and Herbert Valley bonus
+      if (facilityId === 'shipyard') {
+        options.currentShipCount = this.shipManager.getPlayerShips(player.id).length;
+        options.hasHerbertValley = this.territoryManager.hasHerbertValleyBonus(player.id);
+      }
+      
+      // Add territory selection if provided
+      if (territorySelections?.has(facilityId)) {
+        options.territoryId = territorySelections.get(facilityId);
+      }
+      
+      const result = this.facilityManager.executeFacilityAction(facilityId, player, ships, options);
       results.set(facilityId, result);
+      
+      // Apply the results if successful
+      if (result.success) {
+        // Add resources gained
+        if (result.resourcesGained) {
+          if (result.resourcesGained.ore) player.resources.ore += result.resourcesGained.ore;
+          if (result.resourcesGained.fuel) player.resources.fuel += result.resourcesGained.fuel;
+          if (result.resourcesGained.energy) player.resources.energy += result.resourcesGained.energy;
+        }
+        
+        // Deduct resources spent
+        if (result.resourcesSpent) {
+          if (result.resourcesSpent.ore) player.resources.ore -= result.resourcesSpent.ore;
+          if (result.resourcesSpent.fuel) player.resources.fuel -= result.resourcesSpent.fuel;
+          if (result.resourcesSpent.energy) player.resources.energy -= result.resourcesSpent.energy;
+        }
+        
+        // Handle colony placed (Colony Constructor, Colonist Hub, Terraforming Station)
+        if (result.colonyPlaced && options?.territoryId) {
+          const success = this.territoryManager.placeColony(player.id, options.territoryId);
+          if (!success) {
+            console.warn(`Failed to place colony on ${options.territoryId} for player ${player.id}`);
+          }
+        }
+        
+        // Handle ship built (Shipyard) - using shipReturned flag
+        if (facilityId === 'shipyard' && result.shipReturned === false) {
+          // Create new ship and dock it at Maintenance Bay
+          const newShip = this.shipManager.createShip(player.id);
+          newShip.location = 'maintenance_bay';
+          this.facilityManager.dockShips('maintenance_bay', player, [newShip]);
+        }
+        
+        // Handle Raiders Outpost theft
+        if (facilityId === 'raiders_outpost' && raidersChoices) {
+          if (raidersChoices.choice === 'resources' && raidersChoices.targetPlayerId && raidersChoices.resources) {
+            // Steal resources from target player
+            const targetPlayer = this.playerManager.getPlayer(raidersChoices.targetPlayerId);
+            if (targetPlayer) {
+              const stolen = raidersChoices.resources;
+              // Take from target (capped at what they have)
+              const actualOre = Math.min(stolen.ore, targetPlayer.resources.ore);
+              const actualFuel = Math.min(stolen.fuel, targetPlayer.resources.fuel);
+              const actualEnergy = Math.min(stolen.energy, targetPlayer.resources.energy);
+              
+              targetPlayer.resources.ore -= actualOre;
+              targetPlayer.resources.fuel -= actualFuel;
+              targetPlayer.resources.energy -= actualEnergy;
+              
+              // Give to raiding player
+              player.resources.ore += actualOre;
+              player.resources.fuel += actualFuel;
+              player.resources.energy += actualEnergy;
+            }
+          } else if (raidersChoices.choice === 'tech' && raidersChoices.targetPlayerId) {
+            // Steal random tech card from target player
+            const targetPlayer = this.playerManager.getPlayer(raidersChoices.targetPlayerId);
+            if (targetPlayer && targetPlayer.alienTechCards.length > 0) {
+              const randomIndex = Math.floor(Math.random() * targetPlayer.alienTechCards.length);
+              const stolenCard = targetPlayer.alienTechCards.splice(randomIndex, 1)[0];
+              player.alienTechCards.push(stolenCard);
+            }
+          }
+        }
+        
+        // Handle ship returned to stock (Terraforming Station)
+        if (result.shipReturned === true) {
+          // Ship is consumed - undock and return to stock
+          // Ships are passed in the 'ships' parameter
+          ships.forEach(ship => {
+            ship.location = null;
+            ship.diceValue = null;
+            ship.isLocked = false;
+          });
+        }
+        
+        // Handle advancement made (Colonist Hub)
+        // Track advancement is already managed in ColonistHub facility
+        // result.advancementMade is informational only
+      }
     });
 
     this.advancePhase();
     return results;
+  }
+
+  /**
+   * Get facilities that require territory selection for the active player
+   * Returns facility IDs that need territory selection (Colony Constructor, Terraforming Station)
+   */
+  getFacilitiesNeedingTerritorySelection(): string[] {
+    const player = this.getActivePlayer();
+    if (!player) return [];
+
+    const dockedShips = this.facilityManager.getDockedShips(player.id);
+    const facilitiesWithShips = new Set(dockedShips.map(({ facilityId }) => facilityId));
+    
+    const territorySelectingFacilities = ['colony_constructor', 'terraforming_station'];
+    return territorySelectingFacilities.filter(id => facilitiesWithShips.has(id));
+  }
+
+  /**
+   * Check if Raiders Outpost needs player choices
+   */
+  needsRaidersChoice(): boolean {
+    const player = this.getActivePlayer();
+    if (!player) return false;
+
+    const dockedShips = this.facilityManager.getDockedShips(player.id);
+    return dockedShips.some(({ facilityId }) => facilityId === 'raiders_outpost');
   }
 
   /**
@@ -641,6 +796,125 @@ export class GameState {
     });
 
     return errors;
+  }
+
+  /**
+   * Get tech card manager
+   */
+  getTechCardManager(): TechCardManager {
+    return this.techCardManager;
+  }
+
+  /**
+   * Get visible tech cards at Alien Artifact
+   */
+  getVisibleTechCards(): TechCard[] {
+    return this.techCardManager.getVisibleCards();
+  }
+
+  /**
+   * Get tech cards for a player by their IDs
+   */
+  getTechCardsByIds(cardIds: string[]): TechCard[] {
+    return this.techCardManager.getCardsByIds(cardIds);
+  }
+
+  /**
+   * Cycle tech cards at Alien Artifact
+   * Called when player docks at Alien Artifact
+   */
+  cycleTechCards(): void {
+    this.techCardManager.cycleVisibleCards();
+  }
+
+  /**
+   * Claim a tech card from Alien Artifact
+   * Returns true if successful
+   */
+  claimTechCard(playerId: string, cardId: string): boolean {
+    const player = this.playerManager.getPlayer(playerId);
+    if (!player) return false;
+
+    // Check if player already has this card
+    if (player.alienTechCards.includes(cardId)) {
+      console.warn(`Player ${player.name} already has card ${cardId}`);
+      return false;
+    }
+
+    const card = this.techCardManager.claimCard(cardId);
+    if (!card) return false;
+
+    // Add card to player's hand
+    player.alienTechCards.push(card.id);
+    
+    // Note: VP is calculated dynamically when needed
+
+    return true;
+  }
+
+  /**
+   * Use a tech card's power
+   */
+  useTechCard(playerId: string, cardId: string, options?: any): boolean {
+    const player = this.playerManager.getPlayer(playerId);
+    if (!player) return false;
+
+    // Check player has the card
+    if (!player.alienTechCards.includes(cardId)) {
+      console.warn(`Player ${player.name} does not have card ${cardId}`);
+      return false;
+    }
+
+    const cards = this.getTechCardsByIds([cardId]);
+    if (cards.length === 0) return false;
+
+    const card = cards[0];
+
+    // Execute card power
+    const result = card.usePower(player, options);
+    if (!result.success) {
+      console.warn(`Failed to use card ${card.name}:`, result.message);
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Discard a tech card
+   */
+  discardTechCard(playerId: string, cardId: string): boolean {
+    const player = this.playerManager.getPlayer(playerId);
+    if (!player) return false;
+
+    // Check player has the card
+    const cardIndex = player.alienTechCards.indexOf(cardId);
+    if (cardIndex === -1) {
+      console.warn(`Player ${player.name} does not have card ${cardId}`);
+      return false;
+    }
+
+    const cards = this.getTechCardsByIds([cardId]);
+    if (cards.length === 0) return false;
+
+    const card = cards[0];
+
+    // Execute discard power
+    const result = card.useDiscardPower(player);
+    if (!result.success) {
+      console.warn(`Failed to discard card ${card.name}:`, result.message);
+      return false;
+    }
+
+    // Remove card from player's hand
+    player.alienTechCards.splice(cardIndex, 1);
+
+    // Discard the card
+    this.techCardManager.discardCard(card);
+
+    // Note: VP is calculated dynamically when needed
+
+    return true;
   }
 
   /**

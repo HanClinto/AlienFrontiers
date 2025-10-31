@@ -50,6 +50,25 @@ export class ShipManager {
   }
 
   /**
+   * Create a single new ship for a player (used by Shipyard)
+   */
+  createShip(playerId: string): Ship {
+    const existingShips = this.getPlayerShips(playerId);
+    const shipIndex = existingShips.length;
+    
+    const ship: Ship = {
+      id: `${playerId}-ship-${shipIndex}`,
+      playerId,
+      diceValue: null,
+      location: null,
+      isLocked: false
+    };
+    
+    this.ships.set(ship.id, ship);
+    return ship;
+  }
+
+  /**
    * Get all ships for a player
    */
   getPlayerShips(playerId: string): Ship[] {

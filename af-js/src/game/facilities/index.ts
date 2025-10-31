@@ -14,3 +14,4 @@ export * from './orbital-market';
 export * from './maintenance-bay';
 export * from './alien-artifact';
 export * from './raiders-outpost';
+export * from './shipyard';
