@@ -47,6 +47,7 @@ export interface TechCardPowerResult {
   techCardClaimed?: TechCardType;
   resourcesGained?: { fuel?: number; ore?: number };
   territoryBonusUsed?: string;
+  shouldDiscard?: boolean; // True if card should be discarded (e.g., Resource Cache on equal odd/even)
 }
 
 /**

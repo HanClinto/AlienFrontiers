@@ -8,13 +8,55 @@ import { Player } from './player';
 
 /**
  * Territory bonus implementations
+ * These match the official Alien Frontiers rules
  */
 export class TerritoryBonusManager {
   /**
-   * Apply Heinlein Plains bonus: Gain 1 ore
+   * Apply Asimov Crater bonus: +1 colony advance at Colonist Hub when docking multiple ships
+   * Note: This is checked at Colonist Hub facility
    */
-  static applyHeinleinPlains(player: Player): void {
-    player.resources.ore += 1;
+  static applyAsimovCrater(): void {
+    // Passive bonus - handled by Colonist Hub facility
+  }
+
+  /**
+   * Apply Bradbury Plateau bonus: -1 ore cost at Colony Constructor
+   * Note: This is checked at Colony Constructor facility
+   */
+  static applyBradburyPlateau(): void {
+    // Passive bonus - handled by Colony Constructor facility
+  }
+
+  /**
+   * Apply Burroughs Desert bonus: Purchase Relic Ship for 1 fuel + 1 ore
+   * Note: Relic Ship is a special ship that returns to territory instead of ship stock
+   */
+  static applyBurrowsDesert(): void {
+    // Active bonus - handled by Relic Ship purchase logic
+  }
+
+  /**
+   * Apply Heinlein Plains bonus: 1:1 fuel-to-ore ratio at Orbital Market
+   * Note: This is checked at Orbital Market facility
+   */
+  static applyHeinleinPlains(): void {
+    // Passive bonus - handled by Orbital Market facility
+  }
+
+  /**
+   * Apply Herbert Valley bonus: -1 fuel and ore cost at Shipyard
+   * Note: This is checked at Shipyard facility
+   */
+  static applyHerbertValley(): void {
+    // Passive bonus - handled by Shipyard facility
+  }
+
+  /**
+   * Apply Lem Badlands bonus: +1 fuel per ship at Solar Converter
+   * Note: This is checked at Solar Converter facility
+   */
+  static applyLemBadlands(): void {
+    // Passive bonus - handled by Solar Converter facility
   }
 
   /**
@@ -26,49 +68,11 @@ export class TerritoryBonusManager {
   }
 
   /**
-   * Apply Van Vogt Mountains bonus: Gain 1 fuel
+   * Apply Van Vogt Mountains bonus: First ship at Lunar Mine may be any value
+   * Note: This is checked at Lunar Mine facility
    */
-  static applyVanVogtMountains(player: Player): void {
-    player.resources.fuel += 1;
-  }
-
-  /**
-   * Apply Bradbury Plateau bonus: Re-roll all ships once
-   * Note: Must be triggered by player action
-   */
-  static applyBradburyPlateau(): void {
-    // Active bonus - must be explicitly used
-  }
-
-  /**
-   * Apply Asimov Crater bonus: Gain 1 energy
-   */
-  static applyAsimovCrater(player: Player): void {
-    player.resources.energy += 1;
-  }
-
-  /**
-   * Apply Herbert Valley bonus: Free colony placement
-   * Note: This is checked during colony placement
-   */
-  static applyHerbertValley(): void {
-    // Passive bonus - handled by colony placement logic
-  }
-
-  /**
-   * Apply Lem Badlands bonus: +1 to all ship values
-   * Note: This is checked during facility docking
-   */
-  static applyLemBadlands(): void {
-    // Passive bonus - handled by facility logic
-  }
-
-  /**
-   * Apply Burroughs Desert bonus: Draw extra tech card
-   * Note: Must be triggered when acquiring tech
-   */
-  static applyBurrowsDesert(): void {
-    // Active bonus - handled by tech card acquisition
+  static applyVanVogtMountains(): void {
+    // Passive bonus - handled by Lunar Mine facility
   }
 }
 
@@ -87,57 +91,57 @@ export class TerritoryManager {
   }
 
   /**
-   * Create all 8 territories
+   * Create all 8 territories with official rule bonuses
    */
   private initializeTerritories(): void {
     const territoryDefs = [
       {
-        type: TerritoryType.HEINLEIN_PLAINS,
-        name: 'Heinlein Plains',
+        type: TerritoryType.ASIMOV_CRATER,
+        name: 'Asimov Crater',
         maxColonies: 3,
-        bonus: 'Gain 1 ore at start of turn'
-      },
-      {
-        type: TerritoryType.POHL_FOOTHILLS,
-        name: 'Pohl Foothills',
-        maxColonies: 3,
-        bonus: 'Tech card powers cost 1 less fuel'
-      },
-      {
-        type: TerritoryType.VAN_VOGT_MOUNTAINS,
-        name: 'Van Vogt Mountains',
-        maxColonies: 3,
-        bonus: 'Gain 1 fuel at start of turn'
+        bonus: 'Advance colony +1 extra level when docking multiple ships at Colonist Hub'
       },
       {
         type: TerritoryType.BRADBURY_PLATEAU,
         name: 'Bradbury Plateau',
         maxColonies: 3,
-        bonus: 'Re-roll all ships once per turn'
-      },
-      {
-        type: TerritoryType.ASIMOV_CRATER,
-        name: 'Asimov Crater',
-        maxColonies: 3,
-        bonus: 'Gain 1 energy at start of turn'
-      },
-      {
-        type: TerritoryType.HERBERT_VALLEY,
-        name: 'Herbert Valley',
-        maxColonies: 3,
-        bonus: 'Place colonies for free'
-      },
-      {
-        type: TerritoryType.LEM_BADLANDS,
-        name: 'Lem Badlands',
-        maxColonies: 3,
-        bonus: '+1 to all ship values'
+        bonus: 'Pay 1 less ore at Colony Constructor'
       },
       {
         type: TerritoryType.BURROUGHS_DESERT,
         name: 'Burroughs Desert',
         maxColonies: 3,
-        bonus: 'Draw 1 extra tech card when acquiring'
+        bonus: 'Purchase Relic Ship for 1 fuel + 1 ore'
+      },
+      {
+        type: TerritoryType.HEINLEIN_PLAINS,
+        name: 'Heinlein Plains',
+        maxColonies: 3,
+        bonus: 'Trading ratio is always 1:1 fuel-to-ore at Orbital Market'
+      },
+      {
+        type: TerritoryType.HERBERT_VALLEY,
+        name: 'Herbert Valley',
+        maxColonies: 3,
+        bonus: 'Pay 1 less fuel and ore at Shipyard'
+      },
+      {
+        type: TerritoryType.LEM_BADLANDS,
+        name: 'Lem Badlands',
+        maxColonies: 3,
+        bonus: 'Gain +1 fuel per ship at Solar Converter'
+      },
+      {
+        type: TerritoryType.POHL_FOOTHILLS,
+        name: 'Pohl Foothills',
+        maxColonies: 3,
+        bonus: 'Pay 1 less fuel for tech card powers'
+      },
+      {
+        type: TerritoryType.VAN_VOGT_MOUNTAINS,
+        name: 'Van Vogt Mountains',
+        maxColonies: 3,
+        bonus: 'First ship at Lunar Mine may be any value'
       }
     ];
 
@@ -237,25 +241,21 @@ export class TerritoryManager {
 
   /**
    * Apply start-of-turn bonuses for a player
+   * Note: In the official rules, bonuses are passive and checked at facilities,
+   * not applied automatically at start of turn. This method is kept for 
+   * potential future use but doesn't apply any bonuses currently.
    */
   applyStartOfTurnBonuses(player: Player): void {
-    const controlled = this.getControlledTerritories(player.id);
-    
-    controlled.forEach(territory => {
-      if (!territory.isBonusActive()) return;
-
-      switch (territory.type) {
-        case TerritoryType.HEINLEIN_PLAINS:
-          TerritoryBonusManager.applyHeinleinPlains(player);
-          break;
-        case TerritoryType.VAN_VOGT_MOUNTAINS:
-          TerritoryBonusManager.applyVanVogtMountains(player);
-          break;
-        case TerritoryType.ASIMOV_CRATER:
-          TerritoryBonusManager.applyAsimovCrater(player);
-          break;
-      }
-    });
+    // Official rules don't grant automatic resources at start of turn
+    // Bonuses are contextual and checked when using facilities:
+    // - Asimov Crater: checked at Colonist Hub
+    // - Bradbury Plateau: checked at Colony Constructor
+    // - Burroughs Desert: Relic Ship purchase option
+    // - Heinlein Plains: checked at Orbital Market
+    // - Herbert Valley: checked at Shipyard
+    // - Lem Badlands: checked at Solar Converter
+    // - Pohl Foothills: checked in tech cards
+    // - Van Vogt Mountains: checked at Lunar Mine
   }
 
   /**

@@ -27,8 +27,11 @@ export class BoosterPod extends TechCard {
   }
 
   getPowerCost(player: Player): number {
-    // TODO: Check for Pohl Foothills bonus (-1 fuel)
-    return 1;
+    let cost = 1;
+    // Check for Pohl Foothills bonus (-1 fuel)
+    // Note: TerritoryManager check would need to be injected via GameState
+    // For now, this is a placeholder for the bonus logic
+    return cost;
   }
 
   canUsePower(player: Player): boolean {
@@ -97,7 +100,9 @@ export class StasisBeam extends TechCard {
   }
 
   getPowerCost(player: Player): number {
-    return 1;
+    let cost = 1;
+    // Pohl Foothills bonus would be checked here via GameState
+    return cost;
   }
 
   canUsePower(player: Player): boolean {
@@ -179,7 +184,9 @@ export class PolarityDevice extends TechCard {
   }
 
   getPowerCost(player: Player): number {
-    return 1;
+    let cost = 1;
+    // Pohl Foothills bonus would be checked here via GameState
+    return cost;
   }
 
   canUsePower(player: Player): boolean {
@@ -260,7 +267,9 @@ export class TemporalWarper extends TechCard {
   }
 
   getPowerCost(player: Player): number {
-    return 1;
+    let cost = 1;
+    // Pohl Foothills bonus would be checked here via GameState
+    return cost;
   }
 
   canUsePower(player: Player): boolean {
@@ -342,7 +351,9 @@ export class GravityManipulator extends TechCard {
   }
 
   getPowerCost(player: Player): number {
-    return 3;
+    let cost = 3;
+    // Pohl Foothills bonus would be checked here via GameState
+    return cost;
   }
 
   canUsePower(player: Player): boolean {

@@ -7,9 +7,14 @@ import { TechCard, TechCardType, TechCardPowerResult } from './base-tech-card';
 import { Player } from '../player';
 
 /**
- * Resource Cache - Gain fuel or ore each turn
- * Power: Gain 1 fuel OR 1 ore (your choice) each turn
- * Discard: None
+ * Resource Cache - Automatic resources based on odd/even ships
+ * Power: Automatic - gain resources based on ship values after roll
+ *        - More odd ships: gain 1 ore
+ *        - More even ships: gain 1 fuel  
+ *        - Equal odd/even: gain 1 fuel AND 1 ore, then discard this card
+ * Discard: Automatically discarded when equal odd/even ships
+ * 
+ * NOTE: Cannot be used on turn acquired, only starts working next turn
  */
 export class ResourceCache extends TechCard {
   constructor() {
@@ -17,15 +22,15 @@ export class ResourceCache extends TechCard {
   }
 
   hasPower(): boolean {
-    return true;
+    return true; // Automatic power
   }
 
   hasDiscardPower(): boolean {
-    return false;
+    return false; // Discarded automatically, not as a power
   }
 
   getPowerCost(): number {
-    return 0; // Free power
+    return 0; // Free automatic power
   }
 
   canUsePower(player: Player): boolean {
@@ -38,30 +43,60 @@ export class ResourceCache extends TechCard {
     return false;
   }
 
-  usePower(player: Player, resourceType: 'fuel' | 'ore'): TechCardPowerResult {
+  /**
+   * Apply Resource Cache effect based on odd/even ship values
+   * @param player The player who owns the card
+   * @param ships Array of ship values to count
+   * @returns Result indicating resources gained and if card should be discarded
+   */
+  usePower(player: Player, ships: number[]): TechCardPowerResult {
     if (!this.canUsePower(player)) {
       return { success: false, message: 'Cannot use Resource Cache power' };
     }
 
-    if (resourceType === 'fuel') {
-      player.resources.fuel += 1;
-      this.markAsUsed();
-      return {
-        success: true,
-        message: 'Gained 1 fuel from Resource Cache',
-        resourcesGained: { fuel: 1 }
-      };
-    } else if (resourceType === 'ore') {
+    // Count odd and even valued ships
+    let oddCount = 0;
+    let evenCount = 0;
+    
+    ships.forEach(value => {
+      if (value % 2 === 0) {
+        evenCount++;
+      } else {
+        oddCount++;
+      }
+    });
+
+    this.markAsUsed();
+
+    // More odd ships: gain 1 ore
+    if (oddCount > evenCount) {
       player.resources.ore += 1;
-      this.markAsUsed();
       return {
         success: true,
-        message: 'Gained 1 ore from Resource Cache',
+        message: `Resource Cache: More odd ships (${oddCount} odd, ${evenCount} even) - gained 1 ore`,
         resourcesGained: { ore: 1 }
       };
     }
-
-    return { success: false, message: 'Invalid resource type' };
+    
+    // More even ships: gain 1 fuel
+    if (evenCount > oddCount) {
+      player.resources.fuel += 1;
+      return {
+        success: true,
+        message: `Resource Cache: More even ships (${evenCount} even, ${oddCount} odd) - gained 1 fuel`,
+        resourcesGained: { fuel: 1 }
+      };
+    }
+    
+    // Equal odd/even: gain 1 fuel AND 1 ore, then discard card
+    player.resources.fuel += 1;
+    player.resources.ore += 1;
+    return {
+      success: true,
+      message: `Resource Cache: Equal ships (${oddCount} odd, ${evenCount} even) - gained 1 fuel and 1 ore, card discarded`,
+      resourcesGained: { fuel: 1, ore: 1 },
+      shouldDiscard: true
+    };
   }
 
   useDiscardPower(): TechCardPowerResult {
@@ -69,10 +104,10 @@ export class ResourceCache extends TechCard {
   }
 
   getPowerDescription(): string {
-    return 'Gain 1 fuel OR 1 ore (your choice) each turn';
+    return 'Automatic: More odd ships = 1 ore, more even ships = 1 fuel, equal = 1 fuel + 1 ore (then discard)';
   }
 
   getDiscardPowerDescription(): string {
-    return 'No discard power';
+    return 'Automatically discarded when rolling equal odd/even ships';
   }
 }
