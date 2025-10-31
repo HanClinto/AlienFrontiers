@@ -13,7 +13,7 @@ import { Player } from '../player';
  */
 export class ResourceCache extends TechCard {
   constructor() {
-    super(TechCardType.RESOURCE_CACHE, 'Resource Cache', 0);
+    super(TechCardType.RESOURCE_CACHE, 'Resource Cache', 0, 'tech_rc');
   }
 
   hasPower(): boolean {

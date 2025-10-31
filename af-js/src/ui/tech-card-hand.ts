@@ -16,9 +16,9 @@ import { TechCard, TechCardType } from '../game/tech-cards';
  */
 export class TechCardSprite extends Phaser.GameObjects.Container {
   private card: TechCard;
-  private cardGraphic: Phaser.GameObjects.Graphics;
+  private cardImage: Phaser.GameObjects.Image;
+  private bgSprite: Phaser.GameObjects.Image;
   private nameText: Phaser.GameObjects.Text;
-  private typeText: Phaser.GameObjects.Text;
   private isSelected: boolean = false;
   private isHovered: boolean = false;
 
@@ -36,35 +36,34 @@ export class TechCardSprite extends Phaser.GameObjects.Container {
 
     this.card = card;
 
-    // Create card background
-    this.cardGraphic = scene.add.graphics();
-    this.add(this.cardGraphic);
+    // Background frame - iOS uses tech_layer_bg.png for tall cards
+    this.bgSprite = scene.add.image(0, 0, 'tech_layer_bg');
+    this.bgSprite.setOrigin(0.5, 0.5);
+    this.add(this.bgSprite);
 
-    // Create name text
-    this.nameText = scene.add.text(0, -40, card.name, {
-      fontSize: '12px',
-      color: '#ffffff',
-      fontStyle: 'bold',
+    // Card image - iOS: cardImage.position = ccp(0, 14) for tall layout
+    // In Phaser @2x that's (0, 28) but we'll center it
+    this.cardImage = scene.add.image(0, 0, card.imageKey);
+    this.cardImage.setOrigin(0.5, 0.5);
+    this.add(this.cardImage);
+
+    // Card name label - iOS: label.position = ccp(0, 30 - 36 - 7) = ccp(0, -13)
+    // At @2x: (0, -26)
+    this.nameText = scene.add.text(0, -26, card.name, {
+      fontFamily: 'DIN-Medium',
+      fontSize: '24px',  // iOS 12 * 2 = 24
+      color: '#000000',
       align: 'center',
-      wordWrap: { width: 90 }
+      wordWrap: { width: 150 }
     });
-    this.nameText.setOrigin(0.5, 0.5);
+    this.nameText.setOrigin(0.5, 1);
     this.add(this.nameText);
 
-    // Create type text
-    this.typeText = scene.add.text(0, 35, card.type.toUpperCase(), {
-      fontSize: '10px',
-      color: '#ffff00',
-      fontStyle: 'bold'
-    });
-    this.typeText.setOrigin(0.5, 0.5);
-    this.add(this.typeText);
+    // Update initial visual state
+    this.updateVisualState();
 
-    // Draw initial card
-    this.drawCard();
-
-    // Set interactive
-    this.setSize(100, 140);
+    // Set interactive - iOS card size is ~88x120 @1x = 176x240 @2x
+    this.setSize(176, 240);
     this.setInteractive({ cursor: 'pointer' });
 
     // Click to select
@@ -82,13 +81,13 @@ export class TechCardSprite extends Phaser.GameObjects.Container {
     // Hover effects
     this.on('pointerover', () => {
       this.isHovered = true;
-      this.drawCard();
-      this.setScale(1.1);
+      this.updateVisualState();
+      this.setScale(1.05);
     });
 
     this.on('pointerout', () => {
       this.isHovered = false;
-      this.drawCard();
+      this.updateVisualState();
       this.setScale(1.0);
     });
 
@@ -97,56 +96,23 @@ export class TechCardSprite extends Phaser.GameObjects.Container {
   }
 
   /**
-   * Draw the card
+   * Update visual state based on selection/hover
+   * iOS uses different background textures and opacity changes
    */
-  private drawCard(): void {
-    this.cardGraphic.clear();
-
-    const width = 100;
-    const height = 140;
-    const radius = 10;
-
-    // Card background color based on type
-    let bgColor: number;
-    if (this.card.victoryPoints > 0) {
-      bgColor = 0x9966ff; // Purple for VP cards
-    } else if (this.card.type.includes('manipulation')) {
-      bgColor = 0x3366ff; // Blue for manipulation
-    } else if (this.card.type.includes('resource')) {
-      bgColor = 0xff6633; // Orange for resources
+  private updateVisualState(): void {
+    // Update background based on selection state
+    // iOS: if (selected) tech_layer_bg_selected.png else tech_layer_bg.png
+    if (this.isSelected) {
+      this.bgSprite.setTexture('tech_layer_bg_selected');
     } else {
-      bgColor = 0x666666; // Gray for others
+      this.bgSprite.setTexture('tech_layer_bg');
     }
 
-    // Adjust alpha based on state
-    const alpha = this.isSelected ? 1.0 : (this.isHovered ? 0.9 : 0.7);
-
-    // Draw rounded rectangle for card
-    this.cardGraphic.fillStyle(bgColor, alpha);
-    this.cardGraphic.fillRoundedRect(-width/2, -height/2, width, height, radius);
-
-    // Draw border
-    const borderColor = this.isSelected ? 0xffff00 : (this.isHovered ? 0xffffff : 0x000000);
-    const borderWidth = this.isSelected ? 4 : 2;
-    this.cardGraphic.lineStyle(borderWidth, borderColor, 1);
-    this.cardGraphic.strokeRoundedRect(-width/2, -height/2, width, height, radius);
-
-    // Draw VP indicator if card has VP
-    if (this.card.victoryPoints && this.card.victoryPoints > 0) {
-      this.cardGraphic.fillStyle(0xffff00, 1);
-      this.cardGraphic.fillCircle(width/2 - 15, -height/2 + 15, 12);
-      this.cardGraphic.lineStyle(2, 0x000000, 1);
-      this.cardGraphic.strokeCircle(width/2 - 15, -height/2 + 15, 12);
-
-      // Draw VP number
-      const vpText = this.scene.add.text(width/2 - 15, -height/2 + 15, this.card.victoryPoints.toString(), {
-        fontSize: '14px',
-        color: '#000000',
-        fontStyle: 'bold'
-      });
-      vpText.setOrigin(0.5, 0.5);
-      this.add(vpText);
-    }
+    // Update opacity based on hover/select state
+    // iOS uses opacity 127 for tapped/used cards, 255 for normal
+    const alpha = this.isSelected || this.isHovered ? 1.0 : 0.85;
+    this.cardImage.setAlpha(alpha);
+    this.nameText.setAlpha(alpha);
   }
 
   /**
@@ -154,7 +120,7 @@ export class TechCardSprite extends Phaser.GameObjects.Container {
    */
   private toggleSelection(): void {
     this.isSelected = !this.isSelected;
-    this.drawCard();
+    this.updateVisualState();
 
     if (this.isSelected && this.onSelect) {
       this.onSelect(this.card);
@@ -166,7 +132,7 @@ export class TechCardSprite extends Phaser.GameObjects.Container {
    */
   public setSelected(selected: boolean): void {
     this.isSelected = selected;
-    this.drawCard();
+    this.updateVisualState();
   }
 
   /**
@@ -180,9 +146,9 @@ export class TechCardSprite extends Phaser.GameObjects.Container {
    * Clean up
    */
   public destroy(fromScene?: boolean): void {
-    this.cardGraphic.destroy();
+    this.bgSprite.destroy();
+    this.cardImage.destroy();
     this.nameText.destroy();
-    this.typeText.destroy();
     super.destroy(fromScene);
   }
 }
@@ -208,20 +174,11 @@ export class TechCardHand extends Phaser.GameObjects.Container {
   ) {
     super(scene, x, y);
 
-    // Create background panel
-    const bg = scene.add.rectangle(0, 0, 700, 180, 0x000000, 0.8);
-    bg.setOrigin(0, 0);
-    this.add(bg);
+    // No background panel needed - cards will be drawn on top of card tray background
+    // Set origin to (0, 0) to match positioning expectations
+    // (Card tray background is already rendered in PlayerHUDLayer)
 
-    // Create title
-    const title = scene.add.text(10, 10, 'Tech Cards', {
-      fontSize: '18px',
-      color: '#ffff00',
-      fontStyle: 'bold'
-    });
-    this.add(title);
-
-    // Create buttons
+    // Create buttons (positioned relative to card area)
     this.createButtons(scene);
 
     // Add to scene
@@ -232,8 +189,12 @@ export class TechCardHand extends Phaser.GameObjects.Container {
    * Create action buttons
    */
   private createButtons(scene: Phaser.Scene): void {
+    // Position buttons to the right of where cards will appear
+    // Cards: startX=84, spacing=178, max 6 cards = 84 + 178*5 = 974
+    // Buttons positioned after last card
+    
     // Use button
-    this.useButton = scene.add.container(600, 140);
+    this.useButton = scene.add.container(1000, 36);
     const useBg = scene.add.rectangle(0, 0, 80, 30, 0x00ff00, 1);
     const useText = scene.add.text(0, 0, 'USE', {
       fontSize: '14px',
@@ -249,7 +210,7 @@ export class TechCardHand extends Phaser.GameObjects.Container {
     this.add(this.useButton);
 
     // Discard button
-    this.discardButton = scene.add.container(510, 140);
+    this.discardButton = scene.add.container(1100, 36);
     const discardBg = scene.add.rectangle(0, 0, 80, 30, 0xff0000, 1);
     const discardText = scene.add.text(0, 0, 'DISCARD', {
       fontSize: '12px',
@@ -269,17 +230,25 @@ export class TechCardHand extends Phaser.GameObjects.Container {
    * Set cards in hand
    */
   public setCards(cards: TechCard[]): void {
+    console.log(`TechCardHand.setCards called with ${cards.length} cards:`, cards.map(c => c.name));
+    
     // Clear existing cards
     this.cardSprites.forEach(sprite => sprite.destroy());
     this.cardSprites = [];
     this.selectedCard = null;
 
     // Create new card sprites
-    const startX = 20;
-    const startY = 50;
-    const spacing = 110;
+    // iOS positioning: cards at x=42 + (88+1)*index, y=-12, anchor (0, 1) = bottom-left
+    // At @2x: x=84 + 178*index, y=-24
+    // iOS anchor (0, 1) is bottom-left, Phaser origin (0, 0) is top-left
+    // Card height ~140px, so we need to add that to Y
+    const startX = 84;      // iOS: 42 * 2
+    const startY = 36;      // Center the cards vertically in the 72px card tray
+    const spacing = 178;    // iOS: (88 + 1) * 2
 
     cards.forEach((card, index) => {
+      console.log(`Creating card sprite ${index}: ${card.name} at position (${startX + (index * spacing)}, ${startY})`);
+
       const sprite = new TechCardSprite(
         this.scene,
         startX + (index * spacing),

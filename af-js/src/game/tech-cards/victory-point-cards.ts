@@ -10,7 +10,7 @@ import { VictoryPointCard, TechCardType } from './base-tech-card';
  */
 export class AlienCity extends VictoryPointCard {
   constructor() {
-    super(TechCardType.ALIEN_CITY, 'Alien City', 1);
+    super(TechCardType.ALIEN_CITY, 'Alien City', 1, 'tech_ac');
   }
 }
 
@@ -19,6 +19,6 @@ export class AlienCity extends VictoryPointCard {
  */
 export class AlienMonument extends VictoryPointCard {
   constructor() {
-    super(TechCardType.ALIEN_MONUMENT, 'Alien Monument', 1);
+    super(TechCardType.ALIEN_MONUMENT, 'Alien Monument', 1, 'tech_am');
   }
 }

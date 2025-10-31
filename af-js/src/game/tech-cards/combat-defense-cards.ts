@@ -14,7 +14,7 @@ import { Ship } from '../ship';
  */
 export class PlasmaCannon extends TechCard {
   constructor() {
-    super(TechCardType.PLASMA_CANNON, 'Plasma Cannon', 0);
+    super(TechCardType.PLASMA_CANNON, 'Plasma Cannon', 0, 'tech_pc');
   }
 
   hasPower(): boolean {
@@ -79,7 +79,7 @@ export class PlasmaCannon extends TechCard {
  */
 export class HolographicDecoy extends TechCard {
   constructor() {
-    super(TechCardType.HOLOGRAPHIC_DECOY, 'Holographic Decoy', 0);
+    super(TechCardType.HOLOGRAPHIC_DECOY, 'Holographic Decoy', 0, 'tech_hd');
   }
 
   hasPower(): boolean {

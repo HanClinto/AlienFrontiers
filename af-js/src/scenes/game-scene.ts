@@ -178,35 +178,42 @@ export class GameScene extends Phaser.Scene {
     // - iOS original: 1536×2048 (@2x retina)
     //
     // The board is WIDER than the viewport (2048 > 1536), so 256px on each side are off-screen
-    // iOS positioned the board at X = (board.width/2 - 54) = (2048/2 - 54) = 970
-    // This means 970px from left edge to center, so:
-    //   Left edge of board: 970 - 1024 = -54 (54px off-screen on left)
-    //   Right edge of board: 970 + 1024 = 1994 (458px off-screen on right, since viewport is 1536)
+    // iOS positioned the board at X = (board.width/2 - 54) @1x points
+    // Board is 1024×1024 @1x points (2048×2048 @2x pixels)
+    // Position: ccp(1024*0.5 - 54, 1024*0.5) = (512 - 54, 512) = (458, 512) @1x
     //
-    // In our viewport (1536 wide), to match iOS:
-    // - Board center should be at: 1536/2 + (offset to match iOS positioning)
-    // - iOS had board center at X=970 in a 1536-wide viewport
-    // - So we should use X = 970
+    // Convert to Phaser @2x:
+    // X: 458 * 2 = 916 pixels
+    // Y: (1024 - 512) * 2 = 1024 pixels (Y-axis inverted)
+    //
+    // This positions the board so:
+    //   Left edge: 916 - 1024 = -108 (108px off-screen on left, matching iOS -54 @1x)
+    //   Right edge: 916 + 1024 = 1940 (404px off-screen on right)
+    //
+    // Facilities are positioned in SCENE coordinates (not board-relative),
+    // so they will align correctly with this board position.
     
     const board = this.add.image(0, 0, 'game_board');
     board.setOrigin(0.5, 0.5);
     
     // Position to match iOS exactly
-    const boardX = 970;           // iOS: board.width/2 - 54 = 1024 - 54 = 970
-    const boardY = GAME_HEIGHT * 0.5;  // 1024 (centered vertically)
+    const boardX = (1024 * 0.5 - 54) * 2;  // = (512 - 54) * 2 = 916
+    const boardY = GAME_HEIGHT * 0.5;       // = 1024 (centered vertically)
     board.setPosition(boardX, boardY);
 
-    // Create facilities container positioned relative to board
-    // iOS LayerOrbitals has position (0, 0) in portrait mode, which means
-    // facilities are positioned relative to the board's coordinate system.
+    // Create facilities container
+    // iOS LayerOrbitals and LayerRegions are positioned at (0, 0) in scene space.
+    // Facilities use SCENE coordinates, NOT board-relative coordinates.
     // 
-    // Board positioning:
-    // - Center: (970, 1024)
-    // - Size: 2048×2048
-    // - Top-left corner: (970 - 1024, 1024 - 1024) = (-54, 0)
+    // The board sprite is just visual background. Facility positions in
+    // FACILITY_DOCKS are already converted scene coordinates that align
+    // with the board visuals when board is at (916, 1024).
     //
-    // iOS LayerOrbitals is at (0, 0) in scene coordinates, not relative to board
-    // Facilities use absolute scene coordinates
+    // Board positioning for reference:
+    // - Center: (916, 1024)
+    // - Size: 2048×2048
+    // - Left edge: 916 - 1024 = -108 (off-screen)
+    // - Top edge: 1024 - 1024 = 0
     this.facilitiesContainer = this.add.container(0, 0);
 
     // Add the main player HUD tray at the bottom
@@ -444,6 +451,9 @@ export class GameScene extends Phaser.Scene {
       
       // Update HUDs after resource changes
       this.updatePlayerHUDs();
+      
+      // Return all dice to pool with animation
+      await this.returnDiceToPool();
     } else {
       // For other phases, keep advancing until turn changes
       // This handles COLLECT_RESOURCES, PURCHASE, and END_TURN phases
@@ -653,8 +663,47 @@ export class GameScene extends Phaser.Scene {
         };
         
         shipSprite.onDragEnd = (location) => {
-          console.log(`Ship ${ship.id} dropped at ${location}`);
-          this.updatePlayerHUDs();
+          console.log(`Ship ${ship.id} (diceValue: ${ship.diceValue}) dropped at ${location}`);
+          
+          // If ship was successfully placed at a facility, execute the action immediately
+          if (location && this.gameState) {
+            const activePlayer = this.gameState.getActivePlayer();
+            console.log(`Active player resources before: Ore=${activePlayer?.resources.ore}, Fuel=${activePlayer?.resources.fuel}, Energy=${activePlayer?.resources.energy}`);
+            
+            try {
+              // Dock the ship at the facility
+              const dockGroupId = this.gameState.dockShipsAtFacility(location, [ship.id]);
+              console.log(`Docked at ${location}, dockGroupId: ${dockGroupId}`);
+              
+              if (dockGroupId) {
+                // Execute facility action immediately to grant resources
+                const result = this.gameState.executeFacilityActionImmediately(location, [ship.id]);
+                console.log(`Facility ${location} executed immediately:`, result);
+                
+                // Update displays to show new resources
+                this.updatePlayerHUDs();
+                
+                // Show result feedback (resources gained, etc.)
+                if (result.success && result.resourcesGained) {
+                  const gains: string[] = [];
+                  if (result.resourcesGained.ore) gains.push(`+${result.resourcesGained.ore} Ore`);
+                  if (result.resourcesGained.fuel) gains.push(`+${result.resourcesGained.fuel} Fuel`);
+                  if (result.resourcesGained.energy) gains.push(`+${result.resourcesGained.energy} Energy`);
+                  
+                  if (gains.length > 0) {
+                    console.log(`Resources gained: ${gains.join(', ')}`);
+                  }
+                  
+                  console.log(`Active player resources after: Ore=${activePlayer?.resources.ore}, Fuel=${activePlayer?.resources.fuel}, Energy=${activePlayer?.resources.energy}`);
+                }
+              }
+            } catch (error) {
+              console.error('Failed to dock/execute facility:', error);
+            }
+          } else {
+            console.log('Ship not dropped at valid facility location');
+            this.updatePlayerHUDs();
+          }
         };
         
         shipSprite.onValidatePlacement = (x, y) => {
@@ -673,7 +722,7 @@ export class GameScene extends Phaser.Scene {
    */
   private createDiceRollManager(): void {
     if (!this.gameState) return;
-    
+
     this.diceRollManager = new DiceRollManager(this);
     
     // Create dice using board layout positions
@@ -688,6 +737,9 @@ export class GameScene extends Phaser.Scene {
     
     this.diceRollManager.createDice(maxDice, startX, startY, spacing, color);
     
+    // Set up dice callbacks
+    this.setupDiceCallbacks();
+    
     // Initially hide dice until first roll
     this.diceRollManager.setVisible(false);
     
@@ -695,16 +747,151 @@ export class GameScene extends Phaser.Scene {
   }
   
   /**
+   * Return all dice to pool with animation
+   * Called at end of turn to prepare for next player
+   */
+  private async returnDiceToPool(): Promise<void> {
+    if (!this.diceRollManager || !this.gameState) return;
+    
+    const dice = this.diceRollManager.getDice();
+    if (dice.length === 0) return;
+    
+    console.log('Returning all dice to pool...');
+    
+    // Get the pool position for the first die
+    const startX = BoardLayout.getDicePosition(0, dice.length).x;
+    const poolY = BoardLayout.DICE_AREA.y;
+    const spacing = BoardLayout.DICE_AREA.spacing;
+    
+    // Return all dice to pool with staggered animation
+    await this.diceRollManager.returnAllToPool(startX, poolY, spacing, 100);
+    
+    console.log('All dice returned to pool');
+  }
+
+  /**
+   * Set up drag callbacks for all dice
+   */
+  private setupDiceCallbacks(): void {
+    if (!this.diceRollManager || !this.gameState) return;
+    
+    const dice = this.diceRollManager.getDice();
+    const activePlayer = this.gameState.getActivePlayer();
+    if (!activePlayer) return;
+    
+    const ships = this.gameState.getShipManager().getPlayerShips(activePlayer.id);
+    
+    dice.forEach((diceSprite, index) => {
+      if (index >= ships.length) return;
+      
+      const ship = ships[index];
+      
+      diceSprite.onDragStart = () => {
+        console.log(`Dragging die with value ${diceSprite.getValue()} (ship ${ship.id})`);
+      };
+      
+      diceSprite.onDragEnd = (location) => {
+        console.log(`Die (ship ${ship.id}, diceValue: ${ship.diceValue}) dropped at ${location}`);
+        
+        if (location && this.gameState) {
+          const activePlayer = this.gameState.getActivePlayer();
+          console.log(`Active player resources before: Ore=${activePlayer?.resources.ore}, Fuel=${activePlayer?.resources.fuel}, Energy=${activePlayer?.resources.energy}`);
+          
+          try {
+            // Dock the ship at the facility
+            const dockGroupId = this.gameState.dockShipsAtFacility(location, [ship.id]);
+            console.log(`Docked at ${location}, dockGroupId: ${dockGroupId}`);
+            
+            if (dockGroupId) {
+              // Execute facility action immediately to grant resources
+              const result = this.gameState.executeFacilityActionImmediately(location, [ship.id]);
+              console.log(`Facility ${location} executed immediately:`, result);
+              
+              // Update displays to show new resources
+              this.updatePlayerHUDs();
+              
+              // Show result feedback (resources gained, etc.)
+              if (result.success && result.resourcesGained) {
+                const gains: string[] = [];
+                if (result.resourcesGained.ore) gains.push(`+${result.resourcesGained.ore} Ore`);
+                if (result.resourcesGained.fuel) gains.push(`+${result.resourcesGained.fuel} Fuel`);
+                if (result.resourcesGained.energy) gains.push(`+${result.resourcesGained.energy} Energy`);
+                
+                if (gains.length > 0) {
+                  console.log(`Resources gained: ${gains.join(', ')}`);
+                }
+                
+                console.log(`Active player resources after: Ore=${activePlayer?.resources.ore}, Fuel=${activePlayer?.resources.fuel}, Energy=${activePlayer?.resources.energy}`);
+              }
+            }
+          } catch (error) {
+            console.error('Failed to dock/execute facility:', error);
+          }
+        } else {
+          console.log('Die not dropped at valid facility location');
+          this.updatePlayerHUDs();
+        }
+      };
+      
+      diceSprite.onValidatePlacement = (x, y) => {
+        return this.validateDicePlacement(ship.id, x, y);
+      };
+    });
+  }
+  
+  /**
+   * Validate dice placement at coordinates (similar to validateShipPlacement)
+   */
+  private validateDicePlacement(shipId: string, x: number, y: number): { 
+    valid: boolean; 
+    location: string | null;
+    targetPosition?: { x: number; y: number };
+  } {
+    // Check each facility sprite
+    const facilities = Array.from(this.facilitySprites.entries());
+    for (const [location, facilitySprite] of facilities) {
+      if (facilitySprite.containsPoint(x, y)) {
+        // Found a facility, now validate if ship can be placed there
+        const ship = this.gameState?.getShipManager().getShip(shipId);
+        if (!ship || !ship.diceValue) {
+          return { valid: false, location: null };
+        }
+        
+        // TODO: Check facility requirements (dice values, player resources, etc.)
+        // For now, allow any placement if ship has dice value
+        
+        // Get the number of ships already docked at this facility to determine slot index
+        const facility = this.gameState?.getFacility(location);
+        const dockedShips = facility?.getDockedShips() || [];
+        const slotIndex = dockedShips.length; // Next available slot
+        
+        // Get the target dock slot position
+        const facilityKey = location.toUpperCase().replace(/ /g, '_');
+        try {
+          const targetPos = BoardLayout.getDockSlotPosition(facilityKey, slotIndex);
+          return { valid: true, location: location, targetPosition: targetPos };
+        } catch (error) {
+          console.warn(`Could not get dock position for ${facilityKey} slot ${slotIndex}:`, error);
+          return { valid: true, location: location }; // Still valid, just no target position
+        }
+      }
+    }
+    
+    // Not over any facility
+    return { valid: false, location: null };
+  }  /**
    * Create tech card hand display
    */
   private createTechCardHand(): void {
     if (!this.gameState) return;
     
-    // Position using board layout
-    const x = BoardLayout.TECH_CARD_HAND.x;
-    const y = BoardLayout.TECH_CARD_HAND.y;
+    // Create tech card hand at (0, 0) - it will be positioned relative to the card tray
+    this.techCardHand = new TechCardHand(this, 0, 0);
     
-    this.techCardHand = new TechCardHand(this, x, y);
+    // Attach it to the main player HUD as a child of the card tray
+    if (this.mainPlayerHUD) {
+      this.mainPlayerHUD.attachTechCardHand(this.techCardHand);
+    }
     
     // Set up callbacks
     this.techCardHand.onUseCard = (card) => {
@@ -730,9 +917,20 @@ export class GameScene extends Phaser.Scene {
   private createAlienArtifactDisplay(): void {
     if (!this.gameState) return;
     
-    // Position near center-right of screen
-    const x = 550;
-    const y = 200;
+    // Position relative to Alien Artifact facility container at (1202, 460)
+    // iOS: cards at ccp(30, -5 - 42*cnt) @1x relative to facility container
+    // Phaser: cards at (60, -10 - 84*cnt) @2x relative to facility container
+    // 
+    // iOS LayerAlienArtifact.m:
+    //   cardSprite.position = ccp(30, 10);  // Initial before animation
+    //   destPosition = ccp(30, -5 - 42 * cnt);  // Final position
+    // 
+    // The card display panel should be positioned at the first card location
+    const cardOffsetX = 30 * 2;   // 60px
+    const cardOffsetY = -5 * 2;    // -10px (negative = below container origin)
+    
+    const x = 1202 + cardOffsetX;  // = 1262
+    const y = 460 + cardOffsetY;   // = 450
     
     this.alienArtifactDisplay = new AlienArtifactCardDisplay(this, x, y);
     
@@ -855,7 +1053,9 @@ export class GameScene extends Phaser.Scene {
     
     // Get tech card instances from player's card IDs
     const cardIds = activePlayer.alienTechCards;
+    console.log(`Player ${activePlayer.name} has ${cardIds.length} tech card(s): ${cardIds.join(', ')}`);
     const cards = this.gameState.getTechCardsByIds(cardIds);
+    console.log(`Setting tech card hand with ${cards.length} card(s):`, cards.map(c => c.name).join(', '));
     this.techCardHand.setCards(cards);
   }
   
@@ -878,9 +1078,13 @@ export class GameScene extends Phaser.Scene {
   
   /**
    * Validate ship placement at coordinates
-   * Returns { valid: boolean, location: ShipLocation | null }
+   * Returns { valid: boolean, location: ShipLocation | null, targetPosition?: { x, y } }
    */
-  private validateShipPlacement(shipId: string, x: number, y: number): { valid: boolean; location: ShipLocation | null } {
+  private validateShipPlacement(shipId: string, x: number, y: number): { 
+    valid: boolean; 
+    location: ShipLocation | null;
+    targetPosition?: { x: number; y: number };
+  } {
     // Check each facility sprite
     const facilities = Array.from(this.facilitySprites.entries());
     for (const [location, facilitySprite] of facilities) {
@@ -893,7 +1097,21 @@ export class GameScene extends Phaser.Scene {
         
         // TODO: Check facility requirements (dice values, player resources, etc.)
         // For now, allow any placement if ship has dice value
-        return { valid: true, location: location };
+        
+        // Get the number of ships already docked at this facility to determine slot index
+        const facility = this.gameState?.getFacility(location);
+        const dockedShips = facility?.getDockedShips() || [];
+        const slotIndex = dockedShips.length; // Next available slot
+        
+        // Get the target dock slot position
+        const facilityKey = location.toUpperCase().replace(/ /g, '_');
+        try {
+          const targetPos = BoardLayout.getDockSlotPosition(facilityKey, slotIndex);
+          return { valid: true, location: location, targetPosition: targetPos };
+        } catch (error) {
+          console.warn(`Could not get dock position for ${facilityKey} slot ${slotIndex}:`, error);
+          return { valid: true, location: location }; // Still valid, just no target position
+        }
       }
     }
     

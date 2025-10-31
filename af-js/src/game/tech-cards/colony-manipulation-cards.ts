@@ -13,7 +13,7 @@ import { Player } from '../player';
  */
 export class OrbitalTeleporter extends TechCard {
   constructor() {
-    super(TechCardType.ORBITAL_TELEPORTER, 'Orbital Teleporter', 0);
+    super(TechCardType.ORBITAL_TELEPORTER, 'Orbital Teleporter', 0, 'tech_ot');
   }
 
   hasPower(): boolean {
@@ -73,7 +73,7 @@ export class OrbitalTeleporter extends TechCard {
  */
 export class DataCrystal extends TechCard {
   constructor() {
-    super(TechCardType.DATA_CRYSTAL, 'Data Crystal', 0);
+    super(TechCardType.DATA_CRYSTAL, 'Data Crystal', 0, 'tech_dc');
   }
 
   hasPower(): boolean {

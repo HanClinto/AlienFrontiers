@@ -10,6 +10,7 @@ export class TechCardManager {
   private deck: TechCard[] = [];
   private discardPile: TechCard[] = [];
   private visibleCards: TechCard[] = [];
+  private allCards: Map<string, TechCard> = new Map(); // Track all cards by ID
 
   constructor() {
     this.initializeDeck();
@@ -68,6 +69,11 @@ export class TechCardManager {
       new TechCards.ResourceCache(),
       new TechCards.ResourceCache(),
     ];
+    
+    // Store all cards in map for easy lookup by ID
+    this.deck.forEach(card => {
+      this.allCards.set(card.id, card);
+    });
   }
 
   /**
@@ -144,22 +150,11 @@ export class TechCardManager {
   }
 
   /**
-   * Get a card instance by ID
+   * Get a card by its ID
    */
   getCardById(cardId: string): TechCard | null {
-    // Check visible cards
-    const visibleCard = this.visibleCards.find(card => card.id === cardId);
-    if (visibleCard) return visibleCard;
-
-    // Check deck
-    const deckCard = this.deck.find(card => card.id === cardId);
-    if (deckCard) return deckCard;
-
-    // Check discard
-    const discardCard = this.discardPile.find(card => card.id === cardId);
-    if (discardCard) return discardCard;
-
-    return null;
+    // Use the allCards map for efficient lookup
+    return this.allCards.get(cardId) || null;
   }
 
   /**

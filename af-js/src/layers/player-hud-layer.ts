@@ -29,18 +29,17 @@ export class PlayerHUDLayer {
     this.scene = scene;
     this.playerIndex = playerIndex;
     
-    // iOS LayerHUDPort.m line 84:
-    //   uiFrame.position = ccp(768 * 0.5, -117) initially, then animates to
-    //   ccp(uiFrame.position.x, 234 * 0.5 - 19) = (384, 98)
+    // iOS LayerHUDPort.m line 410:
+    //   Active position: ccp(384, 234 * 0.5 - 19) = (384, 98) from bottom
     // 
-    // The HUD frame sprite is 1500×468 pixels
-    // 234 = 468/2 (half-height at @1x scale)
-    // Position: 234 * 0.5 - 19 = 117 - 19 = 98 from bottom (center of frame)
-    //
-    // iOS coords (1536×2048 @2x): Y=98 from bottom
-    // Phaser coords: Y = (2048 - 98) = 1950 from top
-    // X: 768 * 0.5 = 384 iOS @1x = 768 Phaser @2x
-    this.container = scene.add.container(768, 1950); // Correct position matching iOS
+    // Frame sprite (hud_port_player_tab_large.png) is 750×234 at @1x (1500×468 at @2x)
+    // Position y=98 from bottom means: 1024 - 98 = 926 from top (@1x)
+    // At @2x: 926 * 2 = 1852 from top
+    // 
+    // Frame is anchored at bottom (0.5, 1), so we want bottom edge near screen bottom
+    // Bottom edge should be at: 1024 - 19 = 1005 from top (@1x) = 2010 at @2x
+    // X: 768 * 0.5 = 384 @1x = 768 @2x
+    this.container = scene.add.container(768, 2010); // Bottom of screen, matching iOS
     this.createHUD();
   }
   
@@ -93,8 +92,8 @@ export class PlayerHUDLayer {
     );
     this.container.add(rollButton.getContainer());
 
-    // Undo button
-    const undoButtonPos = convertIOSChildCoordinates(640 + 62 - 375, 192 - 117);
+    // Undo button - iOS: ccp(693 - 375 - 122 + 3, 126 - 117 - 82 - 2)
+    const undoButtonPos = convertIOSChildCoordinates(693 - 375 - 122 + 3, 126 - 117 - 82 - 2);
     const undoButton = new ImageButton(
       this.scene,
       undoButtonPos.x,
@@ -105,8 +104,8 @@ export class PlayerHUDLayer {
     );
     this.container.add(undoButton.getContainer());
 
-    // Redo button
-    const redoButtonPos = convertIOSChildCoordinates(640 + 62 + 68 - 375, 192 - 117);
+    // Redo button - iOS: ccp(577 - 375 + 37 + 3, 126 - 117 - 82 - 2)
+    const redoButtonPos = convertIOSChildCoordinates(577 - 375 + 37 + 3, 126 - 117 - 82 - 2);
     const redoButton = new ImageButton(
       this.scene,
       redoButtonPos.x,
@@ -117,8 +116,8 @@ export class PlayerHUDLayer {
     );
     this.container.add(redoButton.getContainer());
 
-    // Done button
-    const doneButtonPos = convertIOSChildCoordinates(640 + 62 + 68 + 68 - 375, 192 - 117);
+    // Done button - iOS: ccp(693 - 375 - 16 + 3, 128 - 80 - 117 - 4 - 2)
+    const doneButtonPos = convertIOSChildCoordinates(693 - 375 - 16 + 3, 128 - 80 - 117 - 4 - 2);
     const doneButton = new ImageButton(
       this.scene,
       doneButtonPos.x,
@@ -177,6 +176,8 @@ export class PlayerHUDLayer {
     this.container.add(this.diceLabel);
 
     // Colony and die sprites
+    // iOS: colonySprite.position = ccp(colonyLabel.position.x + 1, colonyLabel.position.y - 27)
+    // Note: In iOS, Y increases upward, so -27 means below. In Phaser, Y increases downward, so +54 (@2x scale)
     const colorNames = ['red', 'green', 'blue', 'yellow'];
     const colorName = colorNames[this.playerIndex];
     
@@ -276,6 +277,25 @@ export class PlayerHUDLayer {
    */
   public setRerollCallback(callback: () => void): void {
     this.onRerollClicked = callback;
+  }
+
+  /**
+   * Add a tech card hand to this HUD, positioned relative to the card tray
+   */
+  public attachTechCardHand(techCardHand: Phaser.GameObjects.Container): void {
+    // Card tray is at iOS coords (-166, 47) relative to container
+    // iOS: white.position = ccp(-3, -12) with anchor (0, 0.5) = left-center
+    // iOS: cardTray.anchorPoint = ccp(0, 1) = bottom-left
+    const cardTrayPos = convertIOSChildCoordinates(706 - 375 - 148 - 349, 182 - 21 - 117 + 3);
+    
+    // Tech card hand should be positioned at card tray's position
+    // TechCardHand has origin (0, 0) = top-left
+    // iOS card tray anchor is (0, 1) = bottom-left, so we need to adjust for container anchor difference
+    // In Phaser, card tray image has origin (0, 0.5) = left-center
+    // Card tray is 672×72 px (@2x), so center is at 36px from top
+    // To align TechCardHand top-left with card tray top-left: y - 36
+    techCardHand.setPosition(cardTrayPos.x, cardTrayPos.y - 36);
+    this.container.add(techCardHand);
   }
 
   public getContainer(): Phaser.GameObjects.Container {

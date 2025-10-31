@@ -57,15 +57,17 @@ export abstract class TechCard {
   readonly type: TechCardType;
   readonly name: string;
   readonly victoryPoints: number;
+  readonly imageKey: string;  // Phaser texture key for card image
   
   protected owner: Player | null;
   protected usedThisTurn: boolean;
 
-  constructor(type: TechCardType, name: string, victoryPoints: number = 0) {
+  constructor(type: TechCardType, name: string, victoryPoints: number = 0, imageKey: string = 'tech_placeholder') {
     this.id = `${type}_${Date.now()}_${Math.random()}`;
     this.type = type;
     this.name = name;
     this.victoryPoints = victoryPoints;
+    this.imageKey = imageKey;
     this.owner = null;
     this.usedThisTurn = false;
   }

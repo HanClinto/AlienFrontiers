@@ -17,11 +17,12 @@ import { TechCard } from '../game/tech-cards';
  */
 export class VisibleTechCardSprite extends Phaser.GameObjects.Container {
   private card: TechCard;
-  private cardGraphic: Phaser.GameObjects.Graphics;
+  private bgSprite: Phaser.GameObjects.Image;
+  private cardImage: Phaser.GameObjects.Image;
   private nameText: Phaser.GameObjects.Text;
-  private typeText: Phaser.GameObjects.Text;
   private claimButton: Phaser.GameObjects.Container | null = null;
   private isHovered: boolean = false;
+  private isSelected: boolean = false;
 
   // Callbacks
   public onClaim?: (card: TechCard) => void;
@@ -36,49 +37,48 @@ export class VisibleTechCardSprite extends Phaser.GameObjects.Container {
 
     this.card = card;
 
-    // Create card background
-    this.cardGraphic = scene.add.graphics();
-    this.add(this.cardGraphic);
+    // Create card background (88x120 @1x, 176x240 @2x)
+    this.bgSprite = scene.add.image(0, 0, 'tech_layer_bg');
+    this.bgSprite.setOrigin(0.5, 0.5);
+    this.add(this.bgSprite);
 
-    // Create name text
-    this.nameText = scene.add.text(0, -50, card.name, {
-      fontSize: '14px',
-      color: '#ffffff',
-      fontStyle: 'bold',
+    // Create card image positioned at (0, 14) in iOS coordinates = (0, 28) @2x
+    this.cardImage = scene.add.image(0, 28, card.imageKey);
+    this.cardImage.setOrigin(0.5, 0.5);
+    this.add(this.cardImage);
+
+    // Create name text positioned at (0, -13) in iOS = (0, -26) @2x
+    this.nameText = scene.add.text(0, -26, card.name, {
+      fontFamily: 'DIN-Medium',
+      fontSize: '24px', // iOS 12 * 2
+      color: '#000000',
       align: 'center',
-      wordWrap: { width: 110 }
+      wordWrap: { width: 160 }
     });
     this.nameText.setOrigin(0.5, 0.5);
     this.add(this.nameText);
 
-    // Create type text
-    this.typeText = scene.add.text(0, 40, this.getTypeLabel(), {
-      fontSize: '10px',
-      color: '#ffff00',
-      fontStyle: 'bold'
-    });
-    this.typeText.setOrigin(0.5, 0.5);
-    this.add(this.typeText);
-
-    // Create claim button
+    // Create claim button (smaller for the artifact display)
     this.createClaimButton(scene);
 
-    // Draw initial card
-    this.drawCard();
-
-    // Set interactive for hover
-    this.setSize(120, 160);
+    // Set interactive for hover and selection
+    this.setSize(176, 240); // @2x card size
     this.setInteractive({ cursor: 'pointer' });
 
-    // Hover effects
+    // Hover and click effects
     this.on('pointerover', () => {
       this.isHovered = true;
-      this.drawCard();
+      this.updateVisualState();
     });
 
     this.on('pointerout', () => {
       this.isHovered = false;
-      this.drawCard();
+      this.updateVisualState();
+    });
+
+    this.on('pointerdown', () => {
+      this.isSelected = !this.isSelected;
+      this.updateVisualState();
     });
 
     // Add to scene
@@ -86,33 +86,23 @@ export class VisibleTechCardSprite extends Phaser.GameObjects.Container {
   }
 
   /**
-   * Get type label for display
-   */
-  private getTypeLabel(): string {
-    if (this.card.victoryPoints > 0) {
-      return `VP (${this.card.victoryPoints})`;
-    }
-    return this.card.type.replace(/_/g, ' ').toUpperCase();
-  }
-
-  /**
    * Create claim button
    */
   private createClaimButton(scene: Phaser.Scene): void {
-    this.claimButton = scene.add.container(0, 70);
+    this.claimButton = scene.add.container(0, 140);
     
-    const buttonBg = scene.add.rectangle(0, 0, 100, 28, 0x00ff00, 1);
+    const buttonBg = scene.add.rectangle(0, 0, 80, 24, 0x00ff00, 1);
     buttonBg.setStrokeStyle(2, 0x000000);
     
-    const buttonText = scene.add.text(0, 0, 'CLAIM', {
-      fontSize: '14px',
+    const buttonText = scene.add.text(0, 0, 'TAKE', {
+      fontSize: '12px',
       color: '#000000',
       fontStyle: 'bold'
     });
     buttonText.setOrigin(0.5, 0.5);
     
     this.claimButton.add([buttonBg, buttonText]);
-    this.claimButton.setSize(100, 28);
+    this.claimButton.setSize(80, 24);
     this.claimButton.setInteractive({ cursor: 'pointer' });
     
     this.claimButton.on('pointerdown', () => {
@@ -134,41 +124,20 @@ export class VisibleTechCardSprite extends Phaser.GameObjects.Container {
   }
 
   /**
-   * Draw the card
+   * Update visual state based on hover/selection
    */
-  private drawCard(): void {
-    this.cardGraphic.clear();
-
-    const width = 120;
-    const height = 160;
-    const radius = 10;
-
-    // Card background color based on type
-    let bgColor: number;
-    if (this.card.victoryPoints > 0) {
-      bgColor = 0x9966ff; // Purple for VP cards
-    } else if (this.card.type.includes('manipulation')) {
-      bgColor = 0x3366ff; // Blue for manipulation
-    } else if (this.card.type.includes('resource')) {
-      bgColor = 0xff6633; // Orange for resources
-    } else if (this.card.type.includes('combat') || this.card.type.includes('defense')) {
-      bgColor = 0xff3333; // Red for combat
+  private updateVisualState(): void {
+    // Change background texture based on selection
+    if (this.isSelected) {
+      this.bgSprite.setTexture('tech_layer_bg_selected');
     } else {
-      bgColor = 0x666666; // Gray for others
+      this.bgSprite.setTexture('tech_layer_bg');
     }
 
-    // Adjust alpha based on state
-    const alpha = this.isHovered ? 1.0 : 0.85;
-
-    // Draw rounded rectangle for card
-    this.cardGraphic.fillStyle(bgColor, alpha);
-    this.cardGraphic.fillRoundedRect(-width/2, -height/2, width, height, radius);
-
-    // Draw border
-    const borderColor = this.isHovered ? 0xffff00 : 0xffffff;
-    const borderWidth = this.isHovered ? 3 : 2;
-    this.cardGraphic.lineStyle(borderWidth, borderColor, 1);
-    this.cardGraphic.strokeRoundedRect(-width/2, -height/2, width, height, radius);
+    // Adjust alpha based on hover state
+    const alpha = this.isHovered || this.isSelected ? 1.0 : 0.85;
+    this.cardImage.setAlpha(alpha);
+    this.bgSprite.setAlpha(alpha);
   }
 
   /**
@@ -195,9 +164,9 @@ export class VisibleTechCardSprite extends Phaser.GameObjects.Container {
     if (this.claimButton) {
       this.claimButton.destroy();
     }
-    this.cardGraphic.destroy();
+    this.bgSprite.destroy();
+    this.cardImage.destroy();
     this.nameText.destroy();
-    this.typeText.destroy();
     super.destroy(fromScene);
   }
 }
@@ -224,42 +193,38 @@ export class AlienArtifactCardDisplay extends Phaser.GameObjects.Container {
   ) {
     super(scene, x, y);
 
-    // Create background panel
-    const panelWidth = 420;
-    const panelHeight = 280;
-    const bg = scene.add.rectangle(0, 0, panelWidth, panelHeight, 0x000000, 0.9);
-    bg.setStrokeStyle(3, 0xffff00);
-    bg.setOrigin(0, 0);
-    this.add(bg);
-
-    // Create title
-    this.titleText = scene.add.text(10, 10, 'Alien Artifact - Tech Cards', {
-      fontSize: '16px',
-      color: '#ffff00',
-      fontStyle: 'bold'
+    // Create title (smaller, positioned above cards)
+    this.titleText = scene.add.text(0, -200, 'ALIEN\nARTIFACT', {
+      fontSize: '18px',
+      color: '#ffffff',
+      fontStyle: 'bold',
+      align: 'left'
     });
+    this.titleText.setOrigin(0, 1);
     this.add(this.titleText);
 
-    // Create deck/discard info
-    this.deckSizeText = scene.add.text(10, 240, 'Deck: 0', {
+    // Create deck/discard info (positioned near title)
+    this.deckSizeText = scene.add.text(0, -165, 'Deck: 0', {
       fontSize: '12px',
       color: '#ffffff'
     });
+    this.deckSizeText.setOrigin(0, 0);
     this.add(this.deckSizeText);
 
-    this.discardSizeText = scene.add.text(10, 256, 'Discard: 0', {
+    this.discardSizeText = scene.add.text(0, -150, 'Discard: 0', {
       fontSize: '12px',
       color: '#ffffff'
     });
+    this.discardSizeText.setOrigin(0, 0);
     this.add(this.discardSizeText);
 
-    // Create cycle button
+    // Create cycle button (positioned below title)
     this.cycleButton = this.createCycleButton(scene);
     this.add(this.cycleButton);
 
     // Add to scene
     scene.add.existing(this);
-    this.setDepth(2000); // Above everything
+    this.setDepth(100); // Above board but below modals
     this.setVisible(false); // Hidden by default
   }
 
@@ -267,20 +232,20 @@ export class AlienArtifactCardDisplay extends Phaser.GameObjects.Container {
    * Create cycle button
    */
   private createCycleButton(scene: Phaser.Scene): Phaser.GameObjects.Container {
-    const button = scene.add.container(300, 245);
+    const button = scene.add.container(0, -120);
     
-    const buttonBg = scene.add.rectangle(0, 0, 100, 30, 0x3366ff, 1);
+    const buttonBg = scene.add.rectangle(0, 0, 90, 28, 0x3366ff, 1);
     buttonBg.setStrokeStyle(2, 0xffffff);
     
     const buttonText = scene.add.text(0, 0, 'CYCLE', {
-      fontSize: '14px',
+      fontSize: '12px',
       color: '#ffffff',
       fontStyle: 'bold'
     });
     buttonText.setOrigin(0.5, 0.5);
     
     button.add([buttonBg, buttonText]);
-    button.setSize(100, 30);
+    button.setSize(90, 28);
     button.setInteractive({ cursor: 'pointer' });
     
     button.on('pointerdown', () => {
@@ -316,16 +281,17 @@ export class AlienArtifactCardDisplay extends Phaser.GameObjects.Container {
     this.cardSprites.forEach(sprite => sprite.destroy());
     this.cardSprites = [];
 
-    // Create new card sprites (3 cards side by side)
-    const startX = 20;
-    const startY = 120;
-    const spacing = 130;
+    // Create new card sprites stacked vertically (like iOS)
+    // iOS: ccp(30, -5 - 42 * cnt) @1x = (60, -10 - 84*cnt) @2x
+    const startX = 60;
+    const startY = -10;
+    const verticalSpacing = -84;  // Cards stack downward
 
     visibleCards.forEach((card, index) => {
       const sprite = new VisibleTechCardSprite(
         this.scene,
-        startX + (index * spacing),
-        startY,
+        startX,
+        startY + (index * verticalSpacing),
         card
       );
 

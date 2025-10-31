@@ -29,12 +29,26 @@ export class DiceSprite extends Phaser.GameObjects.Container {
     private rollTween?: Phaser.Tweens.Tween;
     private size: number;
     private diceColor: number;
+    private originalX: number = 0;
+    private originalY: number = 0;
+    private isDraggable: boolean = false;
+    
+    // Callbacks
+    public onDragStart?: () => void;
+    public onDragEnd?: (location: string | null) => void;
+    public onValidatePlacement?: (x: number, y: number) => { 
+        valid: boolean; 
+        location: string | null;
+        targetPosition?: { x: number; y: number };
+    };
 
     constructor(config: DiceConfig) {
         super(config.scene, config.x, config.y);
         
         this.size = config.size || 60;
         this.diceColor = config.color || 0xffffff;
+        this.originalX = config.x;
+        this.originalY = config.y;
 
         // Create dice background
         this.background = config.scene.add.graphics();
@@ -52,6 +66,148 @@ export class DiceSprite extends Phaser.GameObjects.Container {
         this.add(this.valueText);
 
         config.scene.add.existing(this);
+        
+        // Set up interactivity (but not draggable until enabled)
+        this.setSize(this.size, this.size);
+    }
+    
+    /**
+     * Enable drag and drop for this dice
+     */
+    public enableDrag(): void {
+        if (this.isDraggable) return;
+        
+        this.isDraggable = true;
+        this.setInteractive({ draggable: true, useHandCursor: true });
+        
+        // Store original position when drag starts
+        this.on('dragstart', (pointer: Phaser.Input.Pointer) => {
+            this.originalX = this.x;
+            this.originalY = this.y;
+            this.setDepth(1000); // Bring to front
+            this.setScale(1.2); // Make slightly bigger
+            
+            if (this.onDragStart) {
+                this.onDragStart();
+            }
+        });
+        
+        // Update position during drag
+        this.on('drag', (pointer: Phaser.Input.Pointer, dragX: number, dragY: number) => {
+            this.x = dragX;
+            this.y = dragY;
+        });
+        
+        // Handle drop
+        this.on('dragend', (pointer: Phaser.Input.Pointer) => {
+            this.setScale(1.0);
+            
+            // Validate placement
+            let validPlacement = false;
+            let location: string | null = null;
+            let targetX = this.x;
+            let targetY = this.y;
+            
+            if (this.onValidatePlacement) {
+                const result = this.onValidatePlacement(this.x, this.y);
+                validPlacement = result.valid;
+                location = result.location;
+                
+                // If valid, get the target dock position from the result
+                if (validPlacement && result.targetPosition) {
+                    targetX = result.targetPosition.x;
+                    targetY = result.targetPosition.y;
+                }
+            }
+            
+            if (validPlacement && location) {
+                // Valid placement - animate dice to correct dock slot position
+                this.scene.tweens.add({
+                    targets: this,
+                    x: targetX,
+                    y: targetY,
+                    duration: 300,
+                    ease: 'Back.easeOut',
+                    onComplete: () => {
+                        if (this.onDragEnd) {
+                            this.onDragEnd(location);
+                        }
+                        // Disable further dragging
+                        this.disableDrag();
+                    }
+                });
+            } else {
+                // Invalid - return to original position
+                this.scene.tweens.add({
+                    targets: this,
+                    x: this.originalX,
+                    y: this.originalY,
+                    duration: 200,
+                    ease: 'Back.easeOut'
+                });
+                
+                if (this.onDragEnd) {
+                    this.onDragEnd(null);
+                }
+            }
+            
+            this.setDepth(0);
+        });
+        
+        // Hover effect
+        this.on('pointerover', () => {
+            if (this.isDraggable && !this.isRolling) {
+                this.setScale(1.1);
+            }
+        });
+        
+        this.on('pointerout', () => {
+            if (this.isDraggable && !this.isRolling) {
+                this.setScale(1.0);
+            }
+        });
+    }
+    
+    /**
+     * Disable drag and drop
+     */
+    public disableDrag(): void {
+        this.isDraggable = false;
+        this.removeInteractive();
+        this.off('dragstart');
+        this.off('drag');
+        this.off('dragend');
+        this.off('pointerover');
+        this.off('pointerout');
+    }
+
+    /**
+     * Animate dice returning to pool position
+     * @param targetX - Target X position
+     * @param targetY - Target Y position
+     * @param delay - Delay before starting animation (for staggering)
+     * @returns Promise that resolves when animation completes
+     */
+    public returnToPool(targetX: number, targetY: number, delay: number = 0): Promise<void> {
+        return new Promise((resolve) => {
+            // Disable dragging while returning
+            this.disableDrag();
+            
+            this.scene.tweens.add({
+                targets: this,
+                x: targetX,
+                y: targetY,
+                duration: 500,
+                delay: delay,
+                ease: 'Back.easeInOut',
+                onComplete: () => {
+                    // Update stored original position
+                    this.originalX = targetX;
+                    this.originalY = targetY;
+                    resolve();
+                }
+            });
+        });
     }
 
     /**
@@ -265,6 +421,23 @@ export class DiceRollManager {
 
         // Wait for all rolls to complete
         await Promise.all(rollPromises);
+        
+        // Enable dragging after roll completes
+        this.enableDragging();
+    }
+    
+    /**
+     * Enable dragging for all dice
+     */
+    public enableDragging(): void {
+        this.diceSprites.forEach(dice => dice.enableDrag());
+    }
+    
+    /**
+     * Disable dragging for all dice
+     */
+    public disableDragging(): void {
+        this.diceSprites.forEach(dice => dice.disableDrag());
     }
 
     /**
@@ -306,6 +479,27 @@ export class DiceRollManager {
         this.diceSprites.forEach((dice, index) => {
             dice.setPosition(x + (index * spacing), y);
         });
+    }
+
+    /**
+     * Return all dice to pool with staggered animation
+     * @param poolX - Pool starting X position
+     * @param poolY - Pool Y position
+     * @param spacing - Horizontal spacing in pool
+     * @param stagger - Delay between each die returning in ms
+     */
+    public async returnAllToPool(
+        poolX: number,
+        poolY: number,
+        spacing: number = 80,
+        stagger: number = 100
+    ): Promise<void> {
+        const returnPromises = this.diceSprites.map((dice, index) => {
+            const targetX = poolX + (index * spacing);
+            return dice.returnToPool(targetX, poolY, index * stagger);
+        });
+        
+        await Promise.all(returnPromises);
     }
 
     /**

@@ -38,7 +38,11 @@ export class ShipSprite extends Phaser.GameObjects.Container {
   // Drag event callbacks
   public onDragStart?: () => void;
   public onDragEnd?: (location: ShipLocation | null) => void;
-  public onValidatePlacement?: (x: number, y: number) => { valid: boolean; location: ShipLocation | null };
+  public onValidatePlacement?: (x: number, y: number) => { 
+    valid: boolean; 
+    location: ShipLocation | null;
+    targetPosition?: { x: number; y: number };
+  };
 
   constructor(
     scene: Phaser.Scene,
@@ -181,21 +185,38 @@ export class ShipSprite extends Phaser.GameObjects.Container {
       // Validate placement
       let validPlacement = false;
       let location: ShipLocation | null = null;
+      let targetX = this.x;
+      let targetY = this.y;
 
       if (this.onValidatePlacement) {
         const result = this.onValidatePlacement(this.x, this.y);
         validPlacement = result.valid;
         location = result.location;
+        
+        // If valid, get the target dock position from the result
+        if (validPlacement && result.targetPosition) {
+          targetX = result.targetPosition.x;
+          targetY = result.targetPosition.y;
+        }
       }
 
       if (validPlacement && location) {
-        // Valid placement
-        this.setShipState(ShipState.PLACED);
-        this.ship.location = location;
-        
-        if (this.onDragEnd) {
-          this.onDragEnd(location);
-        }
+        // Valid placement - animate to correct dock slot position
+        this.scene.tweens.add({
+          targets: this,
+          x: targetX,
+          y: targetY,
+          duration: 300,
+          ease: 'Back.easeOut',
+          onComplete: () => {
+            this.setShipState(ShipState.PLACED);
+            this.ship.location = location!;
+            
+            if (this.onDragEnd) {
+              this.onDragEnd(location);
+            }
+          }
+        });
       } else {
         // Invalid placement - return to original position
         this.returnToOriginalPosition();
