@@ -15,7 +15,7 @@ import { DiceValue } from '../types';
  */
 export class BoosterPod extends TechCard {
   constructor() {
-    super(TechCardType.BOOSTER_POD, 'Booster Pod', 0);
+    super(TechCardType.BOOSTER_POD, 'Booster Pod', 0, 'tech_bp');
   }
 
   hasPower(): boolean {
@@ -27,8 +27,11 @@ export class BoosterPod extends TechCard {
   }
 
   getPowerCost(player: Player): number {
-    // TODO: Check for Pohl Foothills bonus (-1 fuel)
-    return 1;
+    let cost = 1;
+    // Check for Pohl Foothills bonus (-1 fuel)
+    // Note: TerritoryManager check would need to be injected via GameState
+    // For now, this is a placeholder for the bonus logic
+    return cost;
   }
 
   canUsePower(player: Player): boolean {
@@ -85,7 +88,7 @@ export class BoosterPod extends TechCard {
  */
 export class StasisBeam extends TechCard {
   constructor() {
-    super(TechCardType.STASIS_BEAM, 'Stasis Beam', 0);
+    super(TechCardType.STASIS_BEAM, 'Stasis Beam', 0, 'tech_sb');
   }
 
   hasPower(): boolean {
@@ -97,7 +100,9 @@ export class StasisBeam extends TechCard {
   }
 
   getPowerCost(player: Player): number {
-    return 1;
+    let cost = 1;
+    // Pohl Foothills bonus would be checked here via GameState
+    return cost;
   }
 
   canUsePower(player: Player): boolean {
@@ -167,7 +172,7 @@ export class StasisBeam extends TechCard {
  */
 export class PolarityDevice extends TechCard {
   constructor() {
-    super(TechCardType.POLARITY_DEVICE, 'Polarity Device', 0);
+    super(TechCardType.POLARITY_DEVICE, 'Polarity Device', 0, 'tech_pd');
   }
 
   hasPower(): boolean {
@@ -179,7 +184,9 @@ export class PolarityDevice extends TechCard {
   }
 
   getPowerCost(player: Player): number {
-    return 1;
+    let cost = 1;
+    // Pohl Foothills bonus would be checked here via GameState
+    return cost;
   }
 
   canUsePower(player: Player): boolean {
@@ -248,7 +255,7 @@ export class PolarityDevice extends TechCard {
  */
 export class TemporalWarper extends TechCard {
   constructor() {
-    super(TechCardType.TEMPORAL_WARPER, 'Temporal Warper', 0);
+    super(TechCardType.TEMPORAL_WARPER, 'Temporal Warper', 0, 'tech_tw');
   }
 
   hasPower(): boolean {
@@ -260,7 +267,9 @@ export class TemporalWarper extends TechCard {
   }
 
   getPowerCost(player: Player): number {
-    return 1;
+    let cost = 1;
+    // Pohl Foothills bonus would be checked here via GameState
+    return cost;
   }
 
   canUsePower(player: Player): boolean {
@@ -330,7 +339,7 @@ export class TemporalWarper extends TechCard {
  */
 export class GravityManipulator extends TechCard {
   constructor() {
-    super(TechCardType.GRAVITY_MANIPULATOR, 'Gravity Manipulator', 0);
+    super(TechCardType.GRAVITY_MANIPULATOR, 'Gravity Manipulator', 0, 'tech_gm');
   }
 
   hasPower(): boolean {
@@ -342,7 +351,9 @@ export class GravityManipulator extends TechCard {
   }
 
   getPowerCost(player: Player): number {
-    return 3;
+    let cost = 2; // Official rules: Pay 2 fuel to move dice values
+    // Pohl Foothills bonus would be checked here via GameState
+    return cost;
   }
 
   canUsePower(player: Player): boolean {

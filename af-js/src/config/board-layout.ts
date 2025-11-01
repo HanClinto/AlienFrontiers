@@ -33,77 +33,69 @@ export interface TerritoryPosition extends Position {
 
 /**
  * Facility dock locations on the board
- * These are where players place their ship dice
+ * These are the CONTAINER ORIGINS where facility layers are positioned
+ * 
+ * In iOS, each facility is a container (LayerOrbital) positioned on the board.
+ * Child elements (docks, labels, icons) are positioned relative to the container origin.
+ * 
+ * Docks within container: ccp(12 + cnt * 26, 8 - 162) @1x = (24 + cnt * 52, -308) @2x
+ * Use getDockSlotPosition() to get absolute dock positions for ship placement.
  */
 export const FACILITY_DOCKS: Record<string, DockPosition> = {
-    // Coordinates from iOS portrait mode (768×1024) -> Phaser portrait (1536×2048)
+    // Coordinates from iOS LayerOrbitals.m (768×1024 @1x) -> Phaser portrait (1536×2048 @2x)
     // iOS uses bottom-left origin, Phaser uses top-left origin
     // Transform: Phaser_x = iOS_x * 2, Phaser_y = (1024 - iOS_y) * 2
+    // These are CONTAINER ORIGINS where facility layers are positioned in scene space
     
-    // Left side facilities (top to bottom)
     SOLAR_CONVERTER: {
-        x: 360,    // iOS: (180, 800) -> (180*2, (1024-800)*2) = (360, 448)
+        x: 360,    // iOS: ccp(180, 800) -> (180*2, (1024-800)*2) = (360, 448)
         y: 448,
         slots: 1,
     },
     ORBITAL_MARKET: {
-        x: 898,    // iOS: (449, 825) -> (449*2, (1024-825)*2) = (898, 398)
+        x: 898,    // iOS: ccp(180 + 269, 800 + 25) = ccp(449, 825) -> (898, 398)
         y: 398,
         slots: 2,
-        spacing: 60,
     },
     ALIEN_ARTIFACT: {
-        x: 1202,   // iOS: (601, 794) -> (601*2, (1024-794)*2) = (1202, 460)
+        x: 1202,   // iOS: ccp(180 + 269 + 152, 800 + 10 - 16) = ccp(601, 794) -> (1202, 460)
         y: 460,
         slots: 1,
     },
-    
-    // Top facilities (left to right)
     TERRAFORMING_STATION: {
-        x: 56,     // iOS: (28, 703) -> (28*2, (1024-703)*2) = (56, 642)
+        x: 56,     // iOS: ccp(180 - 156 + 4, 800 - 365 + 268) = ccp(28, 703) -> (56, 642)
         y: 642,
         slots: 2,
-        spacing: 60,
     },
     SHIPYARD: {
-        x: 48,     // iOS: (24, 435) -> (24*2, (1024-435)*2) = (48, 1178)
+        x: 48,     // iOS: ccp(180 - 156, 800 - 365) = ccp(24, 435) -> (48, 1178)
         y: 1178,
         slots: 3,
-        spacing: 60,
     },
-    
-    // Middle facilities
     MAINTENANCE_BAY: {
-        x: 48,     // iOS: (24, 587) -> (24*2, (1024-587)*2) = (48, 874)
+        x: 48,     // iOS: ccp(180 - 156, 800 - 365 + 268 - 116) = ccp(24, 587) -> (48, 874)
         y: 874,
         slots: 2,
-        spacing: 60,
     },
     COLONIST_HUB: {
-        x: 48,     // iOS: (24, 314) -> (24*2, (1024-314)*2) = (48, 1420)
+        x: 48,     // iOS: ccp(180 - 156, 800 - 365 - 131 + 10) = ccp(24, 314) -> (48, 1420)
         y: 1420,
         slots: 4,
-        spacing: 60,
     },
-    
-    // Right side facilities (top to bottom)
     LUNAR_MINE: {
-        x: 1100,   // iOS: (550, 325) -> (550*2, (1024-325)*2) = (1100, 1398)
+        x: 1100,   // iOS: ccp(550, 325) -> (550*2, (1024-325)*2) = (1100, 1398)
         y: 1398,
         slots: 3,
-        spacing: 60,
     },
     RAIDER_OUTPOST: {
-        x: 1226,   // iOS: (613, 425) -> (613*2, (1024-425)*2) = (1226, 1198)
+        x: 1226,   // iOS: ccp(613, 425) -> (613*2, (1024-425)*2) = (1226, 1198)
         y: 1198,
         slots: 3,
-        spacing: 60,
     },
     COLONY_CONSTRUCTOR: {
-        x: 692,    // iOS: (346, 291) -> (346*2, (1024-291)*2) = (692, 1466)
+        x: 692,    // iOS: ccp(180 - 156 + 322, 800 - 365 - 144) = ccp(346, 291) -> (692, 1466)
         y: 1466,
         slots: 3,
-        spacing: 60,
     },
 };
 
@@ -204,23 +196,38 @@ export const TURN_CONTROLS = {
 };
 
 /**
- * Dice display area
- * Where dice appear after rolling
+ * Dice display area - Rolling Tray Position
+ * iOS: LayerHUDPort.m line 710 - rollingTrayPosition returns ccp(635, 92)
+ * Transform: x = 635 * 2 = 1270, y = (1024 - 92) * 2 = 1864
+ * This is in the bottom-right area where dice appear after rolling
  */
 export const DICE_AREA = {
-    x: 768,
-    y: 1350,
+    x: 1270,  // iOS: 635 * 2
+    y: 1864,  // iOS: (1024 - 92) * 2 - bottom-right rolling tray position
     spacing: 80,
     maxDice: 8, // Maximum 8 dice for a player
 };
 
 /**
  * Tech card hand position
- * Position at bottom of screen for player's hand
+ * iOS: LayerHUDPort.m line 205-208
+ *   cardTray at iOS child coords (-166, 47) relative to uiFrame
+ *   Converted via convertIOSChildCoordinates(-166, 47):
+ *     phaserX = -166 * 2 = -332
+ *     phaserY = -(47 + 234/2) * 2 = -328
+ * 
+ * PlayerHUDLayer container at (768, 2010) with bottom-center anchor
+ * Card tray image absolute position (left-center):
+ *   x = 768 + (-332) = 436
+ *   y = 2010 + (-328) = 1682
+ * 
+ * TechCardHand has origin (0,0) = top-left
+ * Card tray has origin (0,0.5) = left-center
+ * Card tray image is ~72px tall, so adjust up by half: 1682 - 36 = 1646
  */
 export const TECH_CARD_HAND = {
-    x: 20,    // Left edge with small margin
-    y: 1850,  // Bottom of screen (2048 - 180 - 18 for margin)
+    x: 436,   // Matches cardTray left edge
+    y: 1646,  // Top edge of card tray (adjusted from center)
     cardSpacing: 120,
     maxCards: 6,
 };
@@ -289,6 +296,14 @@ export const ANIMATION_OFFSETS = {
 
 /**
  * Get dock position for a specific slot
+ * 
+ * iOS dock layout: ccp(12 + cnt * (width + 2), 8 - 162) @1x
+ * - Base X: 12px @1x = 24px @2x
+ * - Spacing: 26px @1x (24px width + 2px gap) = 52px @2x
+ * - Base Y: (8 - 162) @1x = -308px @2x (relative to container origin)
+ * 
+ * FACILITY_DOCKS.x and .y represent the facility CONTAINER origin
+ * Docks are positioned relative to that origin
  */
 export function getDockSlotPosition(facilityName: string, slotIndex: number): Position {
     const dock = FACILITY_DOCKS[facilityName];
@@ -296,12 +311,23 @@ export function getDockSlotPosition(facilityName: string, slotIndex: number): Po
         throw new Error(`Unknown facility: ${facilityName}`);
     }
     
-    const spacing = dock.spacing || 60;
-    const offsetX = (slotIndex - (dock.slots - 1) / 2) * spacing;
+    // iOS dock positioning (converted to Phaser @2x):
+    // x = 12 + slotIndex * (24 + 2) = 12 + slotIndex * 26 @1x
+    // x = 24 + slotIndex * 52 @2x
+    // y = (8 - 162) = -154 @1x = -308 @2x
+    const dockBaseX = 24;      // 12px @1x * 2
+    const dockSpacing = 52;    // 26px @1x * 2 (24px width + 2px gap)
+    const dockY = -308;        // (8 - 162) @1x * 2
+    
+    // For centered arrangement, calculate offset from leftmost dock
+    // With N docks, center is at index (N-1)/2
+    // Offset for centering: move left by half the total width
+    const totalWidth = (dock.slots - 1) * dockSpacing;
+    const centerOffset = -totalWidth / 2;
     
     return {
-        x: dock.x + offsetX,
-        y: dock.y,
+        x: dock.x + dockBaseX + (slotIndex * dockSpacing) + centerOffset,
+        y: dock.y + dockY,
     };
 }
 

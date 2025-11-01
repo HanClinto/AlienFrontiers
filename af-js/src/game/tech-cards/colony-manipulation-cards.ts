@@ -13,7 +13,7 @@ import { Player } from '../player';
  */
 export class OrbitalTeleporter extends TechCard {
   constructor() {
-    super(TechCardType.ORBITAL_TELEPORTER, 'Orbital Teleporter', 0);
+    super(TechCardType.ORBITAL_TELEPORTER, 'Orbital Teleporter', 0, 'tech_ot');
   }
 
   hasPower(): boolean {
@@ -73,7 +73,7 @@ export class OrbitalTeleporter extends TechCard {
  */
 export class DataCrystal extends TechCard {
   constructor() {
-    super(TechCardType.DATA_CRYSTAL, 'Data Crystal', 0);
+    super(TechCardType.DATA_CRYSTAL, 'Data Crystal', 0, 'tech_dc');
   }
 
   hasPower(): boolean {
@@ -84,14 +84,18 @@ export class DataCrystal extends TechCard {
     return true;
   }
 
-  getPowerCost(): number {
-    return 0;
+  getPowerCost(player: Player): number {
+    // Official rules: Pay 1 fuel per colony on the territory
+    // This is a dynamic cost that depends on the target territory
+    // GameState needs to pass colony count when calling usePower
+    return 1; // Base cost per colony
   }
 
   canUsePower(player: Player): boolean {
     if (this.usedThisTurn) return false;
     if (!this.owner || this.owner.id !== player.id) return false;
-    return true;
+    // Actual fuel check will be done in usePower with colony count
+    return player.resources.fuel >= 1;
   }
 
   canUseDiscardPower(player: Player): boolean {
@@ -100,17 +104,24 @@ export class DataCrystal extends TechCard {
     return true;
   }
 
-  usePower(player: Player, territoryId: string): TechCardPowerResult {
+  usePower(player: Player, territoryId: string, coloniesOnTerritory: number = 1): TechCardPowerResult {
     if (!this.canUsePower(player)) {
       return { success: false, message: 'Cannot use Data Crystal power' };
     }
 
-    // TODO: Implement territory bonus usage
+    // Official rules: Cost is 1 fuel per colony on the territory
+    const fuelCost = coloniesOnTerritory;
+    if (player.resources.fuel < fuelCost) {
+      return { success: false, message: `Need ${fuelCost} fuel (1 per colony on territory)` };
+    }
+
+    // TODO: Implement territory bonus usage - GameState will handle fuel deduction
+    // GameState must deduct fuelCost from player's fuel
     this.markAsUsed();
     
     return {
       success: true,
-      message: `Using bonus from ${territoryId}`,
+      message: `Using bonus from ${territoryId} (cost: ${fuelCost} fuel for ${coloniesOnTerritory} ${coloniesOnTerritory === 1 ? 'colony' : 'colonies'})`,
       territoryBonusUsed: territoryId
     };
   }

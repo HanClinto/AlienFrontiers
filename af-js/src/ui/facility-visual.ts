@@ -132,22 +132,23 @@ export class FacilityVisual {
   private createVisuals(): void {
     // iOS layout (from TOP to BOTTOM):
     // 1. Label at top (anchor bottom-left, positioned at labelY)
-    // 2. Docks in middle (anchor bottom-left, positioned at dockY, STACKED VERTICALLY)
+    // 2. Docks in middle (anchor bottom-left, positioned at dockY, HORIZONTAL ROW)
     // 3. Icon at bottom (anchor bottom-left, positioned at y=6*2=12 from container origin)
     
-    // iOS Y coordinates (examples from LayerSolarConverter.m):
-    // - Label: y = 94 - 12 = 82 (from container origin, anchor bottom-left)
-    // - Docks: y = 8 (from container origin, anchor bottom-left), stacked downward
-    // - Icon: y = 6 (from container origin, anchor bottom-left)
+    // iOS Y coordinates (examples from LayerAlienArtifact.m):
+    // - Label: y = 80, 67 (two lines, anchor bottom-left)
+    // - Docks: y = 8 - 162 (from container origin, anchor bottom-left), HORIZONTAL: x = 12 + (cnt % 4) * (width + 2)
+    // - Icon: y = 6 - 162 (from container origin, anchor bottom-left)
     
     // At 2x scale: multiply by 2
-    const labelY = (94 - 12) * 2; // 164px
-    const dockBaseY = 8 * 2; // 16px  
-    const iconY = 6 * 2; // 12px
-    const dockSpacing = 2 * 2; // 4px between docks
+    const labelY = 80 * 2; // 160px (first line)
+    const dockY = (8 - 162) * 2; // -308px (below container origin)
+    const iconY = (6 - 162) * 2; // -312px
+    const dockBaseX = 12 * 2; // 24px
+    const dockSpacingX = 2 * 2; // 4px between docks horizontally
 
     // Add facility label at TOP
-    const label = this.scene.add.text(0, labelY, this.config.label, {
+    const label = this.scene.add.text(dockBaseX, labelY, this.config.label, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '24px', // 12pt * 2
       color: '#ffffff',
@@ -157,10 +158,22 @@ export class FacilityVisual {
     label.setAlpha(0.8); // ORBITAL_FONT_OPACITY = 0xCC ≈ 0.8
     this.container.add(label);
 
-    // Add dock sprites VERTICALLY STACKED in middle
+    // Add dock sprites in HORIZONTAL ROW (CENTERED)
+    // iOS: x = 12 + (cnt % 4) * (dock.contentSize.width + 2)
+    // dock.contentSize.width is ~24px @1x = 48px @2x
+    // spacing is 2px @1x = 4px @2x
+    // Total spacing between docks: 52px (48px width + 4px gap)
+    const dockWidth = 48;
+    const dockTotalSpacing = 52; // dockWidth + dockSpacingX
+    
+    // Calculate centering offset to match getDockSlotPosition()
+    const totalWidth = (this.config.dockSlots - 1) * dockTotalSpacing;
+    const centerOffset = -totalWidth / 2;
+    
     try {
       for (let i = 0; i < this.config.dockSlots; i++) {
-        const dock = this.scene.add.image(0, dockBaseY - i * (24 + dockSpacing), 'dock_normal');
+        const dockX = dockBaseX + i * dockTotalSpacing + centerOffset;
+        const dock = this.scene.add.image(dockX, dockY, 'dock_normal');
         dock.setOrigin(0, 0); // Top-left anchor
         dock.setScale(1); // Don't scale - dock_normal is already correct size
         this.container.add(dock);
@@ -169,7 +182,8 @@ export class FacilityVisual {
       console.warn(`Failed to load dock sprites for ${this.config.label}:`, error);
       // Fallback rectangles
       for (let i = 0; i < this.config.dockSlots; i++) {
-        const dock = this.scene.add.rectangle(12, dockBaseY - i * (24 + dockSpacing), 48, 48, 0x444444, 0.6);
+        const dockX = dockBaseX + i * dockTotalSpacing + centerOffset;
+        const dock = this.scene.add.rectangle(dockX, dockY, dockWidth, dockWidth, 0x444444, 0.6);
         dock.setOrigin(0, 0);
         dock.setStrokeStyle(2, 0x888888);
         this.container.add(dock);

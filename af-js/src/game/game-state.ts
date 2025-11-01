@@ -43,6 +43,7 @@ export class GameState {
   private phase: GamePhase;
   private gameId: string;
   private bradburyRerollUsed: boolean = false; // Phase 7: Track Bradbury Plateau re-roll usage
+  private executedFacilities: Set<string> = new Set(); // Track facilities executed during PLACE_SHIPS
 
   constructor(gameId: string) {
     this.gameId = gameId;
@@ -210,6 +211,9 @@ export class GameState {
     // Add colony to player's colonies array (using territory ID as ColonyLocation)
     this.playerManager.addColony(playerId, territoryId as any);
     
+    // Update victory points for all players (territory control may have changed)
+    this.updateAllPlayerVictoryPoints();
+    
     return true;
   }
 
@@ -370,6 +374,8 @@ export class GameState {
       case TurnPhase.ROLL_DICE:
         // Apply start-of-turn territory bonuses
         this.territoryManager.applyStartOfTurnBonuses(player);
+        // Clear executed facilities tracking from previous turn
+        this.executedFacilities.clear();
         break;
 
       case TurnPhase.RESOLVE_ACTIONS:
@@ -524,6 +530,121 @@ export class GameState {
   }
 
   /**
+   * Execute a facility action immediately when ships are docked during PLACE_SHIPS phase.
+   * This allows players to use resources gained during their turn for subsequent actions.
+   */
+  executeFacilityActionImmediately(
+    facilityId: string,
+    shipIds: string[],
+    territoryId?: string
+  ): FacilityExecutionResult {
+    if (this.phase.current !== TurnPhase.PLACE_SHIPS) {
+      throw new Error('Can only execute facility actions during PLACE_SHIPS phase');
+    }
+
+    const player = this.getActivePlayer();
+    if (!player) {
+      throw new Error('No active player');
+    }
+
+    const ships = shipIds.map(id => this.shipManager.getShip(id)).filter((s): s is Ship => s !== undefined);
+    
+    if (ships.length !== shipIds.length) {
+      throw new Error('Some ships not found');
+    }
+
+    // Verify all ships belong to active player and are docked at this facility
+    const dockedShips = this.facilityManager.getDockedShips(player.id);
+    const facilityShips = dockedShips
+      .filter(({ facilityId: fid }) => fid === facilityId)
+      .map(({ ship }) => ship);
+    
+    if (!ships.every(s => facilityShips.some(fs => fs.id === s.id))) {
+      throw new Error('Not all ships are docked at this facility');
+    }
+
+    // Prepare facility options
+    const options: any = {};
+    
+    // Colonist Hub: Check Asimov Crater bonus (+1 advance with multiple ships)
+    if (facilityId === 'colonist_hub') {
+      options.hasAsimovCrater = this.territoryManager.hasAsimovCraterBonus(player.id);
+    }
+    
+    // Colony Constructor: Check Bradbury Plateau bonus (-1 ore cost)
+    if (facilityId === 'colony_constructor') {
+      options.hasBradburyPlateau = this.territoryManager.hasBradburyPlateauBonus(player.id);
+    }
+    
+    // Lunar Mine: Check Van Vogt Mountains bonus (first ship any value)
+    if (facilityId === 'lunar_mine') {
+      options.hasVanVogtMountains = this.territoryManager.hasVanVogtMountainsBonus(player.id);
+    }
+    
+    // Orbital Market: Check Heinlein Plains bonus (1:1 trade ratio)
+    if (facilityId === 'orbital_market') {
+      options.hasHeinleinPlains = this.territoryManager.hasHeinleinPlainsBonus(player.id);
+    }
+    
+    // Shipyard: Pass current ship count and Herbert Valley bonus
+    if (facilityId === 'shipyard') {
+      options.currentShipCount = this.shipManager.getPlayerShips(player.id).length;
+      options.hasHerbertValley = this.territoryManager.hasHerbertValleyBonus(player.id);
+    }
+    
+    // Solar Converter: Check Lem Badlands bonus (+1 fuel per ship)
+    if (facilityId === 'solar_converter') {
+      options.hasLemBadlands = this.territoryManager.hasLemBadlandsBonus(player.id);
+    }
+    
+    // Add territory selection if provided
+    if (territoryId) {
+      options.territoryId = territoryId;
+    }
+    
+    // Execute facility action
+    const result = this.facilityManager.executeFacilityAction(facilityId, player, ships, options);
+    
+    // Apply the results if successful
+    if (result.success) {
+      // Add resources gained
+      if (result.resourcesGained) {
+        if (result.resourcesGained.ore) player.resources.ore += result.resourcesGained.ore;
+        if (result.resourcesGained.fuel) player.resources.fuel += result.resourcesGained.fuel;
+        if (result.resourcesGained.energy) player.resources.energy += result.resourcesGained.energy;
+      }
+      
+      // Deduct resources spent
+      if (result.resourcesSpent) {
+        if (result.resourcesSpent.ore) player.resources.ore -= result.resourcesSpent.ore;
+        if (result.resourcesSpent.fuel) player.resources.fuel -= result.resourcesSpent.fuel;
+        if (result.resourcesSpent.energy) player.resources.energy -= result.resourcesSpent.energy;
+      }
+      
+      // Handle colony placed (Colony Constructor, Colonist Hub, Terraforming Station)
+      if (result.colonyPlaced && territoryId) {
+        const success = this.territoryManager.placeColony(player.id, territoryId);
+        if (!success) {
+          console.warn(`Failed to place colony on ${territoryId} for player ${player.id}`);
+        }
+      }
+      
+      // Handle ship built (Shipyard)
+      if (facilityId === 'shipyard' && result.shipReturned === false) {
+        // Create new ship and dock it at Maintenance Bay
+        const newShip = this.shipManager.createShip(player.id);
+        this.facilityManager.dockShips('maintenance_bay', player, [newShip]);
+        console.log(`Built new ship ${newShip.id} for player ${player.id}, docked at Maintenance Bay`);
+      }
+      
+      // Mark facility as executed to prevent double-execution in RESOLVE_ACTIONS
+      this.executedFacilities.add(facilityId);
+    }
+    
+    return result;
+  }
+
+  /**
    * Execute actions at docked facilities during RESOLVE_ACTIONS phase
    */
   resolveActions(
@@ -551,8 +672,14 @@ export class GameState {
       shipsByFacility.get(facilityId)!.push(ship);
     });
 
-    // Execute each facility's action
+    // Execute each facility's action (skip if already executed during PLACE_SHIPS)
     shipsByFacility.forEach((ships, facilityId) => {
+      // Skip facilities that were already executed immediately during placement
+      if (this.executedFacilities.has(facilityId)) {
+        console.log(`Skipping ${facilityId} - already executed during PLACE_SHIPS`);
+        return;
+      }
+      
       // Prepare facility options (e.g., territory bonuses)
       const options: any = {};
       
@@ -865,7 +992,8 @@ export class GameState {
     // Add card to player's hand
     player.alienTechCards.push(card.id);
     
-    // Note: VP is calculated dynamically when needed
+    // Update victory points if card grants VP
+    this.updatePlayerVictoryPoints(playerId);
 
     return true;
   }
@@ -888,10 +1016,28 @@ export class GameState {
 
     const card = cards[0];
 
+    // Check Pohl Foothills bonus and apply fuel cost reduction
+    const baseCost = card.getPowerCost(player);
+    let actualCost = baseCost;
+    if (this.territoryManager.hasPohlFoothillsBonus(playerId) && baseCost > 0) {
+      actualCost = Math.max(0, baseCost - 1); // Reduce by 1 fuel, minimum 0
+    }
+
+    // Check if player can afford the actual cost
+    if (player.resources.fuel < actualCost) {
+      console.warn(`Player ${player.name} needs ${actualCost} fuel to use ${card.name}`);
+      return false;
+    }
+
+    // Deduct fuel cost
+    player.resources.fuel -= actualCost;
+
     // Execute card power
     const result = card.usePower(player, options);
     if (!result.success) {
       console.warn(`Failed to use card ${card.name}:`, result.message);
+      // Refund fuel if power failed
+      player.resources.fuel += actualCost;
       return false;
     }
 
@@ -930,9 +1076,51 @@ export class GameState {
     // Discard the card
     this.techCardManager.discardCard(card);
 
-    // Note: VP is calculated dynamically when needed
+    // Update victory points if card granted VP
+    this.updatePlayerVictoryPoints(playerId);
 
     return true;
+  }
+
+  /**
+   * Recalculate victory points for a player
+   * Called after colonies, tech cards, or territory control changes
+   */
+  updatePlayerVictoryPoints(playerId: string): void {
+    const player = this.playerManager.getPlayer(playerId);
+    if (!player) return;
+
+    // Colonies: 1 VP each
+    player.victoryPoints.colonies = player.colonies.length;
+
+    // Alien Tech Cards: count VP-granting cards (Alien City, Alien Monument)
+    player.victoryPoints.alienTech = player.alienTechCards.filter(cardId => {
+      const card = this.techCardManager.getCardById(cardId);
+      return card && card.victoryPoints > 0;
+    }).length;
+
+    // Territories: 1 VP per territory controlled + Positron Field bonus
+    player.victoryPoints.territories = this.territoryManager.getTotalTerritoryVP(playerId);
+
+    // Bonuses: currently just included in territories (Positron Field)
+    player.victoryPoints.bonuses = 0;
+
+    // Total
+    player.victoryPoints.total = 
+      player.victoryPoints.colonies +
+      player.victoryPoints.alienTech +
+      player.victoryPoints.territories +
+      player.victoryPoints.bonuses;
+  }
+
+  /**
+   * Recalculate VP for all players
+   */
+  updateAllPlayerVictoryPoints(): void {
+    const players = this.playerManager.getAllPlayers();
+    players.forEach(player => {
+      this.updatePlayerVictoryPoints(player.id);
+    });
   }
 
   /**

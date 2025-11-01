@@ -177,6 +177,24 @@ export class BootScene extends Phaser.Scene {
         this.load.image('icons_aa', 'icons_aa-ipadhd.png');
         this.load.image('dock_normal', 'dock_normal-ipadhd.png');
         
+        // Tech card backgrounds and images
+        this.load.image('tech_layer_bg', 'tech_layer_bg-ipadhd.png');
+        this.load.image('tech_layer_bg_selected', 'tech_layer_bg_selected-ipadhd.png');
+        
+        // Individual tech card images
+        this.load.image('tech_ac', 'tech_ac-ipadhd.png'); // Alien City
+        this.load.image('tech_am', 'tech_am-ipadhd.png'); // Alien Monument
+        this.load.image('tech_bp', 'tech_bp-ipadhd.png'); // Booster Pod
+        this.load.image('tech_sb', 'tech_sb-ipadhd.png'); // Stasis Beam
+        this.load.image('tech_pd', 'tech_pd-ipadhd.png'); // Polarity Device
+        this.load.image('tech_gm', 'tech_gm-ipadhd.png'); // Gravity Manipulator
+        this.load.image('tech_ot', 'tech_ot-ipadhd.png'); // Orbital Teleporter
+        this.load.image('tech_dc', 'tech_dc-ipadhd.png'); // Data Crystal
+        this.load.image('tech_pc', 'tech_pc-ipadhd.png'); // Plasma Cannon
+        this.load.image('tech_hd', 'tech_hd-ipadhd.png'); // Holographic Decoy
+        this.load.image('tech_rc', 'tech_rc-ipadhd.png'); // Resource Cache
+        this.load.image('tech_tw', 'tech_tw-ipadhd.png'); // Temporal Warper
+        
         // Note: The original bitmap font (DIN_Tech_12-ipadhd.fnt) uses BMFont text format,
         // but Phaser 3 expects XML format. For now, we'll use system fonts.
         // TODO: Convert the font to XML format or use WebFont loader for DIN-Black.ttf

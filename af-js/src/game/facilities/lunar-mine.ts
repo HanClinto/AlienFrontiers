@@ -21,7 +21,7 @@ export class LunarMine extends OrbitalFacility {
     ];
   }
 
-  canDock(player: Player, ships: Ship[], dockGroupId?: string): boolean {
+  canDock(player: Player, ships: Ship[], dockGroupId?: string, options?: any): boolean {
     if (ships.length === 0 || ships.length > 5) return false;
     
     // All ships must have dice values
@@ -43,6 +43,16 @@ export class LunarMine extends OrbitalFacility {
 
     // Find highest currently docked value
     const maxDockedValue = Math.max(...dockedShips.map(s => s.diceValue || 0));
+
+    // Van Vogt Mountains bonus: First ship can be any value
+    if (options?.hasVanVogtMountains && dockedShips.length === 0 && ships.length >= 1) {
+      // First ship has no restriction
+      // Remaining ships must be >= first ship or maxDockedValue
+      if (ships.length === 1) return true;
+      
+      const firstShipValue = ships[0].diceValue || 0;
+      return ships.slice(1).every(s => (s.diceValue || 0) >= Math.max(firstShipValue, maxDockedValue));
+    }
 
     // All new ships must be >= highest docked value
     return ships.every(s => (s.diceValue || 0) >= maxDockedValue);

@@ -25,7 +25,7 @@ export class ColonyConstructor extends OrbitalFacility {
     ];
   }
 
-  canDock(player: Player, ships: Ship[], dockGroupId?: string): boolean {
+  canDock(player: Player, ships: Ship[], dockGroupId?: string, options?: any): boolean {
     // Must be exactly 3 ships
     if (ships.length !== 3) return false;
     
@@ -34,8 +34,9 @@ export class ColonyConstructor extends OrbitalFacility {
       return false;
     }
 
-    // Player must have 3 ore to pay
-    if (player.resources.ore < 3) return false;
+    // Player must have ore to pay (2 with Bradbury Plateau, 3 normally)
+    const oreCost = options?.hasBradburyPlateau ? 2 : 3;
+    if (player.resources.ore < oreCost) return false;
 
     // Check available dock group
     if (dockGroupId) {
@@ -60,16 +61,30 @@ export class ColonyConstructor extends OrbitalFacility {
   }
 
   execute(player: Player, ships: Ship[], options?: any): FacilityExecutionResult {
+    // Calculate ore cost with Bradbury Plateau bonus
+    let oreCost = 3;
+    if (options?.hasBradburyPlateau) {
+      oreCost = 2; // Official rules: -1 ore cost
+    }
+
+    // Check resources (use dynamic cost for final check)
+    if (player.resources.ore < oreCost) {
+      return {
+        success: false,
+        errors: [`Need ${oreCost} ore to use Colony Constructor`]
+      };
+    }
+
     if (!this.canDock(player, ships)) {
       return {
         success: false,
-        errors: ['Must have 3 ships of same value and 3 ore to use Colony Constructor']
+        errors: ['Must have 3 ships of same value to use Colony Constructor']
       };
     }
 
     return {
       success: true,
-      resourcesSpent: { ore: 3 },
+      resourcesSpent: { ore: oreCost },
       colonyPlaced: true
     };
   }

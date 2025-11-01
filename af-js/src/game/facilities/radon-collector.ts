@@ -2,6 +2,18 @@
  * Radon Collector - Collects radon gas for fuel
  * Ships with value 1 or 2
  * Gain 1 fuel per ship
+ * 
+ * ⚠️ HOUSE RULE / CUSTOM FACILITY ⚠️
+ * This facility is NOT in the official Alien Frontiers rules.
+ * It was added as a custom enhancement to provide utility for low-value dice.
+ * 
+ * Official rules only have 10 facilities:
+ * - Alien Artifact, Colonist Hub, Colony Constructor, Lunar Mine, 
+ *   Maintenance Bay, Orbital Market, Raiders Outpost, Shipyard,
+ *   Solar Converter, Terraforming Station
+ * 
+ * This custom facility can be disabled in game settings if strict
+ * rule compliance is desired.
  */
 
 import { OrbitalFacility, FacilityType, DockRequirement, FacilityExecutionResult } from './base-facility';
