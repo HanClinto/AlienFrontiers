@@ -211,6 +211,9 @@ export class GameState {
     // Add colony to player's colonies array (using territory ID as ColonyLocation)
     this.playerManager.addColony(playerId, territoryId as any);
     
+    // Update victory points for all players (territory control may have changed)
+    this.updateAllPlayerVictoryPoints();
+    
     return true;
   }
 
@@ -563,6 +566,21 @@ export class GameState {
     // Prepare facility options
     const options: any = {};
     
+    // Colonist Hub: Check Asimov Crater bonus (+1 advance with multiple ships)
+    if (facilityId === 'colonist_hub') {
+      options.hasAsimovCrater = this.territoryManager.hasAsimovCraterBonus(player.id);
+    }
+    
+    // Colony Constructor: Check Bradbury Plateau bonus (-1 ore cost)
+    if (facilityId === 'colony_constructor') {
+      options.hasBradburyPlateau = this.territoryManager.hasBradburyPlateauBonus(player.id);
+    }
+    
+    // Lunar Mine: Check Van Vogt Mountains bonus (first ship any value)
+    if (facilityId === 'lunar_mine') {
+      options.hasVanVogtMountains = this.territoryManager.hasVanVogtMountainsBonus(player.id);
+    }
+    
     // Orbital Market: Check Heinlein Plains bonus (1:1 trade ratio)
     if (facilityId === 'orbital_market') {
       options.hasHeinleinPlains = this.territoryManager.hasHeinleinPlainsBonus(player.id);
@@ -572,6 +590,11 @@ export class GameState {
     if (facilityId === 'shipyard') {
       options.currentShipCount = this.shipManager.getPlayerShips(player.id).length;
       options.hasHerbertValley = this.territoryManager.hasHerbertValleyBonus(player.id);
+    }
+    
+    // Solar Converter: Check Lem Badlands bonus (+1 fuel per ship)
+    if (facilityId === 'solar_converter') {
+      options.hasLemBadlands = this.territoryManager.hasLemBadlandsBonus(player.id);
     }
     
     // Add territory selection if provided
@@ -969,7 +992,8 @@ export class GameState {
     // Add card to player's hand
     player.alienTechCards.push(card.id);
     
-    // Note: VP is calculated dynamically when needed
+    // Update victory points if card grants VP
+    this.updatePlayerVictoryPoints(playerId);
 
     return true;
   }
@@ -992,10 +1016,28 @@ export class GameState {
 
     const card = cards[0];
 
+    // Check Pohl Foothills bonus and apply fuel cost reduction
+    const baseCost = card.getPowerCost(player);
+    let actualCost = baseCost;
+    if (this.territoryManager.hasPohlFoothillsBonus(playerId) && baseCost > 0) {
+      actualCost = Math.max(0, baseCost - 1); // Reduce by 1 fuel, minimum 0
+    }
+
+    // Check if player can afford the actual cost
+    if (player.resources.fuel < actualCost) {
+      console.warn(`Player ${player.name} needs ${actualCost} fuel to use ${card.name}`);
+      return false;
+    }
+
+    // Deduct fuel cost
+    player.resources.fuel -= actualCost;
+
     // Execute card power
     const result = card.usePower(player, options);
     if (!result.success) {
       console.warn(`Failed to use card ${card.name}:`, result.message);
+      // Refund fuel if power failed
+      player.resources.fuel += actualCost;
       return false;
     }
 
@@ -1034,9 +1076,51 @@ export class GameState {
     // Discard the card
     this.techCardManager.discardCard(card);
 
-    // Note: VP is calculated dynamically when needed
+    // Update victory points if card granted VP
+    this.updatePlayerVictoryPoints(playerId);
 
     return true;
+  }
+
+  /**
+   * Recalculate victory points for a player
+   * Called after colonies, tech cards, or territory control changes
+   */
+  updatePlayerVictoryPoints(playerId: string): void {
+    const player = this.playerManager.getPlayer(playerId);
+    if (!player) return;
+
+    // Colonies: 1 VP each
+    player.victoryPoints.colonies = player.colonies.length;
+
+    // Alien Tech Cards: count VP-granting cards (Alien City, Alien Monument)
+    player.victoryPoints.alienTech = player.alienTechCards.filter(cardId => {
+      const card = this.techCardManager.getCardById(cardId);
+      return card && card.victoryPoints > 0;
+    }).length;
+
+    // Territories: 1 VP per territory controlled + Positron Field bonus
+    player.victoryPoints.territories = this.territoryManager.getTotalTerritoryVP(playerId);
+
+    // Bonuses: currently just included in territories (Positron Field)
+    player.victoryPoints.bonuses = 0;
+
+    // Total
+    player.victoryPoints.total = 
+      player.victoryPoints.colonies +
+      player.victoryPoints.alienTech +
+      player.victoryPoints.territories +
+      player.victoryPoints.bonuses;
+  }
+
+  /**
+   * Recalculate VP for all players
+   */
+  updateAllPlayerVictoryPoints(): void {
+    const players = this.playerManager.getAllPlayers();
+    players.forEach(player => {
+      this.updatePlayerVictoryPoints(player.id);
+    });
   }
 
   /**

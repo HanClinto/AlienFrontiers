@@ -313,6 +313,24 @@ export class TerritoryManager {
   }
 
   /**
+   * Check if player has Asimov Crater bonus
+   */
+  hasAsimovCraterBonus(playerId: string): boolean {
+    const territory = this.territories.get(TerritoryType.ASIMOV_CRATER);
+    if (!territory) return false;
+    return territory.isControlledBy(playerId) && territory.isBonusActive();
+  }
+
+  /**
+   * Check if player has Van Vogt Mountains bonus
+   */
+  hasVanVogtMountainsBonus(playerId: string): boolean {
+    const territory = this.territories.get(TerritoryType.VAN_VOGT_MOUNTAINS);
+    if (!territory) return false;
+    return territory.isControlledBy(playerId) && territory.isBonusActive();
+  }
+
+  /**
    * Calculate total VP from Positron Fields
    */
   getPositronVP(playerId: string): number {
@@ -321,6 +339,27 @@ export class TerritoryManager {
       vp += territory.getPositronVP(playerId);
     });
     return vp;
+  }
+
+  /**
+   * Calculate total VP from territory control
+   * Official rules: 1 VP per territory controlled
+   */
+  getTerritoryControlVP(playerId: string): number {
+    let vp = 0;
+    this.getAllTerritories().forEach(territory => {
+      if (territory.isControlledBy(playerId)) {
+        vp += 1;
+      }
+    });
+    return vp;
+  }
+
+  /**
+   * Calculate total territory VP (control + Positron Field)
+   */
+  getTotalTerritoryVP(playerId: string): number {
+    return this.getTerritoryControlVP(playerId) + this.getPositronVP(playerId);
   }
 
   /**

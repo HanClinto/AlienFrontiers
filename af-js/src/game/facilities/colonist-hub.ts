@@ -125,7 +125,13 @@ export class ColonistHub extends OrbitalFacility {
     }
 
     // Advance track by number of ships
-    const advancement = ships.length;
+    let advancement = ships.length;
+    
+    // Asimov Crater bonus: +1 advance when docking multiple ships
+    if (options?.hasAsimovCrater && ships.length > 1) {
+      advancement += 1;
+    }
+    
     playerTrack.progress = Math.min(7, playerTrack.progress + advancement);
 
     // Check if colony can be placed (at step 7)

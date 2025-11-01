@@ -351,7 +351,7 @@ export class GravityManipulator extends TechCard {
   }
 
   getPowerCost(player: Player): number {
-    let cost = 3;
+    let cost = 2; // Official rules: Pay 2 fuel to move dice values
     // Pohl Foothills bonus would be checked here via GameState
     return cost;
   }

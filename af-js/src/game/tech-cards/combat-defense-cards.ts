@@ -8,9 +8,9 @@ import { Player } from '../player';
 import { Ship } from '../ship';
 
 /**
- * Plasma Cannon - Destroy opponent's ship
- * Power: None
- * Discard: Destroy one opponent's ship at a facility
+ * Plasma Cannon - Remove opponent's ships from facility
+ * Power: Pay 1 fuel per ship to remove opponent's ships from one facility
+ * Discard: Return one opponent's ship to stock (if they have >3 ships)
  */
 export class PlasmaCannon extends TechCard {
   constructor() {
@@ -18,19 +18,24 @@ export class PlasmaCannon extends TechCard {
   }
 
   hasPower(): boolean {
-    return false;
+    return true; // Official rules: Has power to remove ships from facility
   }
 
   hasDiscardPower(): boolean {
     return true;
   }
 
-  getPowerCost(): number {
-    return 0;
+  getPowerCost(player: Player, shipCount: number = 1): number {
+    // Official rules: Pay 1 fuel per ship removed
+    let cost = shipCount;
+    // Pohl Foothills bonus would reduce this (checked by GameState)
+    return cost;
   }
 
-  canUsePower(): boolean {
-    return false;
+  canUsePower(player: Player, shipCount: number = 1): boolean {
+    if (this.usedThisTurn) return false;
+    if (!this.owner || this.owner.id !== player.id) return false;
+    return player.resources.fuel >= this.getPowerCost(player, shipCount);
   }
 
   canUseDiscardPower(player: Player): boolean {
@@ -39,11 +44,33 @@ export class PlasmaCannon extends TechCard {
     return true;
   }
 
-  usePower(): TechCardPowerResult {
-    return { success: false, message: 'Plasma Cannon has no power' };
+  usePower(player: Player, targetShips: Ship[], facilityId: string): TechCardPowerResult {
+    const shipCount = targetShips.length;
+    if (!this.canUsePower(player, shipCount)) {
+      return { success: false, message: `Cannot use Plasma Cannon power (need ${this.getPowerCost(player, shipCount)} fuel)` };
+    }
+
+    // Cannot target own ships
+    if (targetShips.some(ship => ship.playerId === player.id)) {
+      return { success: false, message: 'Cannot target your own ships' };
+    }
+
+    // All ships must be from the same facility
+    // TODO: Validate all ships are from same facility in GameState
+    
+    // GameState will:
+    // - Deduct fuel cost
+    // - Move ships to Maintenance Bay (or stock if from Terraforming Station)
+    this.markAsUsed();
+    
+    return {
+      success: true,
+      message: `Removed ${shipCount} ship${shipCount > 1 ? 's' : ''} from ${facilityId} (cost: ${this.getPowerCost(player, shipCount)} fuel)`,
+      // Ships moved to Maintenance Bay - GameState handles this
+    };
   }
 
-  useDiscardPower(player: Player, targetShip: Ship): TechCardPowerResult {
+  useDiscardPower(player: Player, targetShip: Ship, targetPlayerShipCount: number): TechCardPowerResult {
     if (!this.canUseDiscardPower(player)) {
       return { success: false, message: 'Cannot use Plasma Cannon discard power' };
     }
@@ -53,22 +80,27 @@ export class PlasmaCannon extends TechCard {
       return { success: false, message: 'Cannot target your own ships' };
     }
 
-    // TODO: Implement ship destruction logic in GameState
+    // Official rules: Target player must have more than 3 ships on board
+    if (targetPlayerShipCount <= 3) {
+      return { success: false, message: 'Target player must have more than 3 ships on board' };
+    }
+
+    // TODO: Implement ship return to stock in GameState
     this.markAsUsed();
     
     return {
       success: true,
-      message: `Destroyed ship ${targetShip.id}`,
-      shipDestroyed: targetShip.id
+      message: `Returned ship ${targetShip.id} to stock (player had ${targetPlayerShipCount} ships)`,
+      shipDestroyed: targetShip.id // Returns to stock, not destroyed, but same effect
     };
   }
 
   getPowerDescription(): string {
-    return 'No power';
+    return 'Pay 1 fuel per ship to remove opponent\'s ships from one facility to Maintenance Bay';
   }
 
   getDiscardPowerDescription(): string {
-    return 'Discard to destroy one opponent\'s ship at a facility';
+    return 'Discard to return one opponent\'s ship to stock (if they have >3 ships)';
   }
 }
 

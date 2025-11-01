@@ -12,9 +12,9 @@ export class SolarConverter extends OrbitalFacility {
   constructor() {
     super('solar_converter', 'Solar Converter', FacilityType.SOLAR_CONVERTER);
     
-    // Single dock group with 5 docks
+    // Single dock group with 8 docks (per official rules)
     this.dockGroups = [
-      this.createDockGroup('solar_converter_main', 5, {
+      this.createDockGroup('solar_converter_main', 8, {
         shipCount: 'unlimited',
         valueConstraint: 'any'
       })
@@ -22,7 +22,7 @@ export class SolarConverter extends OrbitalFacility {
   }
 
   canDock(player: Player, ships: Ship[], dockGroupId?: string): boolean {
-    if (ships.length === 0 || ships.length > 5) return false;
+    if (ships.length === 0 || ships.length > 8) return false;
     
     // All ships must have dice values
     if (!ships.every(s => s.diceValue !== null)) return false;
@@ -57,6 +57,11 @@ export class SolarConverter extends OrbitalFacility {
         fuelGained += Math.ceil(ship.diceValue / 2);
       }
     });
+
+    // Lem Badlands bonus: +1 fuel per ship
+    if (options?.hasLemBadlands) {
+      fuelGained += ships.length;
+    }
 
     return {
       success: true,

@@ -12,6 +12,7 @@ This is the web-based port of the Alien Frontiers board game, built with Phaser 
 ### Play the Game Now
 
 **Option 1**: Build and play
+
 ```powershell
 cd s:\Dev\AlienFrontiers\af-js
 .\build.ps1
@@ -19,12 +20,14 @@ cd s:\Dev\AlienFrontiers\af-js
 ```
 
 **Option 2**: Development server
+
 ```powershell
 .\start-dev-server.ps1
 # Opens at http://localhost:8080
 ```
 
 **Option 3**: Manual commands
+
 ```powershell
 $env:NODE_OPTIONS='--openssl-legacy-provider'
 npx webpack
@@ -76,12 +79,14 @@ npx http-server
 ## Game Features
 
 ### Display & UI
+
 - **Fixed Aspect Ratio**: 1536 × 2048 (portrait orientation)
 - **Responsive Scaling**: Game scales to fit any screen size with black borders as needed
 - **Main Menu**: Title screen with Play, Quick Rules, and Achievements buttons
 - **Player Setup**: Configure number of players (2-4) and select controller types
 
 ### Core Gameplay
+
 - **Complete Game Implementation**: All 11 orbital facilities functional
 - **Territory System**: 8 territories with bonuses and control mechanics
 - **Colony Placement**: Interactive territory selection with animations
@@ -91,6 +96,7 @@ npx http-server
 - **Dice Rolling**: Standard + Bradbury Plateau re-roll bonus
 
 ### Interactive Features (Phase 7)
+
 - **Territory Selector Modal**: Choose where to place colonies
 - **Raiders Outpost**: 3-step theft system (resources or tech cards)
 - **Re-roll Mechanic**: Bradbury Plateau bonus with once-per-turn enforcement
@@ -98,12 +104,14 @@ npx http-server
 - **Visual Feedback**: Colony placement animations, floating resource text, territory control glow
 
 ### AI Opponents
+
 - **Cadet AI**: Beginner difficulty
 - **Spacer AI**: Intermediate difficulty
 - **Pirate AI**: Advanced difficulty
 - **Admiral AI**: Expert difficulty with exhaustive search
 
 ### Quality & Testing
+
 - **325 Passing Tests**: Comprehensive test coverage
   - 211 game logic tests
   - 114 AI tests
@@ -162,6 +170,7 @@ npx http-server
 ## Current Status
 
 **Phase 7 Complete** (October 31, 2025)
+
 - All core game mechanics implemented
 - Full UI with interactive modals
 - 4-level AI system
@@ -173,7 +182,6 @@ npx http-server
 ## Contributing
 
 See `docs/` folder for detailed implementation documentation and `.agents/` for development workflow.
-
 
 ## License
 
