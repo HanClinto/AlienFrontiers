@@ -8,10 +8,12 @@
   "private": true,
   "devDependencies": {
     "@types/jest": "^27.5.2",
+    "@types/node": "^24.9.2",
     "copy-webpack-plugin": "6.2.1",
     "jest": "^27.5.1",
     "ts-jest": "^27.1.5",
     "ts-loader": "8.0.0",
+    "ts-node": "^10.9.2",
     "typescript": "4.1.5",
     "webpack": "4.42.1",
     "webpack-cli": "^3.3.11",
@@ -22,7 +24,11 @@
     "dev": "NODE_OPTIONS=--openssl-legacy-provider webpack-dev-server",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "export-layout": "ts-node scripts/export-board-layout.ts",
+    "import-layout:csv": "ts-node scripts/import-board-layout.ts csv",
+    "import-layout:json": "ts-node scripts/import-board-layout.ts json",
+    "import-layout:svg": "ts-node scripts/import-board-layout.ts svg"
   },
   "dependencies": {
     "phaser": "^3.55.2",

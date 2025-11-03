@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="2048" viewBox="0 0 1536 2048">
+  <title>Alien Frontiers Board Layout</title>
+  <defs>
+    <style>
+      .facility { fill: rgba(51, 128, 204, 0.7); stroke: rgb(51, 128, 204); stroke-width: 2; }
+      .dock { fill: rgba(77, 153, 230, 0.5); stroke: rgb(77, 153, 230); stroke-width: 1; }
+      .territory { fill: rgba(204, 128, 51, 0.6); stroke: rgb(204, 128, 51); stroke-width: 2; }
+      .colony { fill: rgba(230, 153, 77, 0.4); stroke: rgb(230, 153, 77); stroke-width: 1; }
+      .player { fill: rgba(128, 204, 77, 0.5); stroke: rgb(128, 204, 77); stroke-width: 2; }
+      .control { fill: rgba(153, 77, 204, 0.7); stroke: rgb(153, 77, 204); stroke-width: 2; }
+      .dice { fill: rgba(204, 77, 77, 0.3); stroke: rgb(204, 77, 77); stroke-width: 2; }
+      .techcard { fill: rgba(230, 204, 51, 0.3); stroke: rgb(230, 204, 51); stroke-width: 2; }
+      .label { fill: white; font-family: Arial, sans-serif; font-size: 12px; }
+    </style>
+  </defs>
+  
+  <!-- Background -->
+  <rect x="0" y="0" width="1536" height="2048" fill="#f0f0f0"/>
+  
+  <!-- Facilities -->
+  <g id="facilities">
+    <g id="SOLAR_CONVERTER" data-type="facility">
+      <rect class="facility" x="300" y="408" width="120" height="80" rx="8"/>
+      <text class="label" x="310" y="423">SOLAR CONVERTER</text>
+      <rect class="dock" x="360" y="116" width="48" height="48" rx="4" data-slot="0"/>
+    </g>
+    <g id="ORBITAL_MARKET" data-type="facility">
+      <rect class="facility" x="838" y="358" width="120" height="80" rx="8"/>
+      <text class="label" x="848" y="373">ORBITAL MARKET</text>
+      <rect class="dock" x="872" y="66" width="48" height="48" rx="4" data-slot="0"/>
+      <rect class="dock" x="924" y="66" width="48" height="48" rx="4" data-slot="1"/>
+    </g>
+    <g id="ALIEN_ARTIFACT" data-type="facility">
+      <rect class="facility" x="1142" y="420" width="120" height="80" rx="8"/>
+      <text class="label" x="1152" y="435">ALIEN ARTIFACT</text>
+      <rect class="dock" x="1202" y="128" width="48" height="48" rx="4" data-slot="0"/>
+    </g>
+    <g id="TERRAFORMING_STATION" data-type="facility">
+      <rect class="facility" x="-4" y="602" width="120" height="80" rx="8"/>
+      <text class="label" x="6" y="617">TERRAFORMING STATION</text>
+      <rect class="dock" x="30" y="310" width="48" height="48" rx="4" data-slot="0"/>
+      <rect class="dock" x="82" y="310" width="48" height="48" rx="4" data-slot="1"/>
+    </g>
+    <g id="SHIPYARD" data-type="facility">
+      <rect class="facility" x="-12" y="1138" width="120" height="80" rx="8"/>
+      <text class="label" x="-2" y="1153">SHIPYARD</text>
+      <rect class="dock" x="-4" y="846" width="48" height="48" rx="4" data-slot="0"/>
+      <rect class="dock" x="48" y="846" width="48" height="48" rx="4" data-slot="1"/>
+      <rect class="dock" x="100" y="846" width="48" height="48" rx="4" data-slot="2"/>
+    </g>
+    <g id="MAINTENANCE_BAY" data-type="facility">
+      <rect class="facility" x="-12" y="834" width="120" height="80" rx="8"/>
+      <text class="label" x="-2" y="849">MAINTENANCE BAY</text>
+      <rect class="dock" x="22" y="542" width="48" height="48" rx="4" data-slot="0"/>
+      <rect class="dock" x="74" y="542" width="48" height="48" rx="4" data-slot="1"/>
+    </g>
+    <g id="COLONIST_HUB" data-type="facility">
+      <rect class="facility" x="-12" y="1380" width="120" height="80" rx="8"/>
+      <text class="label" x="-2" y="1395">COLONIST HUB</text>
+      <rect class="dock" x="-30" y="1088" width="48" height="48" rx="4" data-slot="0"/>
+      <rect class="dock" x="22" y="1088" width="48" height="48" rx="4" data-slot="1"/>
+      <rect class="dock" x="74" y="1088" width="48" height="48" rx="4" data-slot="2"/>
+      <rect class="dock" x="126" y="1088" width="48" height="48" rx="4" data-slot="3"/>
+    </g>
+    <g id="LUNAR_MINE" data-type="facility">
+      <rect class="facility" x="1040" y="1358" width="120" height="80" rx="8"/>
+      <text class="label" x="1050" y="1373">LUNAR MINE</text>
+      <rect class="dock" x="1048" y="1066" width="48" height="48" rx="4" data-slot="0"/>
+      <rect class="dock" x="1100" y="1066" width="48" height="48" rx="4" data-slot="1"/>
+      <rect class="dock" x="1152" y="1066" width="48" height="48" rx="4" data-slot="2"/>
+    </g>
+    <g id="RAIDER_OUTPOST" data-type="facility">
+      <rect class="facility" x="1166" y="1158" width="120" height="80" rx="8"/>
+      <text class="label" x="1176" y="1173">RAIDER OUTPOST</text>
+      <rect class="dock" x="1174" y="866" width="48" height="48" rx="4" data-slot="0"/>
+      <rect class="dock" x="1226" y="866" width="48" height="48" rx="4" data-slot="1"/>
+      <rect class="dock" x="1278" y="866" width="48" height="48" rx="4" data-slot="2"/>
+    </g>
+    <g id="COLONY_CONSTRUCTOR" data-type="facility">
+      <rect class="facility" x="632" y="1426" width="120" height="80" rx="8"/>
+      <text class="label" x="642" y="1441">COLONY CONSTRUCTOR</text>
+      <rect class="dock" x="640" y="1134" width="48" height="48" rx="4" data-slot="0"/>
+      <rect class="dock" x="692" y="1134" width="48" height="48" rx="4" data-slot="1"/>
+      <rect class="dock" x="744" y="1134" width="48" height="48" rx="4" data-slot="2"/>
+    </g>
+  </g>
+  
+  <!-- Territories -->
+  <g id="territories">
+    <g id="HEINLEIN_PLAINS" data-type="territory">
+      <rect class="territory" x="782" y="512" width="180" height="120" rx="12"/>
+      <text class="label" x="792" y="527">Heinlein Plains</text>
+      <circle class="colony" cx="822" cy="572" r="20" data-slot="0"/>
+      <circle class="colony" cx="872" cy="572" r="20" data-slot="1"/>
+      <circle class="colony" cx="922" cy="572" r="20" data-slot="2"/>
+    </g>
+    <g id="ASIMOV_CRATER" data-type="territory">
+      <rect class="territory" x="432" y="948" width="180" height="120" rx="12"/>
+      <text class="label" x="442" y="963">Asimov Crater</text>
+      <circle class="colony" cx="472" cy="1008" r="20" data-slot="0"/>
+      <circle class="colony" cx="522" cy="1008" r="20" data-slot="1"/>
+      <circle class="colony" cx="572" cy="1008" r="20" data-slot="2"/>
+    </g>
+    <g id="BRADBURY_PLATEAU" data-type="territory">
+      <rect class="territory" x="658" y="1050" width="180" height="120" rx="12"/>
+      <text class="label" x="668" y="1065">Bradbury Plateau</text>
+      <circle class="colony" cx="748" cy="1060" r="20" data-slot="0"/>
+      <circle class="colony" cx="748" cy="1110" r="20" data-slot="1"/>
+      <circle class="colony" cx="748" cy="1160" r="20" data-slot="2"/>
+    </g>
+    <g id="BURROUGHS_DESERT" data-type="territory">
+      <rect class="territory" x="658" y="780" width="180" height="120" rx="12"/>
+      <text class="label" x="668" y="795">Burroughs Desert</text>
+      <circle class="colony" cx="748" cy="790" r="20" data-slot="0"/>
+      <circle class="colony" cx="748" cy="840" r="20" data-slot="1"/>
+      <circle class="colony" cx="748" cy="890" r="20" data-slot="2"/>
+    </g>
+    <g id="HERBERT_VALLEY" data-type="territory">
+      <rect class="territory" x="374" y="718" width="180" height="120" rx="12"/>
+      <text class="label" x="384" y="733">Herbert Valley</text>
+      <circle class="colony" cx="414" cy="778" r="20" data-slot="0"/>
+      <circle class="colony" cx="464" cy="778" r="20" data-slot="1"/>
+      <circle class="colony" cx="514" cy="778" r="20" data-slot="2"/>
+    </g>
+    <g id="VAN_VOGT_MOUNTAINS" data-type="territory">
+      <rect class="territory" x="888" y="948" width="180" height="120" rx="12"/>
+      <text class="label" x="898" y="963">Van Vogt Mountains</text>
+      <circle class="colony" cx="928" cy="1008" r="20" data-slot="0"/>
+      <circle class="colony" cx="978" cy="1008" r="20" data-slot="1"/>
+      <circle class="colony" cx="1028" cy="1008" r="20" data-slot="2"/>
+    </g>
+  </g>
+  
+  <!-- Player Trays -->
+  <g id="player-trays">
+    <rect class="player" x="150" y="1600" width="200" height="150" rx="8" data-player="0"/>
+    <text class="label" x="160" y="1620">Player 0 Tray</text>
+    <rect class="player" x="1386" y="1600" width="200" height="150" rx="8" data-player="1"/>
+    <text class="label" x="1396" y="1620">Player 1 Tray</text>
+    <rect class="player" x="150" y="1800" width="200" height="150" rx="8" data-player="2"/>
+    <text class="label" x="160" y="1820">Player 2 Tray</text>
+    <rect class="player" x="1386" y="1800" width="200" height="150" rx="8" data-player="3"/>
+    <text class="label" x="1396" y="1820">Player 3 Tray</text>
+  </g>
+  
+  <!-- Player HUD -->
+  <g id="player-hud">
+    <rect class="player" x="100" y="100" width="300" height="120" rx="8" data-player="0"/>
+    <text class="label" x="110" y="120">Player 0 HUD</text>
+    <rect class="player" x="1436" y="100" width="300" height="120" rx="8" data-player="1"/>
+    <text class="label" x="1446" y="120">Player 1 HUD</text>
+    <rect class="player" x="100" y="250" width="300" height="120" rx="8" data-player="2"/>
+    <text class="label" x="110" y="270">Player 2 HUD</text>
+    <rect class="player" x="1436" y="250" width="300" height="120" rx="8" data-player="3"/>
+    <text class="label" x="1446" y="270">Player 3 HUD</text>
+  </g>
+  
+  <!-- Turn Controls -->
+  <g id="turn-controls">
+    <rect class="control" x="520" y="1630" width="120" height="50" rx="8" data-control="ROLL_DICE"/>
+    <text class="label" x="530" y="1660">ROLL DICE</text>
+    <rect class="control" x="610" y="1726" width="120" height="50" rx="8" data-control="END_TURN"/>
+    <text class="label" x="620" y="1756">END TURN</text>
+    <rect class="control" x="398" y="1726" width="120" height="50" rx="8" data-control="UNDO"/>
+    <text class="label" x="408" y="1756">UNDO</text>
+    <rect class="control" x="484" y="1726" width="120" height="50" rx="8" data-control="REDO"/>
+    <text class="label" x="494" y="1756">REDO</text>
+  </g>
+  
+  <!-- Dice Area -->
+  <rect class="dice" x="1070" y="1824" width="400" height="80" rx="8"/>
+  <text class="label" x="1090" y="1849">Dice Area</text>
+  
+  <!-- Tech Card Hand -->
+  <rect class="techcard" x="436" y="1646" width="720" height="140" rx="8"/>
+  <text class="label" x="446" y="1666">Tech Card Hand</text>
+</svg>
