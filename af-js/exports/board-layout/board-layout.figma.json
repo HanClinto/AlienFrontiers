@@ -1,0 +1,2813 @@
+{
+  "name": "Alien Frontiers Board Layout",
+  "type": "DOCUMENT",
+  "version": "1.0.0",
+  "children": [
+    {
+      "type": "RECTANGLE",
+      "name": "Board Background",
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 2048,
+      "fills": [
+        {
+          "type": "SOLID",
+          "color": {
+            "r": 0.95,
+            "g": 0.95,
+            "b": 0.95
+          },
+          "opacity": 1
+        }
+      ],
+      "cornerRadius": 0
+    },
+    {
+      "type": "FRAME",
+      "name": "Facilities",
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 2048,
+      "children": [
+        {
+          "type": "FRAME",
+          "name": "SOLAR_CONVERTER",
+          "x": 360,
+          "y": 448,
+          "width": 120,
+          "height": 80,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 0.7
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "SOLAR_CONVERTER_label",
+              "x": 10,
+              "y": 5,
+              "characters": "SOLAR CONVERTER",
+              "fontSize": 12,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "SOLAR_CONVERTER_dock_0",
+              "x": 24,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            }
+          ]
+        },
+        {
+          "type": "FRAME",
+          "name": "ORBITAL_MARKET",
+          "x": 898,
+          "y": 398,
+          "width": 120,
+          "height": 80,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 0.7
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "ORBITAL_MARKET_label",
+              "x": 10,
+              "y": 5,
+              "characters": "ORBITAL MARKET",
+              "fontSize": 12,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "ORBITAL_MARKET_dock_0",
+              "x": -2,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "ORBITAL_MARKET_dock_1",
+              "x": 50,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            }
+          ]
+        },
+        {
+          "type": "FRAME",
+          "name": "ALIEN_ARTIFACT",
+          "x": 1202,
+          "y": 460,
+          "width": 120,
+          "height": 80,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 0.7
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "ALIEN_ARTIFACT_label",
+              "x": 10,
+              "y": 5,
+              "characters": "ALIEN ARTIFACT",
+              "fontSize": 12,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "ALIEN_ARTIFACT_dock_0",
+              "x": 24,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            }
+          ]
+        },
+        {
+          "type": "FRAME",
+          "name": "TERRAFORMING_STATION",
+          "x": 56,
+          "y": 642,
+          "width": 120,
+          "height": 80,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 0.7
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "TERRAFORMING_STATION_label",
+              "x": 10,
+              "y": 5,
+              "characters": "TERRAFORMING STATION",
+              "fontSize": 12,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "TERRAFORMING_STATION_dock_0",
+              "x": -2,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "TERRAFORMING_STATION_dock_1",
+              "x": 50,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            }
+          ]
+        },
+        {
+          "type": "FRAME",
+          "name": "SHIPYARD",
+          "x": 48,
+          "y": 1178,
+          "width": 120,
+          "height": 80,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 0.7
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "SHIPYARD_label",
+              "x": 10,
+              "y": 5,
+              "characters": "SHIPYARD",
+              "fontSize": 12,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "SHIPYARD_dock_0",
+              "x": -28,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "SHIPYARD_dock_1",
+              "x": 24,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "SHIPYARD_dock_2",
+              "x": 76,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            }
+          ]
+        },
+        {
+          "type": "FRAME",
+          "name": "MAINTENANCE_BAY",
+          "x": 48,
+          "y": 874,
+          "width": 120,
+          "height": 80,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 0.7
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "MAINTENANCE_BAY_label",
+              "x": 10,
+              "y": 5,
+              "characters": "MAINTENANCE BAY",
+              "fontSize": 12,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "MAINTENANCE_BAY_dock_0",
+              "x": -2,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "MAINTENANCE_BAY_dock_1",
+              "x": 50,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            }
+          ]
+        },
+        {
+          "type": "FRAME",
+          "name": "COLONIST_HUB",
+          "x": 48,
+          "y": 1420,
+          "width": 120,
+          "height": 80,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 0.7
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "COLONIST_HUB_label",
+              "x": 10,
+              "y": 5,
+              "characters": "COLONIST HUB",
+              "fontSize": 12,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "COLONIST_HUB_dock_0",
+              "x": -54,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "COLONIST_HUB_dock_1",
+              "x": -2,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "COLONIST_HUB_dock_2",
+              "x": 50,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "COLONIST_HUB_dock_3",
+              "x": 102,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            }
+          ]
+        },
+        {
+          "type": "FRAME",
+          "name": "LUNAR_MINE",
+          "x": 1100,
+          "y": 1398,
+          "width": 120,
+          "height": 80,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 0.7
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "LUNAR_MINE_label",
+              "x": 10,
+              "y": 5,
+              "characters": "LUNAR MINE",
+              "fontSize": 12,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "LUNAR_MINE_dock_0",
+              "x": -28,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "LUNAR_MINE_dock_1",
+              "x": 24,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "LUNAR_MINE_dock_2",
+              "x": 76,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            }
+          ]
+        },
+        {
+          "type": "FRAME",
+          "name": "RAIDER_OUTPOST",
+          "x": 1226,
+          "y": 1198,
+          "width": 120,
+          "height": 80,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 0.7
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "RAIDER_OUTPOST_label",
+              "x": 10,
+              "y": 5,
+              "characters": "RAIDER OUTPOST",
+              "fontSize": 12,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "RAIDER_OUTPOST_dock_0",
+              "x": -28,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "RAIDER_OUTPOST_dock_1",
+              "x": 24,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "RAIDER_OUTPOST_dock_2",
+              "x": 76,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            }
+          ]
+        },
+        {
+          "type": "FRAME",
+          "name": "COLONY_CONSTRUCTOR",
+          "x": 692,
+          "y": 1466,
+          "width": 120,
+          "height": 80,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 0.7
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.2,
+                "g": 0.5,
+                "b": 0.8
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "COLONY_CONSTRUCTOR_label",
+              "x": 10,
+              "y": 5,
+              "characters": "COLONY CONSTRUCTOR",
+              "fontSize": 12,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "COLONY_CONSTRUCTOR_dock_0",
+              "x": -28,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "COLONY_CONSTRUCTOR_dock_1",
+              "x": 24,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "COLONY_CONSTRUCTOR_dock_2",
+              "x": 76,
+              "y": -308,
+              "width": 48,
+              "height": 48,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 0.5
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.3,
+                    "g": 0.6,
+                    "b": 0.9
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "FRAME",
+      "name": "Territories",
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 2048,
+      "children": [
+        {
+          "type": "FRAME",
+          "name": "HEINLEIN_PLAINS",
+          "x": 872,
+          "y": 572,
+          "width": 180,
+          "height": 120,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.8,
+                "g": 0.5,
+                "b": 0.2
+              },
+              "opacity": 0.6
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.8,
+                "g": 0.5,
+                "b": 0.2
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 12,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "HEINLEIN_PLAINS_label",
+              "x": 10,
+              "y": 5,
+              "characters": "Heinlein Plains",
+              "fontSize": 14,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "HEINLEIN_PLAINS_colony_0",
+              "x": -50,
+              "y": 0,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "HEINLEIN_PLAINS_colony_1",
+              "x": 0,
+              "y": 0,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "HEINLEIN_PLAINS_colony_2",
+              "x": 50,
+              "y": 0,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            }
+          ]
+        },
+        {
+          "type": "FRAME",
+          "name": "ASIMOV_CRATER",
+          "x": 522,
+          "y": 1008,
+          "width": 180,
+          "height": 120,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.8,
+                "g": 0.5,
+                "b": 0.2
+              },
+              "opacity": 0.6
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.8,
+                "g": 0.5,
+                "b": 0.2
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 12,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "ASIMOV_CRATER_label",
+              "x": 10,
+              "y": 5,
+              "characters": "Asimov Crater",
+              "fontSize": 14,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "ASIMOV_CRATER_colony_0",
+              "x": -50,
+              "y": 0,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "ASIMOV_CRATER_colony_1",
+              "x": 0,
+              "y": 0,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "ASIMOV_CRATER_colony_2",
+              "x": 50,
+              "y": 0,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            }
+          ]
+        },
+        {
+          "type": "FRAME",
+          "name": "BRADBURY_PLATEAU",
+          "x": 748,
+          "y": 1110,
+          "width": 180,
+          "height": 120,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.8,
+                "g": 0.5,
+                "b": 0.2
+              },
+              "opacity": 0.6
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.8,
+                "g": 0.5,
+                "b": 0.2
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 12,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "BRADBURY_PLATEAU_label",
+              "x": 10,
+              "y": 5,
+              "characters": "Bradbury Plateau",
+              "fontSize": 14,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "BRADBURY_PLATEAU_colony_0",
+              "x": 0,
+              "y": -50,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "BRADBURY_PLATEAU_colony_1",
+              "x": 0,
+              "y": 0,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "BRADBURY_PLATEAU_colony_2",
+              "x": 0,
+              "y": 50,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            }
+          ]
+        },
+        {
+          "type": "FRAME",
+          "name": "BURROUGHS_DESERT",
+          "x": 748,
+          "y": 840,
+          "width": 180,
+          "height": 120,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.8,
+                "g": 0.5,
+                "b": 0.2
+              },
+              "opacity": 0.6
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.8,
+                "g": 0.5,
+                "b": 0.2
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 12,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "BURROUGHS_DESERT_label",
+              "x": 10,
+              "y": 5,
+              "characters": "Burroughs Desert",
+              "fontSize": 14,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "BURROUGHS_DESERT_colony_0",
+              "x": 0,
+              "y": -50,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "BURROUGHS_DESERT_colony_1",
+              "x": 0,
+              "y": 0,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "BURROUGHS_DESERT_colony_2",
+              "x": 0,
+              "y": 50,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            }
+          ]
+        },
+        {
+          "type": "FRAME",
+          "name": "HERBERT_VALLEY",
+          "x": 464,
+          "y": 778,
+          "width": 180,
+          "height": 120,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.8,
+                "g": 0.5,
+                "b": 0.2
+              },
+              "opacity": 0.6
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.8,
+                "g": 0.5,
+                "b": 0.2
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 12,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "HERBERT_VALLEY_label",
+              "x": 10,
+              "y": 5,
+              "characters": "Herbert Valley",
+              "fontSize": 14,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "HERBERT_VALLEY_colony_0",
+              "x": -50,
+              "y": 0,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "HERBERT_VALLEY_colony_1",
+              "x": 0,
+              "y": 0,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "HERBERT_VALLEY_colony_2",
+              "x": 50,
+              "y": 0,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            }
+          ]
+        },
+        {
+          "type": "FRAME",
+          "name": "VAN_VOGT_MOUNTAINS",
+          "x": 978,
+          "y": 1008,
+          "width": 180,
+          "height": 120,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.8,
+                "g": 0.5,
+                "b": 0.2
+              },
+              "opacity": 0.6
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.8,
+                "g": 0.5,
+                "b": 0.2
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 12,
+          "children": [
+            {
+              "type": "TEXT",
+              "name": "VAN_VOGT_MOUNTAINS_label",
+              "x": 10,
+              "y": 5,
+              "characters": "Van Vogt Mountains",
+              "fontSize": 14,
+              "fontFamily": "Inter",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 1,
+                    "g": 1,
+                    "b": 1
+                  },
+                  "opacity": 1
+                }
+              ]
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "VAN_VOGT_MOUNTAINS_colony_0",
+              "x": -50,
+              "y": 0,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "VAN_VOGT_MOUNTAINS_colony_1",
+              "x": 0,
+              "y": 0,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            },
+            {
+              "type": "RECTANGLE",
+              "name": "VAN_VOGT_MOUNTAINS_colony_2",
+              "x": 50,
+              "y": 0,
+              "width": 40,
+              "height": 40,
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 0.4
+                }
+              ],
+              "strokes": [
+                {
+                  "type": "SOLID",
+                  "color": {
+                    "r": 0.9,
+                    "g": 0.6,
+                    "b": 0.3
+                  },
+                  "opacity": 1
+                }
+              ],
+              "strokeWeight": 1,
+              "cornerRadius": 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "FRAME",
+      "name": "Player Trays",
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 2048,
+      "children": [
+        {
+          "type": "RECTANGLE",
+          "name": "Player_0_Tray",
+          "x": 150,
+          "y": 1600,
+          "width": 200,
+          "height": 150,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 0.5
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8
+        },
+        {
+          "type": "RECTANGLE",
+          "name": "Player_1_Tray",
+          "x": 1386,
+          "y": 1600,
+          "width": 200,
+          "height": 150,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 0.5
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8
+        },
+        {
+          "type": "RECTANGLE",
+          "name": "Player_2_Tray",
+          "x": 150,
+          "y": 1800,
+          "width": 200,
+          "height": 150,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 0.5
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8
+        },
+        {
+          "type": "RECTANGLE",
+          "name": "Player_3_Tray",
+          "x": 1386,
+          "y": 1800,
+          "width": 200,
+          "height": 150,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 0.5
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8
+        }
+      ]
+    },
+    {
+      "type": "FRAME",
+      "name": "Player HUD",
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 2048,
+      "children": [
+        {
+          "type": "RECTANGLE",
+          "name": "Player_0_HUD",
+          "x": 100,
+          "y": 100,
+          "width": 300,
+          "height": 120,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 0.6
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8
+        },
+        {
+          "type": "RECTANGLE",
+          "name": "Player_1_HUD",
+          "x": 1436,
+          "y": 100,
+          "width": 300,
+          "height": 120,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 0.6
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8
+        },
+        {
+          "type": "RECTANGLE",
+          "name": "Player_2_HUD",
+          "x": 100,
+          "y": 250,
+          "width": 300,
+          "height": 120,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 0.6
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8
+        },
+        {
+          "type": "RECTANGLE",
+          "name": "Player_3_HUD",
+          "x": 1436,
+          "y": 250,
+          "width": 300,
+          "height": 120,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 0.6
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.5,
+                "g": 0.8,
+                "b": 0.3
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8
+        }
+      ]
+    },
+    {
+      "type": "FRAME",
+      "name": "Turn Controls",
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 2048,
+      "children": [
+        {
+          "type": "RECTANGLE",
+          "name": "ROLL_DICE",
+          "x": 520,
+          "y": 1630,
+          "width": 120,
+          "height": 50,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.6,
+                "g": 0.3,
+                "b": 0.8
+              },
+              "opacity": 0.7
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.6,
+                "g": 0.3,
+                "b": 0.8
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8
+        },
+        {
+          "type": "TEXT",
+          "name": "ROLL_DICE_label",
+          "x": 530,
+          "y": 1645,
+          "characters": "ROLL DICE",
+          "fontSize": 14,
+          "fontFamily": "Inter",
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 1,
+                "g": 1,
+                "b": 1
+              },
+              "opacity": 1
+            }
+          ]
+        },
+        {
+          "type": "RECTANGLE",
+          "name": "END_TURN",
+          "x": 610,
+          "y": 1726,
+          "width": 120,
+          "height": 50,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.6,
+                "g": 0.3,
+                "b": 0.8
+              },
+              "opacity": 0.7
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.6,
+                "g": 0.3,
+                "b": 0.8
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8
+        },
+        {
+          "type": "TEXT",
+          "name": "END_TURN_label",
+          "x": 620,
+          "y": 1741,
+          "characters": "END TURN",
+          "fontSize": 14,
+          "fontFamily": "Inter",
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 1,
+                "g": 1,
+                "b": 1
+              },
+              "opacity": 1
+            }
+          ]
+        },
+        {
+          "type": "RECTANGLE",
+          "name": "UNDO",
+          "x": 398,
+          "y": 1726,
+          "width": 120,
+          "height": 50,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.6,
+                "g": 0.3,
+                "b": 0.8
+              },
+              "opacity": 0.7
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.6,
+                "g": 0.3,
+                "b": 0.8
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8
+        },
+        {
+          "type": "TEXT",
+          "name": "UNDO_label",
+          "x": 408,
+          "y": 1741,
+          "characters": "UNDO",
+          "fontSize": 14,
+          "fontFamily": "Inter",
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 1,
+                "g": 1,
+                "b": 1
+              },
+              "opacity": 1
+            }
+          ]
+        },
+        {
+          "type": "RECTANGLE",
+          "name": "REDO",
+          "x": 484,
+          "y": 1726,
+          "width": 120,
+          "height": 50,
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.6,
+                "g": 0.3,
+                "b": 0.8
+              },
+              "opacity": 0.7
+            }
+          ],
+          "strokes": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 0.6,
+                "g": 0.3,
+                "b": 0.8
+              },
+              "opacity": 1
+            }
+          ],
+          "strokeWeight": 2,
+          "cornerRadius": 8
+        },
+        {
+          "type": "TEXT",
+          "name": "REDO_label",
+          "x": 494,
+          "y": 1741,
+          "characters": "REDO",
+          "fontSize": 14,
+          "fontFamily": "Inter",
+          "fills": [
+            {
+              "type": "SOLID",
+              "color": {
+                "r": 1,
+                "g": 1,
+                "b": 1
+              },
+              "opacity": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "RECTANGLE",
+      "name": "Dice Area",
+      "x": 1070,
+      "y": 1824,
+      "width": 400,
+      "height": 80,
+      "fills": [
+        {
+          "type": "SOLID",
+          "color": {
+            "r": 0.8,
+            "g": 0.3,
+            "b": 0.3
+          },
+          "opacity": 0.3
+        }
+      ],
+      "strokes": [
+        {
+          "type": "SOLID",
+          "color": {
+            "r": 0.8,
+            "g": 0.3,
+            "b": 0.3
+          },
+          "opacity": 1
+        }
+      ],
+      "strokeWeight": 2,
+      "cornerRadius": 8
+    },
+    {
+      "type": "RECTANGLE",
+      "name": "Tech Card Hand",
+      "x": 436,
+      "y": 1646,
+      "width": 720,
+      "height": 140,
+      "fills": [
+        {
+          "type": "SOLID",
+          "color": {
+            "r": 0.9,
+            "g": 0.8,
+            "b": 0.2
+          },
+          "opacity": 0.3
+        }
+      ],
+      "strokes": [
+        {
+          "type": "SOLID",
+          "color": {
+            "r": 0.9,
+            "g": 0.8,
+            "b": 0.2
+          },
+          "opacity": 1
+        }
+      ],
+      "strokeWeight": 2,
+      "cornerRadius": 8
+    }
+  ]
+}
