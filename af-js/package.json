@@ -21,7 +21,7 @@
   },
   "scripts": {
     "build": "NODE_OPTIONS=--openssl-legacy-provider webpack",
-    "dev": "NODE_OPTIONS=--openssl-legacy-provider webpack-dev-server",
+    "dev": "NODE_OPTIONS=--openssl-legacy-provider webpack-dev-server --no-open",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

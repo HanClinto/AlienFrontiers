@@ -333,9 +333,9 @@ export class TemporalWarper extends TechCard {
 }
 
 /**
- * Gravity Manipulator - Change ship value to any number
- * Power: Pay 3 fuel to change one ship to any value
- * Discard: None
+ * Gravity Manipulator - Move points between ships
+ * Power: Pay 2 fuel to decrease one ship by 1 and increase another by 1
+ * Discard: Place or move the Repulsor Field
  */
 export class GravityManipulator extends TechCard {
   constructor() {
@@ -347,7 +347,7 @@ export class GravityManipulator extends TechCard {
   }
 
   hasDiscardPower(): boolean {
-    return false;
+    return true;
   }
 
   getPowerCost(player: Player): number {
@@ -362,43 +362,63 @@ export class GravityManipulator extends TechCard {
     return player.resources.fuel >= this.getPowerCost(player);
   }
 
-  canUseDiscardPower(): boolean {
-    return false;
+  canUseDiscardPower(player: Player): boolean {
+    if (this.usedThisTurn) return false;
+    if (!this.owner || this.owner.id !== player.id) return false;
+    return true;
   }
 
-  usePower(player: Player, ship: Ship, newValue: number): TechCardPowerResult {
+  usePower(player: Player, decreaseShip: Ship, increaseShip: Ship): TechCardPowerResult {
     if (!this.canUsePower(player)) {
       return { success: false, message: 'Cannot use Gravity Manipulator power' };
     }
 
-    if (newValue < 1 || newValue > 6) {
-      return { success: false, message: 'Ship value must be between 1 and 6' };
+    // Official rules: Decrease one ship by 1, increase another by 1
+    if (!decreaseShip.diceValue || decreaseShip.diceValue <= 1) {
+      return { success: false, message: 'Cannot decrease ship below 1' };
+    }
+
+    if (!increaseShip.diceValue || increaseShip.diceValue >= 6) {
+      return { success: false, message: 'Cannot increase ship above 6' };
     }
 
     const cost = this.getPowerCost(player);
     player.resources.fuel -= cost;
     
-    const oldValue = ship.diceValue || 0;
-    ship.diceValue = newValue as DiceValue;
+    const oldValueDecrease = decreaseShip.diceValue;
+    const oldValueIncrease = increaseShip.diceValue;
+    
+    decreaseShip.diceValue = (decreaseShip.diceValue - 1) as DiceValue;
+    increaseShip.diceValue = (increaseShip.diceValue + 1) as DiceValue;
     
     this.markAsUsed();
     
     return {
       success: true,
-      message: `Changed ship value from ${oldValue} to ${newValue}`,
-      shipValueChanged: { shipId: ship.id, oldValue, newValue }
+      message: `Moved 1 point from ship ${decreaseShip.id} (${oldValueDecrease}→${decreaseShip.diceValue}) to ship ${increaseShip.id} (${oldValueIncrease}→${increaseShip.diceValue})`
     };
   }
 
-  useDiscardPower(): TechCardPowerResult {
-    return { success: false, message: 'Gravity Manipulator has no discard power' };
+  useDiscardPower(player: Player, territoryId: string): TechCardPowerResult {
+    if (!this.canUseDiscardPower(player)) {
+      return { success: false, message: 'Cannot use Gravity Manipulator discard power' };
+    }
+
+    // TODO: Implement field movement in territory system
+    this.markAsUsed();
+    
+    return {
+      success: true,
+      message: `Placed/moved Repulsor Field to ${territoryId}`,
+      fieldMoved: { type: 'repulsor', from: '', to: territoryId }
+    };
   }
 
   getPowerDescription(): string {
-    return 'Pay 3 fuel to change one ship to any value (1-6)';
+    return 'Pay 2 fuel to decrease one ship by 1 and increase another ship by 1';
   }
 
   getDiscardPowerDescription(): string {
-    return 'No discard power';
+    return 'Discard to place or move the Repulsor Field (blocks colony add/remove)';
   }
 }

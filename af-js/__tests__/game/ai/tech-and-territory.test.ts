@@ -24,6 +24,12 @@ describe('AI Tech Card Usage', () => {
 
   describe('decideTechCardUsage', () => {
     test('Returns empty array when player has no tech cards', () => {
+      const player = gameState.getAllPlayers().find(p => p.id === playerId);
+      if (!player) fail('Player not found');
+      
+      // Clear any starting tech cards dealt during initialization
+      player.alienTechCards = [];
+      
       const decisions = ai.decideTechCardUsage(gameState, playerId);
       expect(decisions).toEqual([]);
     });

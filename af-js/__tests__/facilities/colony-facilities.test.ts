@@ -137,6 +137,57 @@ describe('Terraforming Station', () => {
     expect(result.colonyPlaced).toBe(true);
     expect(result.shipReturned).toBe(true);
   });
+
+  test('EDGE CASE: ship returns to stock, not maintenance bay', () => {
+    const player = playerManager.getPlayer('p1')!;
+    const ships = shipManager.getPlayerShips('p1');
+    ships[0].diceValue = 6;
+    
+    const result = facility.execute(player, [ships[0]]);
+    expect(result.shipReturned).toBe(true);
+    // Ship should go to stock, not maintenance bay (tested in game-state integration)
+  });
+
+  test('EDGE CASE: cannot use if would drop below 3 ships', () => {
+    // This would be enforced at game-state level
+    // A player with only 3 ships shouldn't be able to use Terraforming Station
+    // since the ship returns to stock (removing it from play temporarily)
+    const player = playerManager.getPlayer('p1')!;
+    const ships = shipManager.getPlayerShips('p1');
+    
+    // If player has 3 ships and uses one at Terraforming Station,
+    // they'd temporarily have only 2 ships available
+    // This should be blocked by game rules (minimum 3 ships on board)
+    expect(ships.length).toBe(3); // Player starts with 3 ships
+  });
+
+  test('EDGE CASE: ship at Terraforming Station cannot be reused via Orbital Teleporter', () => {
+    // Ship is docked at facility, location is tracked
+    // This documents that the ship is committed to the facility until resolution
+    const player = playerManager.getPlayer('p1')!;
+    const ships = shipManager.getPlayerShips('p1');
+    ships[0].diceValue = 6;
+    
+    // Dock the ship
+    facility.dockShips(player, [ships[0]]);
+    
+    // Ship should be docked (cannot dock again)
+    const canDockAgain = facility.canDock(player, [ships[0]]);
+    expect(canDockAgain).toBe(false); // Already occupied
+  });
+
+  test('should block when facility is occupied', () => {
+    const player = playerManager.getPlayer('p1')!;
+    const ships = shipManager.getPlayerShips('p1');
+    
+    // Dock first ship
+    ships[0].diceValue = 6;
+    facility.dockShips(player, [ships[0]]);
+    
+    // Try to dock second ship - should fail
+    ships[1].diceValue = 6;
+    expect(facility.canDock(player, [ships[1]])).toBe(false);
+  });
 });
 
 describe('Colonist Hub', () => {

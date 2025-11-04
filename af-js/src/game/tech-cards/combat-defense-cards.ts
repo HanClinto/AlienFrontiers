@@ -105,9 +105,13 @@ export class PlasmaCannon extends TechCard {
 }
 
 /**
- * Holographic Decoy - Place Repulsor Field
- * Power: None
- * Discard: Place or move the Repulsor Field
+ * Holographic Decoy - Protects from Raiders' resource theft
+ * Power: None (passive protection from Raiders' Outpost resource theft)
+ * Discard: None
+ * 
+ * Official rules: No fuel cost, no discard power.
+ * While you possess this card, players cannot steal resources from you at Raiders' Outpost.
+ * They can only steal your Holographic Decoy card itself (or another tech card if they have one).
  */
 export class HolographicDecoy extends TechCard {
   constructor() {
@@ -115,11 +119,11 @@ export class HolographicDecoy extends TechCard {
   }
 
   hasPower(): boolean {
-    return false;
+    return false; // Passive protection, not an active power
   }
 
   hasDiscardPower(): boolean {
-    return true;
+    return false;
   }
 
   getPowerCost(): number {
@@ -130,36 +134,23 @@ export class HolographicDecoy extends TechCard {
     return false;
   }
 
-  canUseDiscardPower(player: Player): boolean {
-    if (this.usedThisTurn) return false;
-    if (!this.owner || this.owner.id !== player.id) return false;
-    return true;
+  canUseDiscardPower(): boolean {
+    return false;
   }
 
   usePower(): TechCardPowerResult {
-    return { success: false, message: 'Holographic Decoy has no power' };
+    return { success: false, message: 'Holographic Decoy has no active power (provides passive protection from Raiders)' };
   }
 
-  useDiscardPower(player: Player, territoryId: string): TechCardPowerResult {
-    if (!this.canUseDiscardPower(player)) {
-      return { success: false, message: 'Cannot use Holographic Decoy discard power' };
-    }
-
-    // TODO: Implement field movement
-    this.markAsUsed();
-    
-    return {
-      success: true,
-      message: `Placed/moved Repulsor Field to ${territoryId}`,
-      fieldMoved: { type: 'repulsor', from: '', to: territoryId }
-    };
+  useDiscardPower(): TechCardPowerResult {
+    return { success: false, message: 'Holographic Decoy has no discard power' };
   }
 
   getPowerDescription(): string {
-    return 'No power';
+    return 'Passive: Protects your resources from Raiders\' Outpost theft';
   }
 
   getDiscardPowerDescription(): string {
-    return 'Discard to place or move the Repulsor Field (prevents colony placement)';
+    return 'No discard power';
   }
 }
