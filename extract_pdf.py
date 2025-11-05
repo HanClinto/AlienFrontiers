@@ -1,6 +1,6 @@
 import PyPDF2
 
-pdf_path = r"S:\Dev\AlienFrontiers\assets-archive\rules-and-docs\AlienFrontiersRules-Final.pdf"
+pdf_path = r"S:\Dev\AlienFrontiers\assets-archive\rules-and-docs\AlienFrontiersRules-2ndPrint.pdf"
 
 try:
     with open(pdf_path, 'rb') as file:
