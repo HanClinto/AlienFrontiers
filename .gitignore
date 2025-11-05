@@ -222,3 +222,5 @@ xcuserdata/
 af-js/node_modules/
 af-js/dist/
 af-js/package-lock.json
+
+.agents

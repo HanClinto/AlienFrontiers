@@ -38,8 +38,6 @@ export class GameState {
   private facilityManager: FacilityManager;
   private territoryManager: TerritoryManager;
   private techCardManager: TechCardManager;
-  private techCardDeck: TechCard[];  // DEPRECATED: Use techCardManager instead
-  private techCardDiscard: TechCard[];  // DEPRECATED: Use techCardManager instead
   private phase: GamePhase;
   private gameId: string;
   private bradburyRerollUsed: boolean = false; // Phase 7: Track Bradbury Plateau re-roll usage
@@ -52,16 +50,11 @@ export class GameState {
     this.facilityManager = new FacilityManager();
     this.territoryManager = new TerritoryManager();
     this.techCardManager = new TechCardManager();
-    this.techCardDeck = [];
-    this.techCardDiscard = [];
     this.phase = {
       current: TurnPhase.ROLL_DICE,
       activePlayerId: '',
       roundNumber: 1
     };
-    
-    // Initialize tech card deck
-    this.initializeTechCardDeck();
   }
 
   /**
@@ -199,6 +192,9 @@ export class GameState {
     player.resources.ore -= oreCost;
     player.resources.fuel -= fuelCost;
     
+    // Check Burroughs Desert controller BEFORE placing colony
+    const previousBurrowsController = this.territoryManager.getTerritory('burroughs_desert')?.getControllingPlayer();
+    
     // Place colony on territory
     const success = territory.placeColony(playerId);
     if (!success) {
@@ -214,7 +210,86 @@ export class GameState {
     // Update victory points for all players (territory control may have changed)
     this.updateAllPlayerVictoryPoints();
     
+    // Check if Burroughs Desert control changed and handle Relic Ship
+    const currentBurrowsController = this.territoryManager.getTerritory('burroughs_desert')?.getControllingPlayer();
+    if (previousBurrowsController !== currentBurrowsController && previousBurrowsController) {
+      // Previous controller lost Burroughs Desert - return their Relic Ship
+      this.returnRelicShipToTerritory(previousBurrowsController);
+    }
+    
     return true;
+  }
+
+  /**
+   * Purchase the Relic Ship (Burroughs Desert bonus)
+   * Cost: 1 fuel + 1 ore
+   * The Relic Ship is colorless and returns to Burroughs Desert instead of ship stock
+   */
+  purchaseRelicShip(playerId: string): { success: boolean; message: string } {
+    const player = this.playerManager.getPlayer(playerId);
+    if (!player) {
+      return { success: false, message: 'Player not found' };
+    }
+
+    // Check if player controls Burroughs Desert
+    if (!this.territoryManager.hasBurrowsDesertBonus(playerId)) {
+      return { success: false, message: 'Must control Burroughs Desert to purchase Relic Ship' };
+    }
+
+    // Check if Relic Ship already owned by this player
+    if (this.shipManager.playerHasRelicShip(playerId)) {
+      return { success: false, message: 'Player already has the Relic Ship' };
+    }
+
+    // Check if Relic Ship is owned by another player
+    const existingRelic = this.shipManager.getRelicShip();
+    if (existingRelic && existingRelic.playerId && existingRelic.playerId !== playerId) {
+      return { success: false, message: 'Relic Ship is currently owned by another player' };
+    }
+
+    // Check resources
+    if (player.resources.fuel < 1 || player.resources.ore < 1) {
+      return { success: false, message: 'Insufficient resources (need 1 fuel + 1 ore)' };
+    }
+
+    // Deduct resources
+    player.resources.fuel -= 1;
+    player.resources.ore -= 1;
+
+    // Create/assign Relic Ship
+    const relicShip = this.shipManager.createRelicShip(playerId);
+    
+    // Place at Maintenance Bay
+    this.facilityManager.dockShips('maintenance_bay', player, [relicShip]);
+
+    return { 
+      success: true, 
+      message: `Purchased Relic Ship for 1 fuel + 1 ore, docked at Maintenance Bay` 
+    };
+  }
+
+  /**
+   * Return Relic Ship to Burroughs Desert
+   * Called when player loses control of territory
+   */
+  returnRelicShipToTerritory(playerId: string): boolean {
+    if (!this.shipManager.playerHasRelicShip(playerId)) {
+      return false;
+    }
+
+    const relicShip = this.shipManager.getRelicShip();
+    if (!relicShip) return false;
+
+    // Remove from any facility it's docked at
+    if (relicShip.location) {
+      // Undock from facility
+      relicShip.location = null;
+      relicShip.isLocked = false;
+      relicShip.diceValue = null;
+    }
+
+    // Return to territory (remove from player control)
+    return this.shipManager.returnRelicShipToTerritory();
   }
 
   /**
@@ -228,16 +303,9 @@ export class GameState {
    * Draw a tech card
    */
   drawTechCard(playerId: string): TechCard | null {
-    if (this.techCardDeck.length === 0) {
-      // Shuffle discard pile back into deck
-      this.techCardDeck = [...this.techCardDiscard];
-      this.techCardDiscard = [];
-      this.shuffleTechCardDeck();
-    }
+    const card = this.techCardManager.drawCard();
+    if (!card) return null;
     
-    if (this.techCardDeck.length === 0) return null;
-    
-    const card = this.techCardDeck.pop()!;
     const player = this.playerManager.getPlayer(playerId);
     if (player) {
       card.setOwner(player);
@@ -249,7 +317,6 @@ export class GameState {
 
   /**
    * Get tech card deck size
-   * @deprecated Use techCardManager methods instead
    */
   getTechCardDeckSize(): number {
     return this.techCardManager.getDeckSize();
@@ -257,69 +324,12 @@ export class GameState {
 
   /**
    * Get tech card discard pile size
-   * @deprecated Use techCardManager methods instead
    */
   getTechCardDiscardSize(): number {
     return this.techCardManager.getDiscardSize();
   }
 
-  /**
-   * Initialize tech card deck with all cards
-   * Based on original game composition:
-   * - 1x AlienCity, 1x AlienMonument (VP cards)
-   * - 2x each: BoosterPod, StasisBeam, PolarityDevice, TemporalWarper, GravityManipulator (die manipulation)
-   * - 2x each: OrbitalTeleporter, DataCrystal (colony manipulation)
-   * - 2x each: PlasmaCannon, HolographicDecoy (combat/defense)
-   * - 2x ResourceCache (resource generation)
-   * Total: 22 cards
-   */
-  private initializeTechCardDeck(): void {
-    this.techCardDeck = [];
-    
-    // Victory point cards (1 each)
-    this.techCardDeck.push(new AlienCity());
-    this.techCardDeck.push(new AlienMonument());
-    
-    // Die manipulation cards (2 each)
-    for (let i = 0; i < 2; i++) {
-      this.techCardDeck.push(new BoosterPod());
-      this.techCardDeck.push(new StasisBeam());
-      this.techCardDeck.push(new PolarityDevice());
-      this.techCardDeck.push(new TemporalWarper());
-      this.techCardDeck.push(new GravityManipulator());
-    }
-    
-    // Colony manipulation cards (2 each)
-    for (let i = 0; i < 2; i++) {
-      this.techCardDeck.push(new OrbitalTeleporter());
-      this.techCardDeck.push(new DataCrystal());
-    }
-    
-    // Combat/defense cards (2 each)
-    for (let i = 0; i < 2; i++) {
-      this.techCardDeck.push(new PlasmaCannon());
-      this.techCardDeck.push(new HolographicDecoy());
-    }
-    
-    // Resource generation cards (2 each)
-    for (let i = 0; i < 2; i++) {
-      this.techCardDeck.push(new ResourceCache());
-    }
-    
-    // Shuffle the deck
-    this.shuffleTechCardDeck();
-  }
 
-  /**
-   * Shuffle tech card deck
-   */
-  private shuffleTechCardDeck(): void {
-    for (let i = this.techCardDeck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [this.techCardDeck[i], this.techCardDeck[j]] = 
-        [this.techCardDeck[j], this.techCardDeck[i]];
-    }
-  }
 
   /**
    * Get a specific facility by ID
@@ -769,11 +779,9 @@ export class GameState {
         // Handle ship returned to stock (Terraforming Station)
         if (result.shipReturned === true) {
           // Ship is consumed - undock and return to stock
-          // Ships are passed in the 'ships' parameter
+          // For Relic Ship, this returns to Burroughs Desert instead
           ships.forEach(ship => {
-            ship.location = null;
-            ship.diceValue = null;
-            ship.isLocked = false;
+            this.shipManager.returnShipToStock(ship.id);
           });
         }
         

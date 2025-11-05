@@ -276,44 +276,33 @@ describe('TerritoryManager', () => {
   });
 
   describe('Territory Bonuses', () => {
-    test('applies Heinlein Plains bonus (ore)', () => {
-      const territory = manager.getTerritory(TerritoryType.HEINLEIN_PLAINS);
-      territory?.placeColony(player.id);
-      
-      manager.applyStartOfTurnBonuses(player);
-      expect(player.resources.ore).toBe(1);
-    });
-
-    test('applies Van Vogt Mountains bonus (fuel)', () => {
-      const territory = manager.getTerritory(TerritoryType.VAN_VOGT_MOUNTAINS);
-      territory?.placeColony(player.id);
-      
-      manager.applyStartOfTurnBonuses(player);
-      expect(player.resources.fuel).toBe(1);
-    });
-
-    test('applies Asimov Crater bonus (energy)', () => {
-      const territory = manager.getTerritory(TerritoryType.ASIMOV_CRATER);
-      territory?.placeColony(player.id);
-      
-      manager.applyStartOfTurnBonuses(player);
-      expect(player.resources.energy).toBe(1);
-    });
-
-    test('applies multiple bonuses', () => {
+    test('territory bonuses are passive - verified by hasXBonus methods', () => {
+      // Territory bonuses are contextual and checked at facilities, not granted automatically
       const heinlein = manager.getTerritory(TerritoryType.HEINLEIN_PLAINS);
-      const vanVogt = manager.getTerritory(TerritoryType.VAN_VOGT_MOUNTAINS);
-      const asimov = manager.getTerritory(TerritoryType.ASIMOV_CRATER);
-      
       heinlein?.placeColony(player.id);
-      vanVogt?.placeColony(player.id);
+      
+      expect(manager.hasHeinleinPlainsBonus(player.id)).toBe(true);
+    });
+
+    test('hasPohlFoothillsBonus returns true when player controls territory', () => {
+      const pohl = manager.getTerritory(TerritoryType.POHL_FOOTHILLS);
+      pohl?.placeColony(player.id);
+      
+      expect(manager.hasPohlFoothillsBonus(player.id)).toBe(true);
+    });
+
+    test('hasAsimovCraterBonus returns true when player controls territory', () => {
+      const asimov = manager.getTerritory(TerritoryType.ASIMOV_CRATER);
       asimov?.placeColony(player.id);
       
-      manager.applyStartOfTurnBonuses(player);
-      
-      expect(player.resources.ore).toBe(1);
-      expect(player.resources.fuel).toBe(1);
-      expect(player.resources.energy).toBe(1);
+      expect(manager.hasAsimovCraterBonus(player.id)).toBe(true);
+    });
+
+    test('territory bonuses inactive when not controlled', () => {
+      // No colonies placed
+      expect(manager.hasHeinleinPlainsBonus(player.id)).toBe(false);
+      expect(manager.hasPohlFoothillsBonus(player.id)).toBe(false);
+      expect(manager.hasAsimovCraterBonus(player.id)).toBe(false);
     });
 
     test('Isolation Field prevents bonus', () => {

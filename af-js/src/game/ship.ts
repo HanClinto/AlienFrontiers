@@ -14,6 +14,7 @@ export interface Ship {
   diceValue: DiceValue | null; // null when not rolled
   location: ShipLocation;
   isLocked: boolean; // true when committed to a facility
+  isRelicShip?: boolean; // true for the Relic Ship from Burroughs Desert
 }
 
 /**
@@ -66,6 +67,69 @@ export class ShipManager {
     
     this.ships.set(ship.id, ship);
     return ship;
+  }
+
+  /**
+   * Create the Relic Ship for a player (used by Burroughs Desert bonus)
+   * The Relic Ship is colorless and returns to Burroughs Desert instead of ship stock
+   */
+  createRelicShip(playerId: string): Ship {
+    const relicShipId = 'relic-ship';
+    
+    // Check if Relic Ship already exists
+    const existingRelic = this.ships.get(relicShipId);
+    if (existingRelic) {
+      // Reassign to new player
+      existingRelic.playerId = playerId;
+      existingRelic.diceValue = null;
+      existingRelic.location = null;
+      existingRelic.isLocked = false;
+      return existingRelic;
+    }
+    
+    // Create new Relic Ship
+    const relicShip: Ship = {
+      id: relicShipId,
+      playerId,
+      diceValue: null,
+      location: null,
+      isLocked: false,
+      isRelicShip: true
+    };
+    
+    this.ships.set(relicShipId, relicShip);
+    return relicShip;
+  }
+
+  /**
+   * Get the Relic Ship if it exists
+   */
+  getRelicShip(): Ship | undefined {
+    return this.ships.get('relic-ship');
+  }
+
+  /**
+   * Return Relic Ship to Burroughs Desert (removes from player's control)
+   */
+  returnRelicShipToTerritory(): boolean {
+    const relicShip = this.getRelicShip();
+    if (!relicShip) return false;
+
+    // Remove from current player but keep in system
+    relicShip.playerId = '';
+    relicShip.diceValue = null;
+    relicShip.location = null;
+    relicShip.isLocked = false;
+    
+    return true;
+  }
+
+  /**
+   * Check if a player has the Relic Ship
+   */
+  playerHasRelicShip(playerId: string): boolean {
+    const relicShip = this.getRelicShip();
+    return relicShip !== undefined && relicShip.playerId === playerId;
   }
 
   /**
@@ -135,6 +199,7 @@ export class ShipManager {
 
   /**
    * Return ship to player pool (unlock and clear location)
+   * Note: Relic Ship handling is done separately via returnRelicShipToTerritory
    */
   returnShipToPool(shipId: string): boolean {
     const ship = this.ships.get(shipId);
@@ -143,6 +208,24 @@ export class ShipManager {
     ship.location = null;
     ship.isLocked = false;
     ship.diceValue = null;
+    return true;
+  }
+
+  /**
+   * Return ship to stock (completely remove from player)
+   * For Relic Ship, this returns it to Burroughs Desert instead
+   */
+  returnShipToStock(shipId: string): boolean {
+    const ship = this.ships.get(shipId);
+    if (!ship) return false;
+
+    if (ship.isRelicShip) {
+      // Relic Ship returns to Burroughs Desert, not stock
+      return this.returnRelicShipToTerritory();
+    }
+
+    // Regular ship - remove from game
+    this.ships.delete(shipId);
     return true;
   }
 

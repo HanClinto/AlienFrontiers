@@ -7,9 +7,16 @@ import { TechCard, TechCardType, TechCardPowerResult } from './base-tech-card';
 import { Player } from '../player';
 
 /**
- * Orbital Teleporter - Move colony on discard
- * Power: None
+ * Orbital Teleporter - Move docked ships or colonies
+ * Power: Pay 2 fuel to move one docked ship to a different facility
  * Discard: Move one of your colonies to another territory
+ * 
+ * Official rules power restrictions:
+ * - Can only move one ship per turn
+ * - Cannot reuse ship at the same facility it was removed from
+ * - Cannot change ship value during move
+ * - Cannot move ship from Terraforming Station
+ * - Moved ship can be used at new facility with other unplaced ships
  */
 export class OrbitalTeleporter extends TechCard {
   constructor() {
@@ -17,19 +24,23 @@ export class OrbitalTeleporter extends TechCard {
   }
 
   hasPower(): boolean {
-    return false;
+    return true;
   }
 
   hasDiscardPower(): boolean {
     return true;
   }
 
-  getPowerCost(): number {
-    return 0;
+  getPowerCost(player: Player): number {
+    let cost = 2; // Official rules: Pay 2 fuel
+    // Pohl Foothills bonus would be checked here via GameState
+    return cost;
   }
 
-  canUsePower(): boolean {
-    return false;
+  canUsePower(player: Player): boolean {
+    if (this.usedThisTurn) return false;
+    if (!this.owner || this.owner.id !== player.id) return false;
+    return player.resources.fuel >= this.getPowerCost(player);
   }
 
   canUseDiscardPower(player: Player): boolean {
@@ -38,8 +49,31 @@ export class OrbitalTeleporter extends TechCard {
     return true;
   }
 
-  usePower(): TechCardPowerResult {
-    return { success: false, message: 'Orbital Teleporter has no power' };
+  usePower(player: Player, fromFacility: string, toFacility: string, shipId: string): TechCardPowerResult {
+    if (!this.canUsePower(player)) {
+      return { success: false, message: 'Cannot use Orbital Teleporter power' };
+    }
+
+    // Official rules: Cannot move from Terraforming Station
+    if (fromFacility === 'terraforming_station') {
+      return { success: false, message: 'Cannot move ship from Terraforming Station' };
+    }
+
+    // Official rules: Cannot move to same facility
+    if (fromFacility === toFacility) {
+      return { success: false, message: 'Cannot move ship to the same facility' };
+    }
+
+    const cost = this.getPowerCost(player);
+    player.resources.fuel -= cost;
+
+    // TODO: GameState will handle actual ship movement
+    this.markAsUsed();
+    
+    return {
+      success: true,
+      message: `Moved ship ${shipId} from ${fromFacility} to ${toFacility} (cost: ${cost} fuel)`
+    };
   }
 
   useDiscardPower(player: Player, fromTerritory: string, toTerritory: string): TechCardPowerResult {
@@ -58,7 +92,7 @@ export class OrbitalTeleporter extends TechCard {
   }
 
   getPowerDescription(): string {
-    return 'No power';
+    return 'Pay 2 fuel to move one docked ship to a different facility (cannot move from Terraforming Station)';
   }
 
   getDiscardPowerDescription(): string {

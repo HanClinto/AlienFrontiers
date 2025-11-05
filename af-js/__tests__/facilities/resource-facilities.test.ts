@@ -30,10 +30,10 @@ describe('Solar Converter', () => {
     expect(facility.name).toBe('Solar Converter');
   });
 
-  test('should have 1 dock group with 5 docks', () => {
+  test('should have 1 dock group with 8 docks', () => {
     const groups = facility.getDockGroups();
     expect(groups).toHaveLength(1);
-    expect(groups[0].maxCapacity).toBe(5);
+    expect(groups[0].maxCapacity).toBe(8);
   });
 
   test('should accept ships with any value', () => {
@@ -81,14 +81,17 @@ describe('Solar Converter', () => {
     expect(result.resourcesGained?.fuel).toBe(3);
   });
 
-  test('should reject more than 5 ships', () => {
+  test('should reject more than 8 ships', () => {
     const player = playerManager.getPlayer('p1')!;
     playerManager.createPlayer('p2', 'Bob', PlayerColor.BLUE, 1);
+    playerManager.createPlayer('p3', 'Charlie', PlayerColor.GREEN, 2);
     shipManager.createPlayerShips('p2');
+    shipManager.createPlayerShips('p3');
     
     const ships = [
       ...shipManager.getPlayerShips('p1'),
-      ...shipManager.getPlayerShips('p2')
+      ...shipManager.getPlayerShips('p2'),
+      ...shipManager.getPlayerShips('p3')
     ];
     ships.forEach((s, i) => s.diceValue = ((i % 6) + 1) as any);
     
