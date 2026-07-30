@@ -311,6 +311,20 @@ export class GameState {
       return true;
     }
     if (card.type === "gravity-manipulator") {
+      if (this.pendingTechAction === "power-raise") {
+        if (this.pendingTechTargets[0] === ship) {
+          this.pendingTechTargets = [];
+          this.postEvent(EventName.techCardsChanged, card);
+          return true;
+        }
+        if (this.pendingTechTargets.length > 0 || !card.canUsePowerOnShip(ship)) {
+          return false;
+        }
+        this.pendingTechTargets.push(ship);
+        this.pendingTechAction = "power";
+        this.postEvent(EventName.techCardsChanged, card);
+        return true;
+      }
       if (this.pendingTechTargets.length === 0) {
         if (!card.canUsePowerOnShip(ship)) {
           return false;
@@ -452,13 +466,17 @@ export class GameState {
 
   selectPlacedColony(region, player) {
     if (
-      this.pendingTechAction !== "discard-colony"
+      !["discard-colony", "discard-colony-first"].includes(this.pendingTechAction)
       || region.hasRepulsorField
       || region.coloniesForPlayer(player.playerIndex) <= 0
     ) {
       return false;
     }
     const selection = { region, player };
+    if (this.pendingTechAction === "discard-colony-first") {
+      this.pendingColonyTargets = [];
+      this.pendingTechAction = "discard-colony";
+    }
     if (this.pendingTechCard.type === "orbital-teleporter") {
       this.pendingColonyTargets = [selection];
       this.pendingTechAction = "discard-colony-destination";
@@ -503,6 +521,36 @@ export class GameState {
     this.pendingTechTargets = [];
     this.pendingColonyTargets = [];
     this.pendingTechAction = null;
+  }
+
+  stepBackPendingSelection() {
+    if (!this.pendingTechCard) {
+      return false;
+    }
+    if (
+      this.pendingTechCard.type === "gravity-manipulator"
+      && this.pendingTechAction === "power"
+      && this.pendingTechTargets.length > 0
+    ) {
+      this.pendingTechAction = "power-raise";
+      this.postEvent(EventName.techCardsChanged, this.pendingTechCard);
+      return true;
+    }
+    if (
+      this.pendingTechCard.type === "polarity-device"
+      && this.pendingTechAction === "discard-colony"
+      && this.pendingColonyTargets.length > 0
+    ) {
+      this.pendingTechAction = "discard-colony-first";
+      this.postEvent(EventName.techCardsChanged, this.pendingTechCard);
+      return true;
+    }
+    if (this.pendingTechAction === "discard-colony-destination") {
+      this.pendingTechAction = "discard-colony-first";
+      this.postEvent(EventName.techCardsChanged, this.pendingTechCard);
+      return true;
+    }
+    return false;
   }
 
   cancelPendingSelection() {

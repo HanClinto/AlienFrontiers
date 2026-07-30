@@ -162,7 +162,7 @@ The intended 20-card deck and core facilities are present. Remaining major gaps 
 | Checklist | Gap | Impact |
 |---|---|---|
 | [ ] | Personality-specific `ExhaustiveAI` | The heuristic AI now applies original aggression, noise, and human-prejudice profiles to raid/colony decisions and uses Artifact credit/Market trades. Exhaustive state search and full tech/facility planning remain unported. |
-| [ ] | Cancellable/step-back selection queues | Undo now cancels active raid and tech-selection queues safely. Original per-stage step-back behavior remains incomplete. |
+| [x] | Cancellable/step-back selection queues | Undo steps Gravity, Polarity, and Teleporter back one queue stage while retaining the first selection; at stage zero it safely cancels the active raid or tech queue. |
 | [ ] | Options scene and colorblind dice | Main-menu OPTIONS is not a complete scene; original alternate green dice and preference UI are absent. |
 | [ ] | Generalized Cocos touch dispatcher | Manual forwarding handles known overlap cases, but future overlapping targets can still diverge from targeted delegate ordering. |
 | [ ] | Full render/blend fidelity | Region ownership overlays, HUD tint blending, glows and several resource effects remain absent. |
@@ -193,7 +193,7 @@ Out of scope by project decision: Game Center, achievements, landscape layouts, 
 - [ ] Implement negative-z child visitation.
 - [ ] Implement transformed `boundingBox` and `childBounds` union/inset.
 - [ ] Generalize targeted touch delivery and pass-through.
-- [ ] Make pending selection flows cancellable and step-back aware.
+- [x] Make pending selection flows cancellable and step-back aware.
 
 ### 4. Remaining Product Behavior
 

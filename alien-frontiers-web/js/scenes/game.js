@@ -1696,6 +1696,9 @@ export class GameScene extends AFLayer {
   }
 
   undo() {
+    if (this.state.stepBackPendingSelection()) {
+      return;
+    }
     if (this.state.cancelPendingSelection()) {
       return;
     }
@@ -1753,7 +1756,7 @@ export class GameScene extends AFLayer {
     const isSelectingDiscardShip = isHumanTurn
       && this.state.pendingTechAction === "discard-ship";
     const isSelectingColony = isHumanTurn
-      && this.state.pendingTechAction === "discard-colony";
+      && ["discard-colony", "discard-colony-first"].includes(this.state.pendingTechAction);
     const isSelectingColonyDestination = isHumanTurn
       && this.state.pendingTechAction === "discard-colony-destination";
     if (isHumanTurn && this.aiTimer) {
@@ -1853,7 +1856,8 @@ export class GameScene extends AFLayer {
       return "SELECT DOCKED ENEMY SHIPS FROM ONE FACILITY";
     }
     if (card.type === "gravity-manipulator") {
-      return this.state.pendingTechTargets.length === 0
+      return this.state.pendingTechAction === "power-raise"
+        || this.state.pendingTechTargets.length === 0
         ? "SELECT AN UNDOCKED DIE TO INCREASE"
         : "SELECT A DIFFERENT DIE TO DECREASE";
     }
@@ -1871,10 +1875,14 @@ export class GameScene extends AFLayer {
 
   colonyDiscardHint() {
     return this.state.pendingTechCard.type === "polarity-device"
-      ? this.state.pendingColonyTargets.length === 0
+      ? this.state.pendingTechAction === "discard-colony-first"
+        ? "SELECT THE FIRST COLONY TO SWAP"
+        : this.state.pendingColonyTargets.length === 0
         ? "SELECT THE FIRST COLONY TO SWAP"
         : "SELECT THE SECOND COLONY TO SWAP"
-      : "SELECT THE COLONY TO MOVE";
+      : this.state.pendingTechAction === "discard-colony-first"
+        ? "SELECT THE COLONY TO MOVE"
+        : "SELECT THE DESTINATION REGION";
   }
 
   scheduleAI() {

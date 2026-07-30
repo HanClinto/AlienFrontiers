@@ -658,6 +658,32 @@ test("Gravity Manipulator raises then lowers two different legal ships", () => {
   assert.equal(state.pendingTechCard, null);
 });
 
+test("Undo steps back through Gravity selection before canceling its queue", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const gravity = state.allTech.find((card) => card.type === TechCardType.gravityManipulator);
+  player.cards = [];
+  player.addCard(gravity);
+  player.fuel = 2;
+  player.activeShips[0].value = 4;
+  player.activeShips[1].value = 3;
+
+  assert.equal(state.beginTechPower(gravity), true);
+  assert.equal(state.usePendingTechOnShip(player.activeShips[0]), true);
+  assert.equal(state.stepBackPendingSelection(), true);
+  assert.equal(state.pendingTechAction, "power-raise");
+  assert.equal(state.pendingTechTargets[0], player.activeShips[0]);
+  assert.equal(state.usePendingTechOnShip(player.activeShips[0]), true);
+  assert.deepEqual(state.pendingTechTargets, []);
+  assert.equal(state.usePendingTechOnShip(player.activeShips[1]), true);
+  assert.equal(state.pendingTechAction, "power");
+  assert.equal(state.pendingTechTargets[0], player.activeShips[1]);
+  assert.equal(state.stepBackPendingSelection(), true);
+  assert.equal(state.stepBackPendingSelection(), false);
+  assert.equal(state.cancelPendingSelection(), true);
+  assert.equal(state.pendingTechCard, null);
+});
+
 test("teleported dice follow original Gravity and Polarity target rules", () => {
   const state = new GameState(2, [AIType.human, AIType.human]);
   const player = state.currentPlayer;
@@ -974,6 +1000,27 @@ test("Orbital Teleporter discard moves a selected colony to another region", () 
   assert.equal(state.techDiscardDeck.includes(teleporter), true);
 });
 
+test("Undo steps Teleporter colony selection back to its first queue stage", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const teleporter = state.allTech.find((card) => card.type === TechCardType.orbitalTeleporter);
+  player.cards = [];
+  player.addCard(teleporter);
+  state.heinleinPlains.addColony(1);
+
+  assert.equal(state.beginTechDiscard(teleporter), true);
+  assert.equal(state.selectPlacedColony(state.heinleinPlains, state.players[1]), true);
+  assert.equal(state.stepBackPendingSelection(), true);
+  assert.equal(state.pendingTechAction, "discard-colony-first");
+  assert.equal(state.pendingColonyTargets[0].region, state.heinleinPlains);
+  state.lemBadlands.addColony(0);
+  assert.equal(state.selectPlacedColony(state.lemBadlands, player), true);
+  assert.equal(state.pendingTechAction, "discard-colony-destination");
+  assert.equal(state.pendingColonyTargets[0].region, state.lemBadlands);
+  assert.equal(state.stepBackPendingSelection(), true);
+  assert.equal(state.stepBackPendingSelection(), false);
+});
+
 test("colony-moving discards cannot select a Repulsor source region", () => {
   const state = new GameState(2, [AIType.human, AIType.human]);
   const player = state.currentPlayer;
@@ -1017,6 +1064,28 @@ test("Polarity discard swaps two selected colonies between regions", () => {
     state.lemBadlands.coloniesForPlayer(0),
     state.lemBadlands.coloniesForPlayer(1),
   ], [0, 1, 1, 0]);
+  assert.equal(state.techDiscardDeck.includes(polarity), true);
+});
+
+test("Undo steps Polarity colony selection back to its first queue stage", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const polarity = state.allTech.find((card) => card.type === TechCardType.polarityDevice);
+  player.cards = [];
+  player.addCard(polarity);
+  state.heinleinPlains.addColony(0);
+  state.lemBadlands.addColony(1);
+  state.asimovCrater.addColony(0);
+
+  assert.equal(state.beginTechDiscard(polarity), true);
+  assert.equal(state.selectPlacedColony(state.heinleinPlains, player), true);
+  assert.equal(state.stepBackPendingSelection(), true);
+  assert.equal(state.pendingTechAction, "discard-colony-first");
+  assert.equal(state.pendingColonyTargets[0].region, state.heinleinPlains);
+  assert.equal(state.selectPlacedColony(state.asimovCrater, player), true);
+  assert.equal(state.pendingTechAction, "discard-colony");
+  assert.equal(state.pendingColonyTargets[0].region, state.asimovCrater);
+  assert.equal(state.selectPlacedColony(state.lemBadlands, state.players[1]), true);
   assert.equal(state.techDiscardDeck.includes(polarity), true);
 });
 
