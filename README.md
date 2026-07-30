@@ -32,10 +32,12 @@ configuration and multiple local human players. The first rules-driven gameplay 
 supports rolling and selecting ships, using the Solar Converter, Maintenance Bay,
 Lunar Mine, Shipyard, Orbital Market, and Colony Constructor, purchasing additional
 ships, trading resources, landing colonies across all eight regions, scoring majority
-victory points, and advancing a pass-and-play turn. AI seats automatically play through
-the ported rules using the original SimpleAI fallback priority. The remaining facilities,
-region fields and bonuses, personality-specific ExhaustiveAI strategies, alien tech cards,
-undo/redo, saving, audio, and endgame are still being ported.
+victory points, and advancing a pass-and-play turn. The exact 20-card Alien Tech deck is
+shuffled and dealt into the original current/opponent trays; Alien City, Alien Monument,
+and Resource Cache passive effects are active. AI seats automatically play through the
+ported rules using the original SimpleAI fallback priority. The remaining facilities,
+region fields and bonuses, personality-specific ExhaustiveAI strategies, active/discard
+tech abilities, undo/redo, saving, audio, and endgame are still being ported.
 
 Run the static site locally from the repository root:
 

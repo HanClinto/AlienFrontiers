@@ -4,6 +4,7 @@ import test from "node:test";
 import { AIType } from "../js/game/constants.js";
 import { GameState } from "../js/game/game-state.js";
 import { SimpleAI } from "../js/game/simple-ai.js";
+import { TECH_CARD_DEFINITIONS, TechCardType } from "../js/game/tech-card.js";
 
 function sequenceRandom(values) {
   let index = 0;
@@ -207,4 +208,56 @@ test("SimpleAI uses Colony Constructor and lands its pending colony", () => {
   assert.equal(player.coloniesLeft, 7);
   assert.equal(state.heinleinPlains.coloniesForPlayer(0), 1);
   assert.equal(player.vps, 2);
+});
+
+test("builds, shuffles, deals, and displays the exact 20-card tech deck", () => {
+  const state = new GameState(4, [AIType.human, AIType.human, AIType.human, AIType.human], Math.random, () => 0.25);
+  const expectedCounts = Object.fromEntries(TECH_CARD_DEFINITIONS.map(({ type, count }) => [type, count]));
+  const actualCounts = Object.fromEntries(TECH_CARD_DEFINITIONS.map(({ type }) => [
+    type,
+    state.allTech.filter((card) => card.type === type).length,
+  ]));
+
+  assert.equal(state.allTech.length, 20);
+  assert.deepEqual(actualCounts, expectedCounts);
+  assert.deepEqual(state.allTech.map((card) => card.cardID), Array.from({ length: 20 }, (_, index) => index));
+  assert.deepEqual(state.players.map((player) => player.cards.length), [1, 1, 1, 1]);
+  assert.equal(state.techDisplayDeck.length, 3);
+  assert.equal(state.techDrawDeck.length, 13);
+  assert.equal(new Set([
+    ...state.players.flatMap((player) => player.cards),
+    ...state.techDisplayDeck,
+    ...state.techDrawDeck,
+  ]).size, 20);
+});
+
+test("Alien City and Monument add passive victory points", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  player.cards = [];
+  player.addCard(state.allTech.find((card) => card.type === TechCardType.alienCity));
+  player.addCard(state.allTech.find((card) => card.type === TechCardType.alienMonument));
+
+  assert.equal(player.vps, 2);
+});
+
+test("Resource Cache resolves odd, even, and tied initial rolls", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const cache = state.allTech.find((card) => card.type === TechCardType.resourceCache);
+  player.cards = [];
+  player.addCard(cache);
+  player.activeShips[0].value = 1;
+  player.activeShips[1].value = 2;
+  player.activeShips[2].value = 3;
+  player.applyResourceCache();
+  assert.deepEqual([player.ore, player.fuel], [1, 0]);
+
+  player.activeShips.push(player.inactiveShips.shift());
+  player.activeShips[3].active = true;
+  player.activeShips[3].value = 4;
+  player.applyResourceCache();
+  assert.deepEqual([player.ore, player.fuel], [2, 1]);
+  assert.equal(player.cards.includes(cache), false);
+  assert.equal(state.techDiscardDeck.includes(cache), true);
 });

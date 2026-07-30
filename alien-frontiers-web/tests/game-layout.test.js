@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { miniHUDPosition, regionAtBoardPoint, rollingTrayPosition } from "../js/scenes/game.js";
+import { miniHUDPosition, regionAtBoardPoint, rollingTrayPosition, techCardPosition } from "../js/scenes/game.js";
 
 test("all six ships wrap into the original four-column tray", () => {
   assert.deepEqual(
@@ -56,4 +56,25 @@ test("player mini HUDs retain original centered spacing", () => {
     ],
   );
   assert.deepEqual(miniHUDPosition(4, 0, true), { x: 103.5, y: 1024 });
+});
+
+test("tech cards use the original current and mini tray slots", () => {
+  assert.deepEqual(
+    Array.from({ length: 4 }, (_, index) => techCardPosition("tall", index)),
+    [
+      { x: 42, y: -12 },
+      { x: 131, y: -12 },
+      { x: 220, y: -12 },
+      { x: 309, y: -12 },
+    ],
+  );
+  assert.deepEqual(
+    Array.from({ length: 4 }, (_, index) => techCardPosition("wide", index)),
+    [
+      { x: 30, y: -84 },
+      { x: 30, y: -29 },
+      { x: 30, y: 26 },
+      { x: 30, y: 81 },
+    ],
+  );
 });

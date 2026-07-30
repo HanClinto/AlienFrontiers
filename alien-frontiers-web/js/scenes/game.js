@@ -48,6 +48,12 @@ export function miniHUDPosition(numPlayers, playerIndex, expanded = false, frame
   );
 }
 
+export function techCardPosition(layout, cardIndex) {
+  return layout === "tall"
+    ? ccp(42 + 89 * cardIndex, -12)
+    : ccp(30, -84 + 55 * cardIndex);
+}
+
 function tintedImage(image, color) {
   const canvas = document.createElement("canvas");
   canvas.width = image.naturalWidth;
@@ -295,6 +301,82 @@ class RegionLayer extends CCNode {
   }
 }
 
+class TechCardView extends CCNode {
+  constructor(scene, card, layout) {
+    super();
+    this.card = card;
+    const isTall = layout === "tall";
+
+    const background = new CCSprite(scene.assets.image(
+      isTall ? "tech_layer_bg.png" : "tech_layer_bg_mini_horiz.png",
+    ));
+    background.setPosition(isTall ? ccp(0, 0) : ccp(58, 0));
+    this.addChild(background, 0);
+
+    this.cardImage = new CCSprite(scene.assets.image(card.imageFilename));
+    this.cardImage.setPosition(isTall ? ccp(0, 14) : ccp(8, 0));
+    if (!isTall) {
+      this.cardImage.setScale(0.8);
+    }
+    this.addChild(this.cardImage, 1);
+
+    this.title1 = this.addTitle(card.title1, isTall ? ccp(0, -13) : ccp(38, 5), isTall);
+    this.title2 = this.addTitle(card.title2, isTall ? ccp(0, -27) : ccp(38, -9), isTall);
+    this.refresh();
+  }
+
+  addTitle(text, position, centered) {
+    const label = new CCLabelTTF(text, "DIN-Medium", 12, "#000");
+    label.setAnchorPoint(centered ? ccp(0.5, 1) : ccp(0, 0.5));
+    label.setPosition(position);
+    this.addChild(label, 2);
+    return label;
+  }
+
+  refresh() {
+    const opacity = this.card.tapped ? 127 : 255;
+    this.cardImage.opacity = opacity;
+    this.title1.opacity = opacity;
+    this.title2.opacity = opacity;
+  }
+}
+
+class TechCardTray extends CCNode {
+  constructor(scene, layout) {
+    super();
+    this.scene = scene;
+    this.layout = layout;
+    this.cardNodes = [];
+    this.signature = "";
+    const background = new CCSprite(scene.assets.image(
+      layout === "tall" ? "hud_card_tray_white_horiz.png" : "hud_card_tray_mini_white_vert.png",
+    ));
+    background.setAnchorPoint(ccp(0, 0.5));
+    background.setPosition(ccp(-3, -12));
+    this.addChild(background, 0);
+  }
+
+  refresh(player) {
+    const signature = player.cards
+      .map((card) => `${card.cardID}:${card.tapped ? 1 : 0}`)
+      .join(",");
+    if (signature === this.signature) {
+      return;
+    }
+    this.signature = signature;
+    for (const cardNode of this.cardNodes) {
+      this.removeChild(cardNode);
+    }
+    this.cardNodes.length = 0;
+    player.cards.forEach((card, cardIndex) => {
+      const cardNode = new TechCardView(this.scene, card, this.layout);
+      cardNode.setPosition(techCardPosition(this.layout, cardIndex));
+      this.addChild(cardNode, cardIndex + 1);
+      this.cardNodes.push(cardNode);
+    });
+  }
+}
+
 class PlayerMiniHUD extends CCNode {
   constructor(scene, player) {
     super();
@@ -326,6 +408,10 @@ class PlayerMiniHUD extends CCNode {
     this.dieIcon = new CCSprite(scene.assets.image(PLAYER_DIE_IMAGES[player.colorIndex]));
     this.dieIcon.setPosition(ccp(30, -406));
     this.addChild(this.dieIcon, 2);
+
+    this.techTray = new TechCardTray(scene, "wide");
+    this.techTray.setPosition(ccp(-88, -109));
+    this.addChild(this.techTray, 1);
 
     this.tabHitArea = new CCNode();
     this.tabHitArea.contentSize = { width: 182, height: 65 };
@@ -365,6 +451,7 @@ class PlayerMiniHUD extends CCNode {
     this.fuelLabel.setString(this.player.fuel);
     this.colonyLabel.setString(this.player.coloniesLeft);
     this.diceLabel.setString(this.player.activeShips.length);
+    this.techTray.refresh(this.player);
     this.updatePosition();
   }
 }
@@ -491,6 +578,10 @@ export class GameScene extends AFLayer {
     this.colonyLabel = this.hudLabel("0", 22, ccp(253, 87), "#000");
     this.diceLabel = this.hudLabel("0", 22, ccp(288, 87), "#000");
     this.hintLabel = this.hudLabel("", 17, ccp(-168, 109), "#ffc200");
+
+    this.currentTechTray = new TechCardTray(this, "tall");
+    this.currentTechTray.setPosition(ccp(-166, 47));
+    this.uiFrame.addChild(this.currentTechTray, 1);
   }
 
   hudLabel(text, fontSize, position, color) {
@@ -593,6 +684,7 @@ export class GameScene extends AFLayer {
       ? isSelectingRegion ? "SELECT A REGION FOR YOUR COLONY"
         : player.initialRollDone ? "SELECT DICE, THEN A FACILITY" : "ROLL YOUR SHIPS"
       : "AI TURN");
+    this.currentTechTray.refresh(player);
     this.regionHitArea.enabled = isSelectingRegion;
     for (const regionLayer of this.regionLayers) {
       regionLayer.refresh();

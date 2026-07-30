@@ -1,5 +1,6 @@
 import { EventName } from "./constants.js";
 import { Ship } from "./ship.js";
+import { TechCardType } from "./tech-card.js";
 
 export class Player {
   constructor(state, playerIndex, colorIndex, numPlayers, aiType) {
@@ -12,6 +13,9 @@ export class Player {
     this.coloniesLeft = 6 + (4 - numPlayers);
     this.coloniesToLaunch = 0;
     this.marketPrice = 0;
+    this.cards = [];
+    this.selectedCard = null;
+    this.techsDiscarded = 0;
     this.initialRollDone = false;
     this.allShips = Array.from({ length: 6 }, (_, index) => new Ship(this, index));
     this.activeShips = [];
@@ -43,12 +47,55 @@ export class Player {
   }
 
   get vps() {
-    return this.state.regions.reduce((total, region) => {
+    const regionVPs = this.state.regions.reduce((total, region) => {
       const colonies = region.coloniesForPlayer(this.playerIndex);
       const controlsRegion = region.playerWithMajority === this.playerIndex;
       return total + colonies + (controlsRegion ? 1 : 0)
         + (controlsRegion && region.hasPositronField ? 1 : 0);
     }, 0);
+    return regionVPs + this.cards.reduce((total, card) => total + card.victoryPoints, 0);
+  }
+
+  addCard(card) {
+    if (this.cards.some((ownedCard) => ownedCard.type === card.type)) {
+      this.state.discardTechCard(card);
+      return false;
+    }
+    card.owner = this;
+    this.cards.push(card);
+    this.state.postEvent(EventName.techCardsChanged, card);
+    return true;
+  }
+
+  removeCard(card) {
+    const cardIndex = this.cards.indexOf(card);
+    if (cardIndex === -1) {
+      return false;
+    }
+    this.cards.splice(cardIndex, 1);
+    card.owner = null;
+    this.state.postEvent(EventName.techCardsChanged, card);
+    return true;
+  }
+
+  applyResourceCache() {
+    const cache = this.cards.find((card) => card.type === TechCardType.resourceCache);
+    if (!cache) {
+      return;
+    }
+    const oddShips = this.activeShips.filter((ship) => ship.value % 2 === 1).length;
+    const evenShips = this.activeShips.length - oddShips;
+    if (oddShips > evenShips) {
+      this.ore += 1;
+    } else if (evenShips > oddShips) {
+      this.fuel += 1;
+    } else {
+      this.ore += 1;
+      this.fuel += 1;
+      this.removeCard(cache);
+      this.state.discardTechCard(cache);
+    }
+    this.state.postEvent(EventName.resourcesChanged, this);
   }
 
   addColony() {
@@ -106,6 +153,7 @@ export class Player {
     }
     this.state.logMove(`${this.playerName}: Rolled: ${this.activeShips.map((ship) => ship.value).join(", ")}`);
     this.initialRollDone = true;
+    this.applyResourceCache();
     this.state.postEvent(EventName.shipsRolled, this);
     return true;
   }
@@ -113,6 +161,10 @@ export class Player {
   endTurnCleanup() {
     this.setMarketPrice(0);
     this.initialRollDone = false;
+    this.techsDiscarded = 0;
+    for (const card of this.cards) {
+      card.setTapped(false);
+    }
     for (const ship of this.allShips) {
       ship.isSelected = false;
     }

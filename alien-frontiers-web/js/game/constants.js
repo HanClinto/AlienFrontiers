@@ -18,6 +18,8 @@ export const EventName = Object.freeze({
   marketPriceChanged: "market-price-changed",
   coloniesChanged: "colonies-changed",
   launchColony: "launch-colony",
+  techCardsChanged: "tech-cards-changed",
+  cardTapped: "card-tapped",
   nextPlayer: "next-player",
   nextTurn: "next-turn",
   stateChanged: "state-changed",
