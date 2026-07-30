@@ -161,7 +161,7 @@ The intended 20-card deck and core facilities are present. Remaining major gaps 
 
 | Checklist | Gap | Impact |
 |---|---|---|
-| [ ] | Personality-specific `ExhaustiveAI` | A Web Worker successor uses source-derived 4.4s/7.4s personality budgets, rule-aware fungible dice (including teleport restrictions), transposition pruning, original weights, and bounded anytime beam search under hard time/node/child caps plus watchdog. Timeout uses the best evaluated principal variation; fallback is zero-successor only. Dense late-game stress tests pass; active tech and unresolved follow-up sequencing remain unported. |
+| [ ] | Personality-specific `ExhaustiveAI` | An experimental Web Worker successor uses source-derived 4.4s/7.4s budgets, rule-aware fungible dice, transposition pruning, original weights, bounded anytime beam search, and dense late-game stress gates. The published game remains on SimpleAI until tournament evidence shows the successor is stronger and equally stable; active tech and follow-up sequencing remain unported. |
 | [x] | Cancellable/step-back selection queues | Undo steps Gravity, Polarity, and Teleporter back one queue stage while retaining the first selection; at stage zero it safely cancels the active raid or tech queue. |
 | [x] | Card inspection and card raids | Artifact detail shows both abilities; current and opponent trays select/highlight cards; mini inspectors show abilities and an explicit `RAID CARD` action that completes theft. |
 | [ ] | Options scene and colorblind dice | Main-menu OPTIONS is not a complete scene; original alternate green dice and preference UI are absent. |

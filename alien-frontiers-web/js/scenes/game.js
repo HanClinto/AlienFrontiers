@@ -3,7 +3,6 @@ import { CCCallFunc, CCDelayTime, CCEaseElasticInOut, CCEaseElasticOut, CCEaseSi
 import { CCLayerColor, CCLabelTTF, CCNode, CCSprite, ccp } from "../cocos/core.js";
 import { AIType, EventName } from "../game/constants.js";
 import { GameHistory } from "../game/game-history.js";
-import { ExhaustiveAI } from "../game/exhaustive-ai.js";
 import { SimpleAI } from "../game/simple-ai.js";
 
 const PLAYER_DIE_PREFIXES = ["rd", "gn", "bl", "yl"];
@@ -1472,9 +1471,6 @@ export class GameScene extends AFLayer {
     this.shipSprites = new Map();
     this.unsubscribe = [];
     this.aiTimer = null;
-    this.aiThinking = false;
-    this.aiAbortController = null;
-    this.aiPlan = [];
     this.buildScene();
     this.refresh();
   }
@@ -1728,10 +1724,6 @@ export class GameScene extends AFLayer {
     this.director.persistence?.unbindState();
     clearTimeout(this.aiTimer);
     this.aiTimer = null;
-    this.aiAbortController?.abort();
-    this.aiAbortController = null;
-    this.aiThinking = false;
-    this.aiPlan.length = 0;
     for (const unsubscribe of this.unsubscribe) {
       unsubscribe();
     }
@@ -2014,7 +2006,6 @@ export class GameScene extends AFLayer {
   scheduleAI() {
     if (
       this.aiTimer
-      || this.aiThinking
       || this.state.currentPlayer.aiType === AIType.human
       || this.director.scene !== this
     ) {
@@ -2028,50 +2019,7 @@ export class GameScene extends AFLayer {
       ) {
         return;
       }
-      const player = this.state.currentPlayer;
-      const shouldSearch = player.initialRollDone
-        && !player.isRaiding
-        && player.coloniesToLaunch === 0
-        && !this.state.pendingTechCard
-        && player.numUndockedShips > 0;
-      if (!shouldSearch) {
-        SimpleAI.step(this.state);
-        this.scheduleAI();
-        return;
-      }
-
-      const plannedMove = this.aiPlan.shift();
-      if (plannedMove && ExhaustiveAI.executeMove(this.state, plannedMove)) {
-        this.scheduleAI();
-        return;
-      }
-      this.aiPlan.length = 0;
-      this.aiThinking = true;
-      this.hintLabel.setString("AI THINKING...");
-      this.aiAbortController = new AbortController();
-      const thinkingPlayerIndex = this.state.currentPlayerIndex;
-      const result = await ExhaustiveAI.think(this.state, {
-        signal: this.aiAbortController.signal,
-      }).catch((error) => ({
-        move: null,
-        fallbackRequired: true,
-        error: error instanceof Error ? error.message : String(error),
-      }));
-      this.aiThinking = false;
-      this.aiAbortController = null;
-      if (
-        this.director.scene !== this
-        || this.state.currentPlayerIndex !== thinkingPlayerIndex
-        || this.state.currentPlayer.aiType === AIType.human
-      ) {
-        return;
-      }
-      this.aiPlan = [...(result.principalVariation ?? [])];
-      const move = this.aiPlan.shift() ?? result.move;
-      if (!ExhaustiveAI.executeMove(this.state, move)) {
-        this.aiPlan.length = 0;
-        SimpleAI.step(this.state);
-      }
+      SimpleAI.step(this.state);
       this.scheduleAI();
     }, 650);
   }

@@ -74,6 +74,18 @@ late-game stress fixture gates six-die, dense-dock, field, tech, Data, Plasma, a
 Search runs in a Web Worker so the source-derived budgets (4.4 seconds for Cadet/Spacer and
 7.4 seconds for Admiral/Pirate) do not block rendering or input, with a hard watchdog beyond
 each internal deadline.
+The published game intentionally continues using SimpleAI until self-play testing shows
+the ExhaustiveAI successor is reliably stronger and equally stable.
+
+Run seeded headless AI tournaments with:
+
+```sh
+node scripts/run-ai-tournament.mjs --games 100 --seed 1000 --players 4
+```
+
+The harness rotates strategies through seats and reports win rate, average VP, decision
+cost, searched nodes, fallback rate, and did-not-finish rate. Search variants remain
+experimental until they complete games reliably and cover active tech/follow-up decisions.
 
 Run the static site locally from the repository root:
 
