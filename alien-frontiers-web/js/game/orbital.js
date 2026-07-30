@@ -298,3 +298,39 @@ export class AlienArtifact extends Orbital {
     return true;
   }
 }
+
+export class RaidersOutpost extends Orbital {
+  constructor(state) {
+    super(state, 1, 3);
+    this.title = "Raiders' Outpost";
+  }
+
+  isValidMoveFromPlayer(_player, selectedShips) {
+    if (selectedShips.length !== 3) {
+      return false;
+    }
+    const values = selectedShips.map((ship) => ship.value).sort((left, right) => left - right);
+    const isStraight = values[1] === values[0] + 1 && values[2] === values[1] + 1;
+    const dockedTotal = this.docks.reduce(
+      (total, dock) => total + (dock.dockedShip?.value ?? 0),
+      0,
+    );
+    return isStraight && values.reduce((total, value) => total + value, 0) > dockedTotal;
+  }
+
+  commitShipsFromPlayer(player, selectedShips) {
+    if (!this.isValidMoveFromPlayer(player, selectedShips)) {
+      return false;
+    }
+    const incumbents = this.docks
+      .map((dock) => dock.dockedShip)
+      .filter(Boolean);
+    for (const ship of incumbents) {
+      this.state.maintenanceBay.dockShip(ship);
+    }
+    this.firstEmptyGroup.dockShips(selectedShips);
+    player.startRaid();
+    this.finishCommit(selectedShips);
+    return true;
+  }
+}

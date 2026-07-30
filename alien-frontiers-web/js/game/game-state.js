@@ -1,6 +1,6 @@
 import { AIType, EventName } from "./constants.js";
 import { EventBus } from "./event-bus.js";
-import { AlienArtifact, ColonyConstructor, LunarMine, MaintenanceBay, OrbitalMarket, Shipyard, SolarConverter } from "./orbital.js";
+import { AlienArtifact, ColonyConstructor, LunarMine, MaintenanceBay, OrbitalMarket, RaidersOutpost, Shipyard, SolarConverter } from "./orbital.js";
 import { Player } from "./player.js";
 import { Region, REGION_DEFINITIONS } from "./region.js";
 import { buildTechDeck, shuffleTechCards } from "./tech-card.js";
@@ -34,6 +34,7 @@ export class GameState {
     this.orbitalMarket = new OrbitalMarket(this);
     this.colonyConstructor = new ColonyConstructor(this);
     this.alienArtifact = new AlienArtifact(this);
+    this.raidersOutpost = new RaidersOutpost(this);
 
     this.allTech = buildTechDeck(this);
     this.techDrawDeck = shuffleTechCards(this.allTech, this.cardRandom);
@@ -55,7 +56,8 @@ export class GameState {
   get canEndTurn() {
     return this.currentPlayer.initialRollDone
       && this.currentPlayer.numUndockedShips === 0
-      && this.currentPlayer.coloniesToLaunch === 0;
+      && this.currentPlayer.coloniesToLaunch === 0
+      && !this.currentPlayer.isRaiding;
   }
 
   postEvent(name, object) {

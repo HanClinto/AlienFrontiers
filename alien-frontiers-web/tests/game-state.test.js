@@ -311,3 +311,92 @@ test("Alien Artifact rejects duplicate purchases and cycles the display", () => 
   assert.equal(player.artifactCreditAvailable, 0);
   assert.equal(player.artifactShufflesAvailable, 0);
 });
+
+test("Raiders Outpost requires and displaces with a higher straight", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const [raider, victim] = state.players;
+  raider.initialRollDone = true;
+  [1, 2, 3].forEach((value, index) => {
+    raider.activeShips[index].value = value;
+    state.toggleShipSelection(raider.activeShips[index]);
+  });
+  assert.equal(state.commitSelectedShips(state.raidersOutpost), true);
+  assert.equal(raider.isRaiding, true);
+  assert.deepEqual(state.raidersOutpost.docks.map((dock) => dock.dockedShip.value), [1, 2, 3]);
+
+  raider.isRaiding = false;
+  state.currentPlayerIndex = 1;
+  victim.gatherShips();
+  victim.initialRollDone = true;
+  [2, 3, 4].forEach((value, index) => {
+    victim.activeShips[index].value = value;
+    state.toggleShipSelection(victim.activeShips[index]);
+  });
+  assert.equal(state.commitSelectedShips(state.raidersOutpost), true);
+  assert.deepEqual(state.raidersOutpost.docks.map((dock) => dock.dockedShip.value), [2, 3, 4]);
+  assert.equal(raider.activeShips.every((ship) => ship.dock?.orbital === state.maintenanceBay), true);
+});
+
+test("resource raids cap at four and finish when scarce resources are exhausted", () => {
+  const state = new GameState(3, [AIType.human, AIType.human, AIType.human]);
+  const [raider, victimOne, victimTwo] = state.players;
+  victimOne.ore = 2;
+  victimOne.fuel = 1;
+  victimTwo.ore = 1;
+  victimTwo.fuel = 3;
+  raider.startRaid();
+  assert.equal(raider.adjustRaidResource(victimOne, "ore", 1), true);
+  assert.equal(raider.adjustRaidResource(victimOne, "ore", 1), true);
+  assert.equal(raider.adjustRaidResource(victimOne, "fuel", 1), true);
+  assert.equal(raider.adjustRaidResource(victimTwo, "ore", 1), true);
+  assert.equal(raider.adjustRaidResource(victimTwo, "fuel", 1), false);
+  assert.equal(raider.raidSelectionComplete, true);
+  assert.equal(raider.finishRaid(), true);
+  assert.deepEqual([raider.ore, raider.fuel], [3, 1]);
+  assert.deepEqual([victimOne.ore, victimOne.fuel, victimTwo.ore], [0, 0, 0]);
+
+  victimOne.ore = 1;
+  victimOne.fuel = 0;
+  victimTwo.ore = 0;
+  victimTwo.fuel = 0;
+  raider.startRaid();
+  raider.adjustRaidResource(victimOne, "ore", 1);
+  assert.equal(raider.raidSelectionComplete, true);
+});
+
+test("Holographic Decoy blocks resources and is the only raidable card", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const [raider, victim] = state.players;
+  const decoy = state.allTech.find((card) => card.type === TechCardType.holographicDecoy);
+  const other = state.allTech.find((card) => card.type === TechCardType.boosterPod);
+  raider.cards = [];
+  victim.cards = [];
+  victim.addCard(decoy);
+  victim.addCard(other);
+  victim.ore = 4;
+  raider.startRaid();
+  assert.equal(raider.adjustRaidResource(victim, "ore", 1), false);
+  assert.equal(raider.selectRaidCard(other), false);
+  assert.equal(raider.selectRaidCard(decoy), true);
+  assert.equal(raider.finishRaid(), true);
+  assert.equal(decoy.owner, raider);
+  assert.equal(victim.cards.includes(decoy), false);
+});
+
+test("SimpleAI uses a straight and resolves its raid", () => {
+  const state = new GameState(2, [AIType.easy, AIType.human], () => 0.2);
+  const [raider, victim] = state.players;
+  victim.ore = 2;
+  victim.fuel = 2;
+  SimpleAI.step(state);
+  assert.deepEqual(raider.activeShips.map((ship) => ship.value), [2, 2, 2]);
+  raider.activeShips[0].value = 1;
+  raider.activeShips[1].value = 2;
+  raider.activeShips[2].value = 3;
+  SimpleAI.step(state);
+  assert.equal(raider.isRaiding, true);
+  SimpleAI.step(state);
+  assert.equal(raider.isRaiding, false);
+  assert.deepEqual([raider.ore, raider.fuel], [2, 2]);
+  assert.deepEqual([victim.ore, victim.fuel], [0, 0]);
+});

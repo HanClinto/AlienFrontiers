@@ -1,6 +1,9 @@
 export class SimpleAI {
   static step(state) {
     const player = state.currentPlayer;
+    if (player.isRaiding) {
+      return this.finishRaid(state, player);
+    }
     if (!player.initialRollDone) {
       state.rollCurrentPlayerShips();
       return true;
@@ -28,6 +31,18 @@ export class SimpleAI {
       this.launchColony(state, player);
       return true;
     }
+    const undocked = player.undockedShips;
+    for (let first = 0; first < undocked.length - 2; first += 1) {
+      for (let second = first + 1; second < undocked.length - 1; second += 1) {
+        for (let third = second + 1; third < undocked.length; third += 1) {
+          const straight = [undocked[first], undocked[second], undocked[third]];
+          if (state.raidersOutpost.isValidMoveFromPlayer(player, straight)) {
+            state.raidersOutpost.commitShipsFromPlayer(player, straight);
+            return true;
+          }
+        }
+      }
+    }
     const shipyardPair = [...shipsByValue.values()].find((ships) =>
       ships.length >= 2 && state.shipyard.isValidMoveFromPlayer(player, ships.slice(0, 2)));
     if (shipyardPair) {
@@ -51,6 +66,35 @@ export class SimpleAI {
     }
 
     state.maintenanceBay.commitShipsFromPlayer(player, player.undockedShips);
+    return true;
+  }
+
+  static finishRaid(state, player) {
+    for (const victim of state.players) {
+      if (victim === player) {
+        continue;
+      }
+      for (const resource of ["ore", "fuel"]) {
+        while (!player.raidSelectionComplete && player.canRaidMore(victim, resource)) {
+          player.adjustRaidResource(victim, resource, 1);
+        }
+      }
+    }
+    if (!player.raidSelectionComplete) {
+      const card = state.players
+        .filter((victim) => victim !== player)
+        .flatMap((victim) => victim.cards)
+        .find((candidate) => player.canRaidCard(candidate));
+      if (card) {
+        player.selectRaidCard(card);
+      }
+    }
+    if (player.raidSelectionComplete) {
+      return player.finishRaid();
+    }
+    player.isRaiding = false;
+    player.cardToRaid = null;
+    state.postEvent("finish-raid", player);
     return true;
   }
 

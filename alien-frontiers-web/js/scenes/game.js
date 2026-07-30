@@ -252,6 +252,21 @@ class ColonyConstructorLayer extends FacilityLayer {
   }
 }
 
+class RaidersOutpostLayer extends FacilityLayer {
+  constructor(scene) {
+    super(scene, scene.state.raidersOutpost, ccp(613, 425), { x: -8, y: -5, width: 165, height: 70 });
+    this.label("RAIDERS' OUTPOST", ccp(0, 53));
+    this.sprite(scene.assets.image("icon_gt.png"), ccp(0, 12));
+    this.sprite(scene.assets.image("dock_straight.png"), ccp(22, 8));
+    this.sprite(scene.assets.image("icon_to_mb.png"), ccp(102, 10));
+    this.sprite(scene.assets.image("icons_raiders.png"), ccp(0, 7), ccp(0, 1));
+  }
+
+  dockPosition(index) {
+    return ccp([21, 47, 73][index], 8);
+  }
+}
+
 class RegionLayer extends CCNode {
   constructor(scene, layout) {
     super();
@@ -361,10 +376,11 @@ class TechCardView extends CCNode {
 }
 
 class TechCardTray extends CCNode {
-  constructor(scene, layout) {
+  constructor(scene, layout, onCardActivate = null) {
     super();
     this.scene = scene;
     this.layout = layout;
+    this.onCardActivate = onCardActivate;
     this.cardNodes = [];
     this.signature = "";
     const background = new CCSprite(scene.assets.image(
@@ -388,7 +404,12 @@ class TechCardTray extends CCNode {
     }
     this.cardNodes.length = 0;
     player.cards.forEach((card, cardIndex) => {
-      const cardNode = new TechCardView(this.scene, card, this.layout);
+      const cardNode = new TechCardView(
+        this.scene,
+        card,
+        this.layout,
+        this.onCardActivate,
+      );
       cardNode.setPosition(techCardPosition(this.layout, cardIndex));
       this.addChild(cardNode, cardIndex + 1);
       this.cardNodes.push(cardNode);
@@ -560,6 +581,7 @@ class PlayerMiniHUD extends CCNode {
     this.scene = scene;
     this.player = player;
     this.expanded = false;
+    this.raidForced = false;
 
     this.frame = new CCSprite(scene.assets.image("hud_port_player_tab_full.png"));
     this.frame.setAnchorPoint(ccp(0.5, 1));
@@ -586,9 +608,17 @@ class PlayerMiniHUD extends CCNode {
     this.dieIcon.setPosition(ccp(30, -406));
     this.addChild(this.dieIcon, 2);
 
-    this.techTray = new TechCardTray(scene, "wide");
+    this.techTray = new TechCardTray(scene, "wide", (card) => this.selectRaidCard(card));
     this.techTray.setPosition(ccp(-88, -109));
     this.addChild(this.techTray, 1);
+
+    this.raidControls = [];
+    this.addRaidControl("ore", 1, ccp(-76, -458), "hud_button_RO_up.png", "hud_button_ro_up_active.png", "hud_button_ro_up_inactive.png");
+    this.addRaidControl("ore", -1, ccp(-76, -482), "hud_button_ro_down.png", "hud_button_ro_down_active.png", "hud_button_ro_down_inactive.png");
+    this.addRaidControl("fuel", 1, ccp(-42, -458), "hud_button_RO_up.png", "hud_button_ro_up_active.png", "hud_button_ro_up_inactive.png");
+    this.addRaidControl("fuel", -1, ccp(-42, -482), "hud_button_ro_down.png", "hud_button_ro_down_active.png", "hud_button_ro_down_inactive.png");
+    this.raidOreLabel = this.label("0", 18, ccp(-75.5, -472), "#000");
+    this.raidFuelLabel = this.label("0", 18, ccp(-41.5, -472), "#000");
 
     this.tabHitArea = new CCNode();
     this.tabHitArea.contentSize = { width: 182, height: 65 };
@@ -608,6 +638,25 @@ class PlayerMiniHUD extends CCNode {
     return label;
   }
 
+  addRaidControl(resource, delta, position, upImage, downImage, inactiveImage) {
+    const button = this.scene.buttonFromImage(
+      upImage,
+      downImage,
+      () => this.scene.state.currentPlayer.adjustRaidResource(this.player, resource, delta),
+      { inactiveImage },
+    );
+    button.setPosition(position);
+    this.addChild(button, 3);
+    this.raidControls.push({ button, resource, delta });
+  }
+
+  selectRaidCard(card) {
+    const currentPlayer = this.scene.state.currentPlayer;
+    if (currentPlayer.isRaiding && this.player !== currentPlayer) {
+      currentPlayer.selectRaidCard(card);
+    }
+  }
+
   toggleExpanded() {
     this.expanded = !this.expanded;
     this.updatePosition();
@@ -623,12 +672,39 @@ class PlayerMiniHUD extends CCNode {
   }
 
   refresh() {
+    const currentPlayer = this.scene.state.currentPlayer;
+    const raidVictim = currentPlayer.isRaiding && this.player !== currentPlayer;
+    if (currentPlayer.isRaiding) {
+      this.expanded = raidVictim;
+      this.raidForced = true;
+    } else if (this.raidForced) {
+      this.expanded = false;
+      this.raidForced = false;
+    }
+    this.frame.image = this.scene.assets.image(
+      raidVictim ? "hud_port_player_tab_full_RO.png" : "hud_port_player_tab_full.png",
+    );
     this.scoreLabel.setString(this.player.vps);
-    this.oreLabel.setString(this.player.ore);
-    this.fuelLabel.setString(this.player.fuel);
+    this.oreLabel.setString(this.player.ore - this.player.oreToRaid);
+    this.fuelLabel.setString(this.player.fuel - this.player.fuelToRaid);
+    this.oreLabel.color = this.player.oreToRaid > 0 ? "#c00" : "#000";
+    this.fuelLabel.color = this.player.fuelToRaid > 0 ? "#c00" : "#000";
     this.colonyLabel.setString(this.player.coloniesLeft);
     this.diceLabel.setString(this.player.activeShips.length);
     this.techTray.refresh(this.player);
+    this.raidOreLabel.setString(this.player.oreToRaid);
+    this.raidFuelLabel.setString(this.player.fuelToRaid);
+    this.raidOreLabel.visible = raidVictim;
+    this.raidFuelLabel.visible = raidVictim;
+    for (const control of this.raidControls) {
+      control.button.visible = raidVictim;
+      this.scene.setButtonIsEnabled(
+        control.button,
+        control.delta > 0
+          ? currentPlayer.canRaidMore(this.player, control.resource)
+          : this.player[`${control.resource}ToRaid`] > 0,
+      );
+    }
     this.updatePosition();
   }
 }
@@ -701,6 +777,8 @@ export class GameScene extends AFLayer {
     this.addChild(this.constructorLayer, 4);
     this.artifactLayer = new AlienArtifactLayer(this);
     this.addChild(this.artifactLayer, 4);
+    this.raidersLayer = new RaidersOutpostLayer(this);
+    this.addChild(this.raidersLayer, 4);
 
     this.regionLayers = REGION_LAYOUTS.map((layout) => {
       const layer = new RegionLayer(this, layout);
@@ -753,6 +831,15 @@ export class GameScene extends AFLayer {
     this.doneButton.setPosition(ccp(305, -75));
     this.uiFrame.addChild(this.doneButton, 2);
 
+    this.raidConfirmButton = this.buttonFromImage(
+      "ondark_button.png",
+      "ondark_button_active.png",
+      () => this.state.currentPlayer.finishRaid(),
+      { inactiveImage: "ondark_button_inactive.png", label: "OK", fontSize: 16 },
+    );
+    this.raidConfirmButton.setPosition(ccp(322, 112));
+    this.uiFrame.addChild(this.raidConfirmButton, 3);
+
     this.playerLabel = this.hudLabel("0", 42, ccp(330, 76), "#fff");
     this.oreLabel = this.hudLabel("0", 22, ccp(183, 87), "#000");
     this.fuelLabel = this.hudLabel("0", 22, ccp(218, 87), "#000");
@@ -799,6 +886,7 @@ export class GameScene extends AFLayer {
       [this.state.orbitalMarket, this.marketLayer],
       [this.state.colonyConstructor, this.constructorLayer],
       [this.state.alienArtifact, this.artifactLayer],
+      [this.state.raidersOutpost, this.raidersLayer],
     ]).get(orbital);
     if (!layer) {
       throw new Error(`No layer for docked orbital: ${orbital.title}`);
@@ -861,13 +949,19 @@ export class GameScene extends AFLayer {
     this.rollButton.visible = !player.initialRollDone;
     this.setButtonIsEnabled(this.rollButton, isHumanTurn);
     this.setButtonIsEnabled(this.doneButton, isHumanTurn && this.state.canEndTurn);
+    this.raidConfirmButton.visible = player.isRaiding;
+    this.setButtonIsEnabled(
+      this.raidConfirmButton,
+      isHumanTurn && player.raidSelectionComplete,
+    );
     this.playerLabel.setString(player.vps);
     this.oreLabel.setString(player.ore);
     this.fuelLabel.setString(player.fuel);
     this.colonyLabel.setString(player.coloniesLeft);
     this.diceLabel.setString(player.activeShips.length);
     this.hintLabel.setString(isHumanTurn
-      ? isSelectingRegion ? "SELECT A REGION FOR YOUR COLONY"
+      ? player.isRaiding ? "SELECT UP TO 4 RESOURCES OR ONE TECH"
+        : isSelectingRegion ? "SELECT A REGION FOR YOUR COLONY"
         : player.initialRollDone ? "SELECT DICE, THEN A FACILITY" : "ROLL YOUR SHIPS"
       : "AI TURN");
     this.currentTechTray.refresh(player);

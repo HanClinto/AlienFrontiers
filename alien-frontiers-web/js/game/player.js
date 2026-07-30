@@ -18,6 +18,10 @@ export class Player {
     this.techsDiscarded = 0;
     this.artifactCreditAvailable = 0;
     this.artifactShufflesAvailable = 0;
+    this.isRaiding = false;
+    this.oreToRaid = 0;
+    this.fuelToRaid = 0;
+    this.cardToRaid = null;
     this.initialRollDone = false;
     this.allShips = Array.from({ length: 6 }, (_, index) => new Ship(this, index));
     this.activeShips = [];
@@ -56,6 +60,108 @@ export class Player {
         + (controlsRegion && region.hasPositronField ? 1 : 0);
     }, 0);
     return regionVPs + this.cards.reduce((total, card) => total + card.victoryPoints, 0);
+  }
+
+  get hasHolographicDecoy() {
+    return this.cards.some((card) => card.type === TechCardType.holographicDecoy);
+  }
+
+  get raidResourceTotal() {
+    return this.state.players.reduce(
+      (total, player) => total + player.oreToRaid + player.fuelToRaid,
+      0,
+    );
+  }
+
+  get raidSelectionComplete() {
+    if (this.cardToRaid) {
+      return true;
+    }
+    const selected = this.raidResourceTotal;
+    if (selected === 4) {
+      return true;
+    }
+    const available = this.state.players
+      .filter((player) => player !== this && !player.hasHolographicDecoy)
+      .reduce((total, player) => total + player.ore + player.fuel, 0);
+    return selected > 0 && selected === available;
+  }
+
+  startRaid() {
+    for (const player of this.state.players) {
+      player.oreToRaid = 0;
+      player.fuelToRaid = 0;
+    }
+    this.cardToRaid = null;
+    this.isRaiding = true;
+    this.state.postEvent(EventName.beginRaid, this);
+  }
+
+  canRaidMore(victim, resource) {
+    return this.isRaiding
+      && victim !== this
+      && !victim.hasHolographicDecoy
+      && this.raidResourceTotal < 4
+      && victim[`${resource}ToRaid`] < victim[resource];
+  }
+
+  adjustRaidResource(victim, resource, delta) {
+    const reservation = `${resource}ToRaid`;
+    if (delta > 0 && !this.canRaidMore(victim, resource)) {
+      return false;
+    }
+    if (delta < 0 && victim[reservation] <= 0) {
+      return false;
+    }
+    this.cardToRaid = null;
+    victim[reservation] += Math.sign(delta);
+    this.state.postEvent(EventName.raidChanged, victim);
+    return true;
+  }
+
+  canRaidCard(card) {
+    if (!this.isRaiding || !card.owner || card.owner === this) {
+      return false;
+    }
+    return !card.owner.hasHolographicDecoy || card.type === TechCardType.holographicDecoy;
+  }
+
+  selectRaidCard(card) {
+    if (!this.canRaidCard(card)) {
+      return false;
+    }
+    for (const player of this.state.players) {
+      player.oreToRaid = 0;
+      player.fuelToRaid = 0;
+    }
+    this.cardToRaid = card;
+    this.state.postEvent(EventName.raidChanged, card);
+    return true;
+  }
+
+  finishRaid() {
+    if (!this.isRaiding || !this.raidSelectionComplete) {
+      return false;
+    }
+    if (this.cardToRaid) {
+      const card = this.cardToRaid;
+      card.owner.removeCard(card);
+      this.addCard(card);
+    } else {
+      for (const victim of this.state.players) {
+        this.ore += victim.oreToRaid;
+        this.fuel += victim.fuelToRaid;
+        victim.ore -= victim.oreToRaid;
+        victim.fuel -= victim.fuelToRaid;
+        victim.oreToRaid = 0;
+        victim.fuelToRaid = 0;
+      }
+      this.state.postEvent(EventName.resourcesChanged, this);
+    }
+    this.cardToRaid = null;
+    this.isRaiding = false;
+    this.state.postEvent(EventName.finishRaid, this);
+    return true;
   }
 
   addCard(card) {
@@ -115,6 +221,12 @@ export class Player {
     this.state.fillTechDisplayPile();
     this.artifactCreditAvailable = 0;
     this.artifactShufflesAvailable = 0;
+    this.isRaiding = false;
+    this.cardToRaid = null;
+    for (const player of this.state.players) {
+      player.oreToRaid = 0;
+      player.fuelToRaid = 0;
+    }
     this.state.postEvent(EventName.techCardsChanged, this);
     this.state.logMove(`${this.playerName}: Purchased tech ${card.title}`);
     return true;
