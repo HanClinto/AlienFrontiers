@@ -4,6 +4,12 @@
   font-display: block;
 }
 
+@font-face {
+  font-family: "DIN-Medium";
+  src: url("./assets/DIN-Medium.ttf") format("truetype");
+  font-display: block;
+}
+
 :root {
   color-scheme: dark;
   background: #00010c;

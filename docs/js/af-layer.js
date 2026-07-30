@@ -44,4 +44,17 @@ export class AFLayer extends CCLayer {
     wrapper.getChildByTag(ButtonTags.label)?.setString(caption);
     wrapper.getChildByTag(ButtonTags.labelShadow)?.setString(caption);
   }
+
+  setButtonIsEnabled(wrapper, enabled) {
+    const menu = wrapper.getChildByTag(ButtonTags.sprite);
+    const button = menu?.children[0];
+    if (button) {
+      button.enabled = enabled;
+      button.opacity = enabled ? 255 : 102;
+    }
+    const label = wrapper.getChildByTag(ButtonTags.label);
+    if (label) {
+      label.opacity = enabled ? 255 : 102;
+    }
+  }
 }

@@ -34,7 +34,10 @@ export class CCDirector {
     this.canvas.addEventListener("pointerdown", (event) => {
       event.preventDefault();
       const point = this.convertToGL(event.clientX, event.clientY);
-      this._pressedNode = this.scene?.findTopmostNodeAt(point, (node) => node.interactive) ?? null;
+      this._pressedNode = this.scene?.findTopmostNodeAt(
+        point,
+        (node) => node.interactive && node.enabled,
+      ) ?? null;
       if (this._pressedNode) {
         this._pressedNode.selected = true;
         this.canvas.setPointerCapture(event.pointerId);
@@ -44,7 +47,10 @@ export class CCDirector {
     this.canvas.addEventListener("pointerup", (event) => {
       event.preventDefault();
       const point = this.convertToGL(event.clientX, event.clientY);
-      const releasedNode = this.scene?.findTopmostNodeAt(point, (node) => node.interactive) ?? null;
+      const releasedNode = this.scene?.findTopmostNodeAt(
+        point,
+        (node) => node.interactive && node.enabled,
+      ) ?? null;
       const pressedNode = this._pressedNode;
       if (pressedNode) {
         pressedNode.selected = false;

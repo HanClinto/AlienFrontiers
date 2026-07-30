@@ -1,0 +1,33 @@
+import { EventName } from "./constants.js";
+
+export class Ship {
+  constructor(player, shipIndex) {
+    this.player = player;
+    this.state = player.state;
+    this.shipIndex = shipIndex;
+    this.value = 0;
+    this.rollIndex = 0;
+    this.dock = null;
+    this.isSelected = false;
+    this.active = false;
+  }
+
+  get docked() {
+    return this.dock !== null;
+  }
+
+  roll(random = Math.random) {
+    this.value = Math.floor(random() * 6) + 1;
+    this.rollIndex += 1;
+    this.state.postEvent(EventName.shipRolled, this);
+  }
+
+  toggleSelect() {
+    this.isSelected = !this.isSelected;
+    this.state.postEvent(EventName.shipSelected, this);
+  }
+
+  undock() {
+    this.dock?.ejectShip();
+  }
+}

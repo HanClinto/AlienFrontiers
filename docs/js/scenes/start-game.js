@@ -1,14 +1,7 @@
 import { AFLayer } from "../af-layer.js";
 import { CCLayerColor, CCSprite, ccp } from "../cocos/core.js";
-
-const AIType = Object.freeze({
-  human: 0,
-  easy: 1,
-  medium: 2,
-  pirate: 3,
-  hard: 4,
-  length: 5,
-});
+import { AIType } from "../game/constants.js";
+import { GameState } from "../game/game-state.js";
 
 const Tags = Object.freeze({
   colorBackground: 0,
@@ -95,13 +88,17 @@ export class StartGameScene extends AFLayer {
     this.director.replaceScene(new MainMenuScene(this.director, this.assets));
   }
 
-  playButtonTapped() {
+  async playButtonTapped() {
+    const detail = {
+      numPlayers: this.numPlayers,
+      playerPersonalities: this.playerPersonalities.slice(0, this.numPlayers),
+    };
     window.dispatchEvent(new CustomEvent("alienfrontiers:startgame", {
-      detail: {
-        numPlayers: this.numPlayers,
-        playerPersonalities: this.playerPersonalities.slice(0, this.numPlayers),
-      },
+      detail,
     }));
+    const { GameScene } = await import("./game.js");
+    const state = new GameState(detail.numPlayers, detail.playerPersonalities);
+    this.director.replaceScene(new GameScene(this.director, this.assets, state));
   }
 
   numPlayersButtonTapped() {
@@ -125,6 +122,6 @@ export class StartGameScene extends AFLayer {
   }
 
   getAIName(index) {
-    return ["Human", "AI: Cadet", "AI: Spacer", "AI: Pirate", "AI: Admiral"][index] ?? "None";
+    return ["Human", "AI: Cadet", "AI: Spacer", "AI: Admiral", "AI: Pirate"][index] ?? "None";
   }
 }

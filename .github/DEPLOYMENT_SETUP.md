@@ -25,9 +25,8 @@ As the repository administrator, you need to complete the following one-time set
 The deployment workflow (`.github/workflows/deploy-pages.yml`) will:
 
 1. Trigger automatically on every push to the `main` branch
-2. Install Node.js and project dependencies
-3. Build the project using `npm run build` in the `af-js/` directory
-4. Deploy the contents of `af-js/dist/` to GitHub Pages
+2. Upload the static `docs/` directory without a build step
+3. Deploy that artifact to GitHub Pages
 
 ## After Setup
 
@@ -56,6 +55,5 @@ If the deployment fails:
 
 ## Manual Deployment
 
-If you need to manually trigger a deployment:
-1. Make any commit to the `main` branch
-2. Or use the "Re-run jobs" button on a previous workflow run in the Actions tab
+Use the **Run workflow** button for the Pages workflow in the Actions tab, or use
+**Re-run jobs** on a previous workflow run.

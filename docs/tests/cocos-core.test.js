@@ -39,3 +39,16 @@ test("later and higher-z children win hit testing", () => {
 
   assert.equal(root.findTopmostNodeAt(ccp(50, 50), (node) => node.interactive), higher);
 });
+
+test("Cocos touch priority is independent from visual z-order", () => {
+  const root = new CCNode();
+  const menuItem = new CCSprite(100, 100).setPosition(50, 50);
+  const ship = new CCSprite(100, 100).setPosition(50, 50);
+  menuItem.interactive = true;
+  menuItem.touchPriority = -128;
+  ship.interactive = true;
+  root.addChild(menuItem, 1);
+  root.addChild(ship, 10);
+
+  assert.equal(root.findTopmostNodeAt(ccp(50, 50), (node) => node.interactive), menuItem);
+});

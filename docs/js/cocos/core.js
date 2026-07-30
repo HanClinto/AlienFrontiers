@@ -53,6 +53,7 @@ export class CCNode {
     this.children = [];
     this.tag = undefined;
     this.zOrder = 0;
+    this.touchPriority = 0;
     this._arrivalOrder = 0;
     this._nextArrivalOrder = 0;
     this._actions = [];
@@ -154,16 +155,26 @@ export class CCNode {
   }
 
   findTopmostNodeAt(point, predicate = () => true) {
-    if (!this.visible) {
-      return null;
-    }
-    for (let index = this.children.length - 1; index >= 0; index -= 1) {
-      const match = this.children[index].findTopmostNodeAt(point, predicate);
-      if (match) {
-        return match;
+    const matches = [];
+    this.collectNodesAt(point, predicate, matches);
+    return matches.reduce((best, candidate) => {
+      if (!best || candidate.touchPriority < best.touchPriority) {
+        return candidate;
       }
+      return candidate.touchPriority === best.touchPriority ? candidate : best;
+    }, null);
+  }
+
+  collectNodesAt(point, predicate, matches) {
+    if (!this.visible) {
+      return;
     }
-    return predicate(this) && this.containsWorldPoint(point) ? this : null;
+    if (predicate(this) && this.containsWorldPoint(point)) {
+      matches.push(this);
+    }
+    for (const child of this.children) {
+      child.collectNodesAt(point, predicate, matches);
+    }
   }
 
   runAction(action) {
@@ -200,6 +211,7 @@ export class CCSprite extends CCNode {
       this.contentSize = { width: imageOrWidth, height };
     } else {
       this.image = imageOrWidth;
+      this.sourceRect = null;
       this.contentSize = {
         width: imageOrWidth.naturalWidth || imageOrWidth.width,
         height: imageOrWidth.naturalHeight || imageOrWidth.height,
@@ -214,8 +226,31 @@ export class CCSprite extends CCNode {
     const { width, height } = this.contentSize;
     context.save();
     context.scale(1, -1);
-    context.drawImage(this.image, 0, -height, width, height);
+    if (this.sourceRect) {
+      const { x, y, width: sourceWidth, height: sourceHeight } = this.sourceRect;
+      context.drawImage(
+        this.image,
+        x,
+        y,
+        sourceWidth,
+        sourceHeight,
+        0,
+        -height,
+        width,
+        height,
+      );
+    } else {
+      context.drawImage(this.image, 0, -height, width, height);
+    }
     context.restore();
+  }
+}
+
+export class CCSpriteFrame extends CCSprite {
+  constructor(image, sourceRect) {
+    super(sourceRect.width, sourceRect.height);
+    this.image = image;
+    this.sourceRect = sourceRect;
   }
 }
 

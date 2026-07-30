@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -24,23 +25,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Install dependencies
-        working-directory: af-js
-        run: npm install
-
-      - name: Build project
-        working-directory: af-js
-        run: NODE_ENV=production npm run build
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: af-js/dist
+          path: docs
 
   deploy:
     environment:

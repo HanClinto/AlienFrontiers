@@ -19,8 +19,33 @@ But hopefully this is a way of letting this stay alive for those of us who loved
 
 # Project Technology
 
-* I want this project to use a minimum of dependencies. I don't even like NPM, but if I need to use it so that I have decent access to things like Phaser, then that's fine. But if I can do it in pure HTML + Javascript, then that's very tempting for me also.
-* The original project used Cocos2D, and there is (apparently?) a Cocos2D-X which can compile for HTML. I don't know if it's worth trying to leverage this or not, but it's something to consider before porting it to another framework or library.
+The web port is static HTML, CSS, and native JavaScript with no runtime dependencies
+or build step. A small Canvas2D compatibility layer preserves the original Cocos2D
+coordinate system, centered sprite anchors, parent transforms, z-order, touch priority,
+and sprite-frame atlases. Ported scenes and model classes keep the Objective-C structure
+and literal iPad coordinates where practical.
+
+# Current Web Port
+
+The main menu and game setup screens are functional, including two-to-four-player
+configuration and multiple local human players. The first rules-driven gameplay slice
+supports rolling and selecting ships, using the Solar Converter and Maintenance Bay,
+and advancing a pass-and-play turn. The remaining facilities, original AI strategies,
+territories, alien tech cards, undo/redo, saving, audio, and endgame are still being ported.
+
+Run the static site locally from the repository root:
+
+```sh
+python3 -m http.server 4173 --directory docs
+```
+
+Then open `http://localhost:4173/`. Run the dependency-free tests with:
+
+```sh
+node --test docs/tests/*.test.js
+```
+
+GitHub Actions publishes `docs/` directly to GitHub Pages on pushes to `main`.
 
 # Reference implementations
 

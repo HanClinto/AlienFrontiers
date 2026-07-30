@@ -2,6 +2,7 @@ export class AssetCache {
   constructor(baseUrl) {
     this.baseUrl = baseUrl;
     this.images = new Map();
+    this.textFiles = new Map();
   }
 
   async preloadImages(fileNames) {
@@ -29,5 +30,18 @@ export class AssetCache {
       throw new Error(`Image was not preloaded: ${fileName}`);
     }
     return image;
+  }
+
+  async loadText(fileName) {
+    if (this.textFiles.has(fileName)) {
+      return this.textFiles.get(fileName);
+    }
+    const response = await fetch(new URL(fileName, this.baseUrl));
+    if (!response.ok) {
+      throw new Error(`Unable to load ${fileName}: ${response.status}`);
+    }
+    const text = await response.text();
+    this.textFiles.set(fileName, text);
+    return text;
   }
 }
