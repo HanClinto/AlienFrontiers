@@ -40,11 +40,12 @@ victory points, and advancing a pass-and-play turn. The exact 20-card Alien Tech
 shuffled and dealt into the original current/opponent trays; Alien City, Alien Monument,
 and Resource Cache passive effects are active, along with Booster Pod, Stasis Beam, and
 Polarity Device die powers, Gravity Manipulator transfers, and Booster/Stasis/Gravity
-region-field discards. Original background music and core UI,
+region-field discards. Heinlein, Van Vogt, Herbert, Lem, Bradbury, Asimov, and Pohl
+majority bonuses affect their connected systems. Original background music and core UI,
 dice, docking, colony, card, ship, and turn effects play after the first interaction;
 ships and player panels use Cocos-style eased movement. AI seats automatically play through the
 ported rules using the original SimpleAI fallback priority. The remaining facilities,
-region fields and bonuses, personality-specific ExhaustiveAI strategies, remaining
+remaining region fields/bonuses, personality-specific ExhaustiveAI strategies, remaining
 active/discard tech abilities, full animation coverage, undo/redo, saving, and endgame
 are still being ported.
 

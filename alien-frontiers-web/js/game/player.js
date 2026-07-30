@@ -45,11 +45,18 @@ export class Player {
   }
 
   get resourcesNeededForNextShip() {
-    return this.activeShips.length - 2;
+    const discount = this.state.herbertValley.playerHasBonus(this) ? 1 : 0;
+    return this.activeShips.length - 2 - discount;
   }
 
   get ableToMarketTrade() {
-    return this.marketPrice > 0 && this.fuel >= this.marketPrice;
+    return this.effectiveMarketPrice > 0 && this.fuel >= this.effectiveMarketPrice;
+  }
+
+  get effectiveMarketPrice() {
+    return this.marketPrice > 0 && this.state.heinleinPlains.playerHasBonus(this)
+      ? 1
+      : this.marketPrice;
   }
 
   get vps() {
@@ -264,10 +271,11 @@ export class Player {
     if (!this.ableToMarketTrade) {
       return false;
     }
-    this.fuel -= this.marketPrice;
+    const price = this.effectiveMarketPrice;
+    this.fuel -= price;
     this.ore += 1;
     this.state.postEvent(EventName.resourcesChanged, this);
-    this.state.logMove(`${this.playerName}: Traded ${this.marketPrice} fuel for 1 ore.`);
+    this.state.logMove(`${this.playerName}: Traded ${price} fuel for 1 ore.`);
     return true;
   }
 
@@ -335,6 +343,7 @@ export class Player {
     );
     this.state.colonistHub.advancementThisTurn = 0;
     this.state.asimovCrater.bonusUsedThisTurn = false;
+    this.state.vanVogtMountains.bonusUsedThisTurn = false;
     this.initialRollDone = false;
     this.techsDiscarded = 0;
     this.artifactCreditAvailable = 0;

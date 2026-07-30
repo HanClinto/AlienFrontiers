@@ -576,3 +576,38 @@ test("Terraforming Station rejects native dice until a fourth ship exists", () =
   state.toggleShipSelection(player.activeShips[0]);
   assert.equal(state.commitSelectedShips(state.terraformingStation), false);
 });
+
+test("existing facilities honor Heinlein, Van Vogt, Herbert, and Lem bonuses", () => {
+  const marketState = new GameState(2, [AIType.human, AIType.human]);
+  const marketPlayer = marketState.currentPlayer;
+  marketState.heinleinPlains.addColony(0);
+  marketPlayer.marketPrice = 5;
+  marketPlayer.fuel = 1;
+  assert.equal(marketPlayer.effectiveMarketPrice, 1);
+  assert.equal(marketPlayer.doMarketTrade(), true);
+  assert.deepEqual([marketPlayer.fuel, marketPlayer.ore], [0, 1]);
+
+  const lunarState = new GameState(2, [AIType.human, AIType.human]);
+  const [lunarPlayer, opponent] = lunarState.players;
+  lunarState.vanVogtMountains.addColony(0);
+  opponent.activeShips[0].value = 6;
+  lunarState.lunarMine.dockShip(opponent.activeShips[0]);
+  lunarPlayer.initialRollDone = true;
+  lunarPlayer.activeShips[0].value = 2;
+  lunarState.toggleShipSelection(lunarPlayer.activeShips[0]);
+  assert.equal(lunarState.commitSelectedShips(lunarState.lunarMine), true);
+  assert.equal(lunarState.vanVogtMountains.bonusUsedThisTurn, true);
+
+  const shipState = new GameState(2, [AIType.human, AIType.human]);
+  shipState.herbertValley.addColony(0);
+  assert.equal(shipState.currentPlayer.resourcesNeededForNextShip, 0);
+
+  const solarState = new GameState(2, [AIType.human, AIType.human]);
+  solarState.lemBadlands.addColony(0);
+  const solarPlayer = solarState.currentPlayer;
+  solarPlayer.initialRollDone = true;
+  solarPlayer.activeShips[0].value = 2;
+  solarState.toggleShipSelection(solarPlayer.activeShips[0]);
+  solarState.commitSelectedShips(solarState.solarConverter);
+  assert.equal(solarPlayer.fuel, 2);
+});

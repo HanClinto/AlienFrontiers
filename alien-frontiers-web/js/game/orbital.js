@@ -119,7 +119,8 @@ export class SolarConverter extends Orbital {
     }
     let newFuelTotal = 0;
     for (const ship of selectedShips) {
-      const newFuel = Math.ceil(ship.value / 2);
+      const newFuel = Math.ceil(ship.value / 2)
+        + (this.state.lemBadlands.playerHasBonus(player) ? 1 : 0);
       player.fuel += newFuel;
       newFuelTotal += newFuel;
       this.dockShip(ship);
@@ -173,9 +174,17 @@ export class LunarMine extends Orbital {
   isValidMoveFromPlayer(player, selectedShips) {
     const comparisonPlayer = player.aiType === AIType.human ? player : null;
     const minimumValue = this.maxValueNotFromPlayer(comparisonPlayer);
+    const shipsBelowLimit = selectedShips.filter((ship) => ship.value < minimumValue).length;
     return selectedShips.length > 0
       && selectedShips.length <= this.numEmptyGroups
-      && selectedShips.every((ship) => ship.value >= minimumValue);
+      && (
+        shipsBelowLimit === 0
+        || (
+          shipsBelowLimit === 1
+          && this.state.vanVogtMountains.playerHasBonus(player)
+          && !this.state.vanVogtMountains.bonusUsedThisTurn
+        )
+      );
   }
 
   commitShipsFromPlayer(player, selectedShips) {
@@ -186,6 +195,7 @@ export class LunarMine extends Orbital {
       player.ore += 1;
       this.dockShip(ship);
     }
+    this.state.vanVogtMountains.bonusUsedThisTurn = true;
     this.state.postEvent(EventName.resourcesChanged, player);
     this.finishCommit(selectedShips);
     this.state.logMove(`${player.playerName}: Harvested ${selectedShips.length} ore`);
