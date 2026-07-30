@@ -139,7 +139,7 @@ These rows capture high-volume APIs that class counts alone hide.
 | [ ] | Negative-z node visitation | `[PARTIAL]` | Director draws a node before all children; Cocos draws negative-z children first. |
 | [ ] | Child bounds and transformed rectangles | `[MISSING]` | Add `boundingBox`, `childBounds`, inset and union helpers; replace manual facility/card hit boxes incrementally. |
 | [ ] | General touch pass-through | `[PARTIAL]` | Docked-die forwarding fixes Lunar/Raiders. General `swallowsTouches:NO` behavior remains absent. |
-| [x] | Tray culling and shadows | `[EQ]` | Current and mini trays use the original whole-card visible-index ranges, preserving authored border/shadow pixels. |
+| [x] | Tray culling and shadows | `[EQ]` | Current and mini trays use original whole-card culling and place their HUD frame sprites above the tray, preserving the authored foreground lip/shadow. |
 | [ ] | Scrollable game log | `[PARTIAL]` | The original `172x142` Communications aperture and bottom-following lines render correctly; direct touch scrolling remains unimplemented. |
 | [ ] | Resource and HUD particles | `[MISSING]` | Original `LayerHUDPort.particleWithSprite` motion/fade/scale effects are not ported. |
 | [ ] | Roll/done/region glows | `[MISSING]` | Artwork exists; requires additive blend state and repeat actions at the original call sites. |
@@ -150,9 +150,9 @@ These rows capture high-volume APIs that class counts alone hide.
 |---|---|---|---|
 | [x] | Numeric labels look too high | Fixed by measured ascent/descent, centered alphabetic baselines, and original mini-HUD `30x30` / score `50x60` text boxes. | Browser validation confirms current and mini-HUD counters are centered in their authored cells. |
 | [ ] | Log clips oddly near menu | The original `172x142` aperture at `(40,36)` is restored and no longer overlaps the hint/header. | Add drag/wheel scrolling while keeping bottom-follow mode. |
-| [ ] | Tech descriptions are misaligned | Wrapped descriptions are now centered like the original columns. | BMFont symbol glyphs and exact line metrics remain the full-fidelity follow-up. |
-| [x] | Tech tray border/shadow cues clip | Fixed by removing the pixel scissor and restoring original whole-card index culling. | Current and mini tray frame sprites now retain authored border/shadow pixels. |
-| [ ] | Dice overlap Undo/Redo | Tray centers match original, but original `SpriteShip` is scaled to `0.8`; web ship sprites are currently full-size. | Apply original `0.8` scale to ship visuals/hit areas; keep tray coordinates and controls unchanged. |
+| [ ] | Tech descriptions are misaligned | Wrapped descriptions now use the original `160px` columns, centers, and vertically centered anchor behavior. | BMFont symbol glyphs and exact line metrics remain the full-fidelity follow-up. |
+| [x] | Tech tray border/shadow cues clip | Fixed by whole-card culling plus original frame-over-tray z-order in current and mini HUDs. | Browser crops confirm the foreground lip and shadow overlay the card bottoms. |
+| [x] | Dice overlap Undo/Redo | Restored original `SpriteShip.scale = 0.8` while retaining the original rolling centers. | Browser validation confirms dice remain inside the authored rolling tray above Undo/Redo. |
 | [ ] | Territory ownership tint absent | Region border/overlay assets and blend modes are not used. | Add sprite blend modes, then port `LayerRegion.updateLabels` border and ownership overlay behavior. |
 
 ## Major Functional Gaps
@@ -176,7 +176,7 @@ Out of scope by project decision: Game Center, achievements, landscape layouts, 
 
 - [ ] Add `CCLabelTTF` fixed dimensions and alignment.
 - [x] Correct numeric score/resource baselines in current and mini HUDs.
-- [ ] Restore original `0.8` ship scale and verify tray/control separation.
+- [x] Restore original `0.8` ship scale and verify tray/control separation.
 - [x] Center tech-description wrapping.
 - [ ] Add game-log drag/wheel scrolling to the restored original aperture.
 - [x] Replace exact tray pixel clipping with original whole-card culling/shadow behavior.

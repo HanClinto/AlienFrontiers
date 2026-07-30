@@ -25,6 +25,7 @@ const PLAYER_COLONY_IMAGES_FULL = [
   "colony_yellow.png",
 ];
 const PLAYER_COLORS = ["#ff343e", "#40ff60", "#45caff", "#ffff60"];
+export const SHIP_SPRITE_SCALE = 0.8;
 const REGION_LAYOUTS = Object.freeze([
   { property: "herbertValley", position: [232, 635], title: "Herbert Valley", bonus: "bonus_herbert.png" },
   { property: "lemBadlands", position: [311, 738], title: "Lem Badlands", bonus: "bonus_lem.png" },
@@ -78,6 +79,15 @@ export function gameLogPosition(height = 142) {
   return ccp(40, 1024 - 846 - height);
 }
 
+export function techDescriptionLayout(column) {
+  const center = column === "power" ? ccp(-84, -44) : ccp(80, -44);
+  const size = { width: 160, height: 52 };
+  return {
+    position: ccp(center.x - size.width / 2, center.y - size.height / 2),
+    size,
+  };
+}
+
 export function colonistHubTrackPosition(numPlayers, playerIndex, step) {
   const verticalOffset = (4 - numPlayers) * 14;
   const y = -playerIndex * 28 - verticalOffset;
@@ -112,6 +122,7 @@ class WrappedTextBox extends CCNode {
     this.padding = options.padding ?? 2;
     this.followEnd = options.followEnd ?? false;
     this.textAlign = options.textAlign ?? "left";
+    this.verticalAlign = options.verticalAlign ?? "top";
   }
 
   setText(text) {
@@ -157,9 +168,12 @@ class WrappedTextBox extends CCNode {
     if (lines.length > maxLines) {
       lines = this.followEnd ? lines.slice(-maxLines) : lines.slice(0, maxLines);
     }
-    const startY = this.followEnd
-      ? this.contentSize.height - this.padding - lines.length * this.lineHeight
-      : this.padding;
+    const textHeight = lines.length * this.lineHeight;
+    const startY = this.followEnd || this.verticalAlign === "bottom"
+      ? this.contentSize.height - this.padding - textHeight
+      : this.verticalAlign === "center"
+        ? (this.contentSize.height - textHeight) / 2
+        : this.padding;
     lines.forEach((line, index) => {
       const x = this.textAlign === "center"
         ? this.contentSize.width / 2
@@ -1097,7 +1111,7 @@ class PlayerMiniHUD extends CCNode {
 
     this.frame = new CCSprite(scene.assets.image("hud_port_player_tab_full.png"));
     this.frame.setAnchorPoint(ccp(0.5, 1));
-    this.addChild(this.frame, 0);
+    this.addChild(this.frame, 1);
 
     const cornerImage = tintedImage(
       scene.assets.image("hud_port_corner_tint_mini.png"),
@@ -1122,7 +1136,7 @@ class PlayerMiniHUD extends CCNode {
 
     this.techTray = new TechCardTray(scene, "wide", (card) => this.selectRaidCard(card));
     this.techTray.setPosition(ccp(-88, -109));
-    this.addChild(this.techTray, 1);
+    this.addChild(this.techTray, 0);
 
     this.raidControls = [];
     this.addRaidControl("ore", 1, ccp(-76, -458), "hud_button_RO_up.png", "hud_button_ro_up_active.png", "hud_button_ro_up_inactive.png");
@@ -1241,6 +1255,7 @@ class ShipSprite extends CCNode {
     this.selectionAnimating = false;
     this.contentSize = { width: 43, height: 43 };
     this.setAnchorPoint(ccp(0.5, 0.5));
+    this.setScale(SHIP_SPRITE_SCALE);
     this.interactive = true;
     this.enabled = true;
     this.activate = () => this.scene.toggleShip(this.ship);
@@ -1430,7 +1445,7 @@ export class GameScene extends AFLayer {
     this.addChild(this.uiFrame, 5);
 
     const frame = new CCSprite(this.assets.image("hud_port_player_tab_large.png"));
-    this.uiFrame.addChild(frame, 0);
+    this.uiFrame.addChild(frame, 2);
 
     this.rollButton = this.buttonFromImage(
       "button_roll_up.png",
@@ -1499,7 +1514,7 @@ export class GameScene extends AFLayer {
       (card) => this.state.selectTechCard(card),
     );
     this.currentTechTray.setPosition(ccp(-166, 47));
-    this.uiFrame.addChild(this.currentTechTray, 1);
+    this.uiFrame.addChild(this.currentTechTray, 0);
 
     this.techUseButton = this.buttonFromImage(
       "menu_button_68.png",
@@ -1519,20 +1534,32 @@ export class GameScene extends AFLayer {
     this.techDiscardButton.setPosition(ccp(80, -76));
     this.uiFrame.addChild(this.techDiscardButton, 3);
 
-    this.techPowerDescription = new WrappedTextBox(154, 52, {
-      fontSize: 10,
-      lineHeight: 12,
-      textAlign: "center",
-    });
-    this.techPowerDescription.setPosition(ccp(-164, -53));
+    const powerDescriptionLayout = techDescriptionLayout("power");
+    this.techPowerDescription = new WrappedTextBox(
+      powerDescriptionLayout.size.width,
+      powerDescriptionLayout.size.height,
+      {
+        fontSize: 10,
+        lineHeight: 12,
+        textAlign: "center",
+        verticalAlign: "center",
+      },
+    );
+    this.techPowerDescription.setPosition(powerDescriptionLayout.position);
     this.uiFrame.addChild(this.techPowerDescription, 2);
 
-    this.techDiscardDescription = new WrappedTextBox(154, 52, {
-      fontSize: 10,
-      lineHeight: 12,
-      textAlign: "center",
-    });
-    this.techDiscardDescription.setPosition(ccp(10, -53));
+    const discardDescriptionLayout = techDescriptionLayout("discard");
+    this.techDiscardDescription = new WrappedTextBox(
+      discardDescriptionLayout.size.width,
+      discardDescriptionLayout.size.height,
+      {
+        fontSize: 10,
+        lineHeight: 12,
+        textAlign: "center",
+        verticalAlign: "center",
+      },
+    );
+    this.techDiscardDescription.setPosition(discardDescriptionLayout.position);
     this.uiFrame.addChild(this.techDiscardDescription, 2);
 
     this.menuButton = this.buttonFromImage(

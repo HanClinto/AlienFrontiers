@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { colonistHubTrackPosition, gameLogPosition, miniHUDPosition, regionAtBoardPoint, rollingTrayPosition, techCardPosition, techTrayScrollBounds, techTrayVisibleRange } from "../js/scenes/game.js";
+import { colonistHubTrackPosition, gameLogPosition, miniHUDPosition, regionAtBoardPoint, rollingTrayPosition, SHIP_SPRITE_SCALE, techCardPosition, techDescriptionLayout, techTrayScrollBounds, techTrayVisibleRange } from "../js/scenes/game.js";
 
 test("all six ships wrap into the original four-column tray", () => {
+  assert.equal(SHIP_SPRITE_SCALE, 0.8);
   assert.deepEqual(
     Array.from({ length: 6 }, (_, shipIndex) => rollingTrayPosition(shipIndex)),
     [
@@ -95,6 +96,17 @@ test("tech trays hide whole cards using the original visible index range", () =>
 
 test("game log occupies the original wrapped UITextView aperture", () => {
   assert.deepEqual(gameLogPosition(), { x: 40, y: 36 });
+});
+
+test("tech descriptions retain the original inspector centers and widths", () => {
+  assert.deepEqual(techDescriptionLayout("power"), {
+    position: { x: -164, y: -70 },
+    size: { width: 160, height: 52 },
+  });
+  assert.deepEqual(techDescriptionLayout("discard"), {
+    position: { x: 0, y: -70 },
+    size: { width: 160, height: 52 },
+  });
 });
 
 test("Colonist Hub tracks retain original compressed player rows", () => {
