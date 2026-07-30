@@ -51,7 +51,9 @@ dice, docking, colony, card, ship, and turn effects play after the first interac
 ships and player panels use Cocos-style eased movement, tech cards slide elastically into
 their trays, and dice scale/rotate when rolled with rotating selection rings. Final colony
 placement opens the ranked, blocking game-over results overlay. The lower HUD includes
-HELP and an animated blocking menu with persistent music/SFX controls, Resume, and Quit.
+the live game log, selected tech power/discard descriptions, HELP, and an animated blocking
+menu with persistent music/SFX controls, Resume, and Quit. Usable facilities retain white
+docks while unavailable docks fade to the original subdued gray.
 AI seats automatically play through the ported rules using the original SimpleAI fallback
 priority. Stable game states autosave locally, and unfinished games can be resumed from
 the main menu after navigation or reload. Original one-level undo/redo controls restore

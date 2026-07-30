@@ -86,6 +86,73 @@ function tintedImage(image, color) {
   return canvas;
 }
 
+class WrappedTextBox extends CCNode {
+  constructor(width, height, options = {}) {
+    super();
+    this.contentSize = { width, height };
+    this.clipRect = { x: 0, y: 0, width, height };
+    this.text = "";
+    this.fontName = options.fontName ?? "DIN-Medium";
+    this.fontSize = options.fontSize ?? 11;
+    this.lineHeight = options.lineHeight ?? 13;
+    this.color = options.color ?? "#000";
+    this.padding = options.padding ?? 2;
+    this.followEnd = options.followEnd ?? false;
+  }
+
+  setText(text) {
+    this.text = String(text ?? "");
+  }
+
+  wrappedLines(context) {
+    const maxWidth = this.contentSize.width - this.padding * 2;
+    const lines = [];
+    for (const paragraph of this.text.split("\n")) {
+      const words = paragraph.split(/\s+/).filter(Boolean);
+      if (words.length === 0) {
+        lines.push("");
+        continue;
+      }
+      let line = words.shift();
+      for (const word of words) {
+        const candidate = `${line} ${word}`;
+        if (context.measureText(candidate).width <= maxWidth) {
+          line = candidate;
+        } else {
+          lines.push(line);
+          line = word;
+        }
+      }
+      lines.push(line);
+    }
+    return lines;
+  }
+
+  draw(context) {
+    context.save();
+    context.translate(0, this.contentSize.height);
+    context.scale(1, -1);
+    context.font = `${this.fontSize}px "${this.fontName}"`;
+    context.fillStyle = this.color;
+    context.textAlign = "left";
+    context.textBaseline = "top";
+    const maxLines = Math.floor(
+      (this.contentSize.height - this.padding * 2) / this.lineHeight,
+    );
+    let lines = this.wrappedLines(context);
+    if (lines.length > maxLines) {
+      lines = this.followEnd ? lines.slice(-maxLines) : lines.slice(0, maxLines);
+    }
+    const startY = this.followEnd
+      ? this.contentSize.height - this.padding - lines.length * this.lineHeight
+      : this.padding;
+    lines.forEach((line, index) => {
+      context.fillText(line, this.padding, startY + index * this.lineHeight);
+    });
+    context.restore();
+  }
+}
+
 export function regionAtBoardPoint(state, point) {
   const deltaX = point.x - 381;
   const deltaY = point.y - 580;
@@ -1396,6 +1463,14 @@ export class GameScene extends AFLayer {
     this.diceLabel = this.hudLabel("0", 22, ccp(288, 87), "#000");
     this.hintLabel = this.hudLabel("", 17, ccp(-168, 109), "#ffc200");
 
+    this.gameLogView = new WrappedTextBox(172, 142, {
+      fontSize: 11,
+      lineHeight: 13,
+      followEnd: true,
+    });
+    this.gameLogView.setPosition(ccp(-374, -10));
+    this.uiFrame.addChild(this.gameLogView, 2);
+
     this.currentTechTray = new TechCardTray(
       this,
       "tall",
@@ -1421,6 +1496,20 @@ export class GameScene extends AFLayer {
     );
     this.techDiscardButton.setPosition(ccp(80, -76));
     this.uiFrame.addChild(this.techDiscardButton, 3);
+
+    this.techPowerDescription = new WrappedTextBox(154, 52, {
+      fontSize: 10,
+      lineHeight: 12,
+    });
+    this.techPowerDescription.setPosition(ccp(-164, -53));
+    this.uiFrame.addChild(this.techPowerDescription, 2);
+
+    this.techDiscardDescription = new WrappedTextBox(154, 52, {
+      fontSize: 10,
+      lineHeight: 12,
+    });
+    this.techDiscardDescription.setPosition(ccp(10, -53));
+    this.uiFrame.addChild(this.techDiscardDescription, 2);
 
     this.menuButton = this.buttonFromImage(
       "menu_button_68.png",
@@ -1609,6 +1698,7 @@ export class GameScene extends AFLayer {
     this.fuelLabel.setString(player.fuel);
     this.colonyLabel.setString(player.coloniesLeft);
     this.diceLabel.setString(player.activeShips.length);
+    this.gameLogView.setText(this.state.gameLog.join("\n"));
     this.hintLabel.setString(isHumanTurn
       ? player.isRaiding ? "SELECT UP TO 4 RESOURCES OR ONE TECH"
         : isSelectingFieldRegion ? "SELECT A REGION FOR THE FIELD EFFECT"
@@ -1622,6 +1712,8 @@ export class GameScene extends AFLayer {
       : "AI TURN");
     this.currentTechTray.refresh(player);
     const selectedCard = player.selectedCard;
+    this.techPowerDescription.setText(selectedCard?.powerText ?? "");
+    this.techDiscardDescription.setText(selectedCard?.discardText ?? "");
     const candidateShips = selectedCard?.type === "plasma-cannon"
       ? this.state.players.flatMap((candidate) => candidate.activeShips)
       : selectedCard?.type === "orbital-teleporter"

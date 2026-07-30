@@ -13,17 +13,17 @@ export const TechCardType = Object.freeze({
 });
 
 export const TECH_CARD_DEFINITIONS = Object.freeze([
-  { type: TechCardType.alienCity, title: "Alien City", title1: "ALIEN", title2: "CITY", image: "tech_ac.png", count: 1, victoryPoints: 1, hasPower: false, hasDiscard: false },
-  { type: TechCardType.alienMonument, title: "Alien Monument", title1: "ALIEN", title2: "MONUMENT", image: "tech_am.png", count: 1, victoryPoints: 1, hasPower: false, hasDiscard: false },
-  { type: TechCardType.boosterPod, title: "Booster Pod", title1: "BOOSTER", title2: "POD", image: "tech_bp.png", count: 2 },
-  { type: TechCardType.plasmaCannon, title: "Plasma Cannon", title1: "PLASMA", title2: "CANNON", image: "tech_pc.png", count: 2 },
-  { type: TechCardType.resourceCache, title: "Resource Cache", title1: "RESOURCE", title2: "CACHE", image: "tech_rc.png", count: 2, hasPower: false, hasDiscard: false },
-  { type: TechCardType.stasisBeam, title: "Stasis Beam", title1: "STASIS", title2: "BEAM", image: "tech_sb.png", count: 2 },
-  { type: TechCardType.gravityManipulator, title: "Gravity Manipulator", title1: "GRAVITY", title2: "MANIPULATOR", image: "tech_gm.png", count: 2, baseFuelCost: 2 },
-  { type: TechCardType.polarityDevice, title: "Polarity Device", title1: "POLARITY", title2: "DEVICE", image: "tech_pd.png", count: 2 },
-  { type: TechCardType.dataCrystal, title: "Data Crystal", title1: "DATA", title2: "CRYSTAL", image: "tech_dc.png", count: 2 },
-  { type: TechCardType.orbitalTeleporter, title: "Orbital Teleporter", title1: "ORBITAL", title2: "TELEPORTER", image: "tech_ot.png", count: 2, baseFuelCost: 2 },
-  { type: TechCardType.holographicDecoy, title: "Holographic Decoy", title1: "HOLOGRAPHIC", title2: "DECOY", image: "tech_hd.png", count: 2, hasPower: false, hasDiscard: false },
+  { type: TechCardType.alienCity, title: "Alien City", title1: "ALIEN", title2: "CITY", image: "tech_ac.png", count: 1, victoryPoints: 1, hasPower: false, hasDiscard: false, powerText: "Gain 1 Victory Point while you possess this card." },
+  { type: TechCardType.alienMonument, title: "Alien Monument", title1: "ALIEN", title2: "MONUMENT", image: "tech_am.png", count: 1, victoryPoints: 1, hasPower: false, hasDiscard: false, powerText: "Gain 1 Victory Point while you possess this card." },
+  { type: TechCardType.boosterPod, title: "Booster Pod", title1: "BOOSTER", title2: "POD", image: "tech_bp.png", count: 2, powerText: "Pay 1 fuel to add one point to one of your unplaced ships.", discardText: "Discard to remove all fields from a territory." },
+  { type: TechCardType.plasmaCannon, title: "Plasma Cannon", title1: "PLASMA", title2: "CANNON", image: "tech_pc.png", count: 2, powerText: "Pay 1 fuel per ship to move other players' ships from one orbital facility to Maintenance Bay.", discardText: "Discard to destroy one ship. Its owner must have at least 4 ships." },
+  { type: TechCardType.resourceCache, title: "Resource Cache", title1: "RESOURCE", title2: "CACHE", image: "tech_rc.png", count: 2, hasPower: false, hasDiscard: false, powerText: "After each roll: more even ships grants 1 fuel; more odd ships grants 1 ore; a tie grants both and discards this card." },
+  { type: TechCardType.stasisBeam, title: "Stasis Beam", title1: "STASIS", title2: "BEAM", image: "tech_sb.png", count: 2, powerText: "Pay 1 fuel to subtract one point from one of your unplaced ships.", discardText: "Discard to place or move the Isolation Field." },
+  { type: TechCardType.gravityManipulator, title: "Gravity Manipulator", title1: "GRAVITY", title2: "MANIPULATOR", image: "tech_gm.png", count: 2, baseFuelCost: 2, powerText: "Pay 2 fuel to move one point from one unplaced ship to another.", discardText: "Discard to place or move the Repulsor Field." },
+  { type: TechCardType.polarityDevice, title: "Polarity Device", title1: "POLARITY", title2: "DEVICE", image: "tech_pd.png", count: 2, powerText: "Pay 1 fuel to flip one unplaced ship to its opposite face.", discardText: "Discard to swap two colonies on different territories." },
+  { type: TechCardType.dataCrystal, title: "Data Crystal", title1: "DATA", title2: "CRYSTAL", image: "tech_dc.png", count: 2, powerText: "Pay 1 fuel per colony on a territory to use its bonus this turn.", discardText: "Discard to place or move the Positron Field." },
+  { type: TechCardType.orbitalTeleporter, title: "Orbital Teleporter", title1: "ORBITAL", title2: "TELEPORTER", image: "tech_ot.png", count: 2, baseFuelCost: 2, powerText: "Pay 2 fuel to reuse one of your ships at a different orbital facility.", discardText: "Discard to move any colony to a different territory." },
+  { type: TechCardType.holographicDecoy, title: "Holographic Decoy", title1: "HOLOGRAPHIC", title2: "DECOY", image: "tech_hd.png", count: 2, hasPower: false, hasDiscard: false, powerText: "Opponents may not raid fuel or ore from you.", discardText: "If an opponent steals tech from you, it must be this card." },
 ]);
 
 export class TechCard {
@@ -45,6 +45,8 @@ export class TechCard {
   get baseFuelCost() { return this.definition.baseFuelCost ?? 1; }
   get hasPower() { return this.definition.hasPower ?? true; }
   get hasDiscard() { return this.definition.hasDiscard ?? true; }
+  get powerText() { return this.definition.powerText ?? ""; }
+  get discardText() { return this.definition.discardText ?? ""; }
 
   get adjustedFuelCost() {
     const discount = this.owner && this.state.pohlFoothills.playerHasBonus(this.owner) ? 1 : 0;

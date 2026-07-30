@@ -78,6 +78,7 @@ export class GameState {
 
   logMove(message) {
     this.gameLog.push(message);
+    this.postEvent(EventName.logEntry, message);
   }
 
   createUndoPoint() {

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { AIType } from "../js/game/constants.js";
+import { AIType, EventName } from "../js/game/constants.js";
 import { GameState } from "../js/game/game-state.js";
 import { SimpleAI } from "../js/game/simple-ai.js";
 import { TECH_CARD_DEFINITIONS, TechCardType } from "../js/game/tech-card.js";
@@ -244,6 +244,21 @@ test("builds, shuffles, deals, and displays the exact 20-card tech deck", () => 
     ...state.techDisplayDeck,
     ...state.techDrawDeck,
   ]).size, 20);
+});
+
+test("every enabled tech card exposes its original visible description", () => {
+  for (const definition of TECH_CARD_DEFINITIONS) {
+    assert.ok(definition.powerText || definition.discardText, definition.title);
+  }
+});
+
+test("game log entries notify the HUD immediately", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const entries = [];
+  state.events.on(EventName.logEntry, ({ object }) => entries.push(object));
+  state.logMove("A visible test move");
+  assert.equal(state.gameLog.at(-1), "A visible test move");
+  assert.deepEqual(entries, ["A visible test move"]);
 });
 
 test("Alien City and Monument add passive victory points", () => {
