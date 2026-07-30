@@ -717,3 +717,43 @@ test("Plasma Cannon enforces one orbital and discard destroys only surplus ships
   assert.equal(victim.allShips[0].active, false);
   assert.equal(state.techDiscardDeck.includes(plasma), true);
 });
+
+test("Orbital Teleporter discard moves a selected colony to another region", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const teleporter = state.allTech.find((card) => card.type === TechCardType.orbitalTeleporter);
+  player.cards = [];
+  player.addCard(teleporter);
+  state.heinleinPlains.addColony(1);
+
+  assert.equal(state.beginTechDiscard(teleporter), true);
+  assert.equal(state.selectPlacedColony(state.heinleinPlains, state.players[1]), true);
+  assert.equal(state.pendingTechAction, "discard-colony-destination");
+  assert.equal(state.selectRegion(state.heinleinPlains), false);
+  assert.equal(state.selectRegion(state.lemBadlands), true);
+  assert.equal(state.heinleinPlains.coloniesForPlayer(1), 0);
+  assert.equal(state.lemBadlands.coloniesForPlayer(1), 1);
+  assert.equal(state.techDiscardDeck.includes(teleporter), true);
+});
+
+test("Polarity discard swaps two selected colonies between regions", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const polarity = state.allTech.find((card) => card.type === TechCardType.polarityDevice);
+  player.cards = [];
+  player.addCard(polarity);
+  state.heinleinPlains.addColony(0);
+  state.lemBadlands.addColony(1);
+
+  assert.equal(state.beginTechDiscard(polarity), true);
+  assert.equal(state.selectPlacedColony(state.heinleinPlains, state.players[0]), true);
+  assert.equal(state.selectPlacedColony(state.heinleinPlains, state.players[0]), false);
+  assert.equal(state.selectPlacedColony(state.lemBadlands, state.players[1]), true);
+  assert.deepEqual([
+    state.heinleinPlains.coloniesForPlayer(0),
+    state.heinleinPlains.coloniesForPlayer(1),
+    state.lemBadlands.coloniesForPlayer(0),
+    state.lemBadlands.coloniesForPlayer(1),
+  ], [0, 1, 1, 0]);
+  assert.equal(state.techDiscardDeck.includes(polarity), true);
+});

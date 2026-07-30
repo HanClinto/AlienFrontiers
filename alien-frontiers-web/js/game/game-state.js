@@ -18,6 +18,7 @@ export class GameState {
     this.numTurns = 0;
     this.pendingTechCard = null;
     this.pendingTechTargets = [];
+    this.pendingColonyTargets = [];
     this.pendingTechAction = null;
     this.gameLog = [`Began new ${numPlayers} player game`];
 
@@ -159,6 +160,7 @@ export class GameState {
     }
     this.pendingTechCard = card;
     this.pendingTechTargets = [];
+    this.pendingColonyTargets = [];
     this.pendingTechAction = card.type === "data-crystal"
       ? "power-region"
       : card.type === "plasma-cannon" ? "power-multi-ship" : "power";
@@ -175,9 +177,7 @@ export class GameState {
       if (!card.useDiscardOnShip(ship)) {
         return false;
       }
-      this.pendingTechCard = null;
-      this.pendingTechTargets = [];
-      this.pendingTechAction = null;
+      this.clearPendingTech();
       this.postEvent(EventName.techCardsChanged, card);
       return true;
     }
@@ -213,31 +213,37 @@ export class GameState {
       if (!card.useGravityPower(this.pendingTechTargets[0], ship)) {
         return false;
       }
-      this.pendingTechCard = null;
-      this.pendingTechTargets = [];
-      this.pendingTechAction = null;
+      this.clearPendingTech();
       this.postEvent(EventName.techCardsChanged, card);
       return true;
     }
     if (!card.usePowerOnShip(ship)) {
       return false;
     }
-    this.pendingTechCard = null;
-    this.pendingTechTargets = [];
-    this.pendingTechAction = null;
+    this.clearPendingTech();
     this.postEvent(EventName.techCardsChanged, card);
     return true;
   }
 
   selectRegion(region) {
+    if (
+      this.pendingTechCard
+      && this.pendingTechAction === "discard-colony-destination"
+    ) {
+      const card = this.pendingTechCard;
+      if (!card.useTeleporterColonyDiscard(this.pendingColonyTargets[0], region)) {
+        return false;
+      }
+      this.clearPendingTech();
+      this.postEvent(EventName.techCardsChanged, region);
+      return true;
+    }
     if (this.pendingTechCard && this.pendingTechAction === "power-region") {
       const card = this.pendingTechCard;
       if (!card.usePowerOnRegion(region)) {
         return false;
       }
-      this.pendingTechCard = null;
-      this.pendingTechTargets = [];
-      this.pendingTechAction = null;
+      this.clearPendingTech();
       this.postEvent(EventName.techCardsChanged, region);
       return true;
     }
@@ -246,9 +252,7 @@ export class GameState {
       if (!card.useDiscardOnRegion(region)) {
         return false;
       }
-      this.pendingTechCard = null;
-      this.pendingTechTargets = [];
-      this.pendingTechAction = null;
+      this.clearPendingTech();
       this.postEvent(EventName.techCardsChanged, region);
       return true;
     }
@@ -266,13 +270,20 @@ export class GameState {
     if (
       !this.currentPlayer.cards.includes(card)
       || !card.canUseDiscard
-      || (!card.hasImplementedRegionDiscard && !card.hasImplementedShipDiscard)
+      || (
+        !card.hasImplementedRegionDiscard
+        && !card.hasImplementedShipDiscard
+        && !card.hasImplementedColonyDiscard
+      )
     ) {
       return false;
     }
     this.pendingTechCard = card;
     this.pendingTechTargets = [];
-    this.pendingTechAction = card.hasImplementedShipDiscard ? "discard-ship" : "discard";
+    this.pendingColonyTargets = [];
+    this.pendingTechAction = card.hasImplementedShipDiscard
+      ? "discard-ship"
+      : card.hasImplementedColonyDiscard ? "discard-colony" : "discard";
     this.postEvent(EventName.techCardsChanged, card);
     return true;
   }
@@ -285,11 +296,53 @@ export class GameState {
       return false;
     }
     const card = this.pendingTechCard;
-    this.pendingTechCard = null;
-    this.pendingTechTargets = [];
-    this.pendingTechAction = null;
+    this.clearPendingTech();
     this.postEvent(EventName.techCardsChanged, card);
     return true;
+  }
+
+  selectPlacedColony(region, player) {
+    if (
+      this.pendingTechAction !== "discard-colony"
+      || region.coloniesForPlayer(player.playerIndex) <= 0
+    ) {
+      return false;
+    }
+    const selection = { region, player };
+    if (this.pendingTechCard.type === "orbital-teleporter") {
+      this.pendingColonyTargets = [selection];
+      this.pendingTechAction = "discard-colony-destination";
+      this.postEvent(EventName.techCardsChanged, region);
+      return true;
+    }
+    if (this.pendingTechCard.type === "polarity-device") {
+      if (
+        this.pendingColonyTargets.length > 0
+        && this.pendingColonyTargets[0].region === region
+      ) {
+        return false;
+      }
+      this.pendingColonyTargets.push(selection);
+      if (this.pendingColonyTargets.length < 2) {
+        this.postEvent(EventName.techCardsChanged, region);
+        return true;
+      }
+      const card = this.pendingTechCard;
+      if (!card.usePolarityColonyDiscard(...this.pendingColonyTargets)) {
+        return false;
+      }
+      this.clearPendingTech();
+      this.postEvent(EventName.techCardsChanged, region);
+      return true;
+    }
+    return false;
+  }
+
+  clearPendingTech() {
+    this.pendingTechCard = null;
+    this.pendingTechTargets = [];
+    this.pendingColonyTargets = [];
+    this.pendingTechAction = null;
   }
 
   gotoNextPlayer() {
@@ -299,6 +352,7 @@ export class GameState {
     this.currentPlayer.endTurnCleanup();
     this.pendingTechCard = null;
     this.pendingTechTargets = [];
+    this.pendingColonyTargets = [];
     this.pendingTechAction = null;
     const nextPlayerIndex = (this.currentPlayerIndex + 1) % this.numPlayers;
     if (nextPlayerIndex < this.currentPlayerIndex) {

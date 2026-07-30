@@ -78,6 +78,10 @@ export class TechCard {
     return this.type === TechCardType.plasmaCannon;
   }
 
+  get hasImplementedColonyDiscard() {
+    return [TechCardType.orbitalTeleporter, TechCardType.polarityDevice].includes(this.type);
+  }
+
   canUsePowerOnShip(ship) {
     if (!this.canUsePower || !ship || ship.player !== this.owner) {
       return false;
@@ -250,6 +254,52 @@ export class TechCard {
     owner.techsDiscarded += 1;
     owner.removeCard(this);
     this.state.discardTechCard(this);
+    return true;
+  }
+
+  consumeDiscard() {
+    const owner = this.owner;
+    owner.techsDiscarded += 1;
+    owner.removeCard(this);
+    this.state.discardTechCard(this);
+  }
+
+  useTeleporterColonyDiscard(selection, destination) {
+    if (
+      this.type !== TechCardType.orbitalTeleporter
+      || !this.canUseDiscard
+      || !selection
+      || !destination
+      || selection.region === destination
+      || selection.region.coloniesForPlayer(selection.player.playerIndex) <= 0
+    ) {
+      return false;
+    }
+    selection.region.colonyCounts[selection.player.playerIndex] -= 1;
+    destination.colonyCounts[selection.player.playerIndex] += 1;
+    this.consumeDiscard();
+    this.state.postEvent("colonies-changed", destination);
+    return true;
+  }
+
+  usePolarityColonyDiscard(first, second) {
+    if (
+      this.type !== TechCardType.polarityDevice
+      || !this.canUseDiscard
+      || !first
+      || !second
+      || first.region === second.region
+      || first.region.coloniesForPlayer(first.player.playerIndex) <= 0
+      || second.region.coloniesForPlayer(second.player.playerIndex) <= 0
+    ) {
+      return false;
+    }
+    first.region.colonyCounts[first.player.playerIndex] -= 1;
+    first.region.colonyCounts[second.player.playerIndex] += 1;
+    second.region.colonyCounts[second.player.playerIndex] -= 1;
+    second.region.colonyCounts[first.player.playerIndex] += 1;
+    this.consumeDiscard();
+    this.state.postEvent("colonies-changed", first.region);
     return true;
   }
 

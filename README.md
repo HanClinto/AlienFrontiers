@@ -42,7 +42,8 @@ and Resource Cache passive effects are active, along with Booster Pod, Stasis Be
 Polarity Device die powers, Gravity Manipulator transfers, and Booster/Stasis/Gravity
 region-field discards, plus Data Crystal bonus borrowing and Positron placement. Orbital
 Teleporter can reuse a docked die at a different facility, while Plasma Cannon removes
-or destroys eligible enemy ships. Heinlein, Van Vogt, Herbert,
+or destroys eligible enemy ships. Teleporter and Polarity discards can move or swap
+placed colonies. Heinlein, Van Vogt, Herbert,
 Lem, Bradbury, Asimov, and Pohl
 majority bonuses affect their connected systems. Original background music and core UI,
 dice, docking, colony, card, ship, and turn effects play after the first interaction;

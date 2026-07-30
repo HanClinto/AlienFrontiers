@@ -430,6 +430,16 @@ class RegionLayer extends CCNode {
       counter.setPosition(ccp(colonyX + 15, -55));
       this.addChild(counter, 3);
       this.colonyNodes.push(counter);
+
+      const hitArea = new CCNode();
+      hitArea.contentSize = { width: 32, height: 32 };
+      hitArea.setPosition(ccp(colonyX, -65));
+      hitArea.interactive = true;
+      hitArea.enabled = this.scene.state.pendingTechAction === "discard-colony";
+      hitArea.touchPriority = -15;
+      hitArea.activate = () => this.scene.state.selectPlacedColony(this.region, player);
+      this.addChild(hitArea, 5);
+      this.colonyNodes.push(hitArea);
     });
   }
 
@@ -1244,6 +1254,10 @@ export class GameScene extends AFLayer {
       && this.state.pendingTechAction === "power-multi-ship";
     const isSelectingDiscardShip = isHumanTurn
       && this.state.pendingTechAction === "discard-ship";
+    const isSelectingColony = isHumanTurn
+      && this.state.pendingTechAction === "discard-colony";
+    const isSelectingColonyDestination = isHumanTurn
+      && this.state.pendingTechAction === "discard-colony-destination";
     if (isHumanTurn && this.aiTimer) {
       clearTimeout(this.aiTimer);
       this.aiTimer = null;
@@ -1268,6 +1282,8 @@ export class GameScene extends AFLayer {
         : isSelectingFieldRegion ? "SELECT A REGION FOR THE FIELD EFFECT"
         : isSelectingPowerRegion ? "SELECT AN OCCUPIED REGION BONUS TO BORROW"
         : isSelectingDiscardShip ? "SELECT ONE DOCKED ENEMY SHIP TO DESTROY"
+        : isSelectingColony ? this.colonyDiscardHint()
+        : isSelectingColonyDestination ? "SELECT THE DESTINATION REGION"
         : this.state.pendingTechCard ? this.techPowerHint(this.state.pendingTechCard)
         : isSelectingRegion ? "SELECT A REGION FOR YOUR COLONY"
         : player.initialRollDone ? "SELECT DICE, THEN A FACILITY" : "ROLL YOUR SHIPS"
@@ -1290,11 +1306,16 @@ export class GameScene extends AFLayer {
     this.techUseButton.visible = Boolean(canUseSelected) && !this.state.pendingTechCard;
     this.techDiscardButton.visible = Boolean(
       selectedCard?.canUseDiscard
-      && (selectedCard.hasImplementedRegionDiscard || selectedCard.hasImplementedShipDiscard),
+      && (
+        selectedCard.hasImplementedRegionDiscard
+        || selectedCard.hasImplementedShipDiscard
+        || selectedCard.hasImplementedColonyDiscard
+      ),
     ) && !this.state.pendingTechCard;
     this.regionHitArea.enabled = isSelectingRegion
       || isSelectingFieldRegion
-      || isSelectingPowerRegion;
+      || isSelectingPowerRegion
+      || isSelectingColonyDestination;
     for (const regionLayer of this.regionLayers) {
       regionLayer.refresh();
     }
@@ -1330,6 +1351,14 @@ export class GameScene extends AFLayer {
       return "SELECT A DOCKED DIE TO TELEPORT";
     }
     return "SELECT AN UNDOCKED DIE TO FLIP";
+  }
+
+  colonyDiscardHint() {
+    return this.state.pendingTechCard.type === "polarity-device"
+      ? this.state.pendingColonyTargets.length === 0
+        ? "SELECT THE FIRST COLONY TO SWAP"
+        : "SELECT THE SECOND COLONY TO SWAP"
+      : "SELECT THE COLONY TO MOVE";
   }
 
   scheduleAI() {
