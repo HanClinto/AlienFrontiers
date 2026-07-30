@@ -1,7 +1,8 @@
 import { AIType, EventName } from "./constants.js";
 import { EventBus } from "./event-bus.js";
-import { LunarMine, MaintenanceBay, OrbitalMarket, Shipyard, SolarConverter } from "./orbital.js";
+import { ColonyConstructor, LunarMine, MaintenanceBay, OrbitalMarket, Shipyard, SolarConverter } from "./orbital.js";
 import { Player } from "./player.js";
+import { Region, REGION_DEFINITIONS } from "./region.js";
 
 export class GameState {
   constructor(numPlayers, playerPersonalities, random = Math.random) {
@@ -19,11 +20,17 @@ export class GameState {
       { length: numPlayers },
       (_, index) => new Player(this, index, index, numPlayers, playerPersonalities[index]),
     );
+    this.regions = REGION_DEFINITIONS.map(([propertyName, title]) => {
+      const region = new Region(this, title);
+      this[propertyName] = region;
+      return region;
+    });
     this.solarConverter = new SolarConverter(this);
     this.maintenanceBay = new MaintenanceBay(this);
     this.lunarMine = new LunarMine(this);
     this.shipyard = new Shipyard(this);
     this.orbitalMarket = new OrbitalMarket(this);
+    this.colonyConstructor = new ColonyConstructor(this);
 
     for (const player of this.players) {
       player.activateStartingShips();
@@ -36,7 +43,9 @@ export class GameState {
   }
 
   get canEndTurn() {
-    return this.currentPlayer.initialRollDone && this.currentPlayer.numUndockedShips === 0;
+    return this.currentPlayer.initialRollDone
+      && this.currentPlayer.numUndockedShips === 0
+      && this.currentPlayer.coloniesToLaunch === 0;
   }
 
   postEvent(name, object) {
@@ -67,6 +76,17 @@ export class GameState {
 
   commitSelectedShips(orbital) {
     return orbital.commitShipsFromPlayer(this.currentPlayer, this.currentPlayer.selectedShips);
+  }
+
+  selectRegion(region) {
+    if (
+      !this.regions.includes(region)
+      || region.hasRepulsorField
+      || this.currentPlayer.coloniesToLaunch <= 0
+    ) {
+      return false;
+    }
+    return region.launchColony(this.currentPlayerIndex);
   }
 
   gotoNextPlayer() {

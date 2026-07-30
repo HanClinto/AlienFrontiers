@@ -6,6 +6,10 @@ export class SimpleAI {
       return true;
     }
 
+    if (player.coloniesToLaunch > 0) {
+      return this.launchColony(state, player);
+    }
+
     if (player.numUndockedShips === 0) {
       return state.gotoNextPlayer();
     }
@@ -15,6 +19,14 @@ export class SimpleAI {
       const matchingShips = shipsByValue.get(ship.value) ?? [];
       matchingShips.push(ship);
       shipsByValue.set(ship.value, matchingShips);
+    }
+    const constructorTriplet = [...shipsByValue.values()].find((ships) =>
+      ships.length >= 3
+      && state.colonyConstructor.isValidMoveFromPlayer(player, ships.slice(0, 3)));
+    if (constructorTriplet) {
+      state.colonyConstructor.commitShipsFromPlayer(player, constructorTriplet.slice(0, 3));
+      this.launchColony(state, player);
+      return true;
     }
     const shipyardPair = [...shipsByValue.values()].find((ships) =>
       ships.length >= 2 && state.shipyard.isValidMoveFromPlayer(player, ships.slice(0, 2)));
@@ -40,5 +52,18 @@ export class SimpleAI {
 
     state.maintenanceBay.commitShipsFromPlayer(player, player.undockedShips);
     return true;
+  }
+
+  static launchColony(state, player) {
+    const legalRegions = state.regions.filter((region) => !region.hasRepulsorField);
+    const needs = legalRegions.map((region) => ({
+      region,
+      coloniesNeeded: region.coloniesNeededForMajority(player),
+    }));
+    const choice = needs.find(({ coloniesNeeded }) => coloniesNeeded === 1)
+      ?? needs.find(({ coloniesNeeded }) => coloniesNeeded === 2)
+      ?? needs.find(({ coloniesNeeded }) => coloniesNeeded === 0)
+      ?? [...needs].sort((left, right) => left.coloniesNeeded - right.coloniesNeeded)[0];
+    return choice ? state.selectRegion(choice.region) : false;
   }
 }

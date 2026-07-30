@@ -57,7 +57,7 @@ export class CCDirector {
       }
       this._pressedNode = null;
       if (pressedNode && pressedNode === releasedNode && pressedNode.enabled) {
-        pressedNode.activate();
+        pressedNode.activate(point);
       }
     });
 

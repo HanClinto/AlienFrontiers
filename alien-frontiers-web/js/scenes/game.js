@@ -16,12 +16,54 @@ const PLAYER_DIE_IMAGES = [
   "hud_die_blue.png",
   "hud_die_yellow.png",
 ];
+const PLAYER_COLONY_IMAGES_FULL = [
+  "colony_red.png",
+  "colony_green.png",
+  "colony_blue.png",
+  "colony_yellow.png",
+];
+const REGION_LAYOUTS = Object.freeze([
+  { property: "herbertValley", position: [232, 635], title: "Herbert Valley", bonus: "bonus_herbert.png" },
+  { property: "lemBadlands", position: [311, 738], title: "Lem Badlands", bonus: "bonus_lem.png" },
+  { property: "heinleinPlains", position: [436, 738], title: "Heinlein Plains", bonus: "bonus_heinlein.png" },
+  { property: "pohlFoothills", position: [518, 635], title: "Pohl Foothills", bonus: "bonus_pohl.png" },
+  { property: "vanVogtMountains", position: [489, 520], upperTitle: "Van Vogt", title: "Mountains", bonus: "bonus_van_vogt.png" },
+  { property: "asimovCrater", position: [261, 520], title: "Asimov Crater", bonus: "bonus_asimov.png" },
+  { property: "bradburyPlateau", position: [374, 469], upperTitle: "Bradbury", title: "Plateau", bonus: "bonus_bradbury.png" },
+  { property: "burroughsDesert", position: [374, 604], title: "Burroughs Desert", bonus: "bonus_burroughs.png" },
+]);
 
 export function rollingTrayPosition(shipIndex) {
   return ccp(
     600 + (shipIndex % 4) * 38,
     77 - Math.floor(shipIndex / 4) * 40,
   );
+}
+
+export function regionAtBoardPoint(state, point) {
+  const deltaX = point.x - 381;
+  const deltaY = point.y - 580;
+  const radius = Math.hypot(deltaX, deltaY);
+  if (radius >= 210) {
+    return null;
+  }
+  if (radius < 81) {
+    return state.burroughsDesert;
+  }
+  let theta = Math.atan2(deltaX, deltaY);
+  if (theta < 0) {
+    theta += Math.PI * 2;
+  }
+  const slice = (Math.floor(theta * 1.114085542671068) + 7) % 7;
+  return [
+    state.heinleinPlains,
+    state.pohlFoothills,
+    state.vanVogtMountains,
+    state.bradburyPlateau,
+    state.asimovCrater,
+    state.herbertValley,
+    state.lemBadlands,
+  ][slice];
 }
 
 class FacilityLayer extends CCNode {
@@ -165,6 +207,74 @@ class OrbitalMarketLayer extends FacilityLayer {
   }
 }
 
+class ColonyConstructorLayer extends FacilityLayer {
+  constructor(scene) {
+    super(scene, scene.state.colonyConstructor, ccp(346, 291), { x: -8, y: -5, width: 165, height: 70 });
+    this.label("COLONY CONSTRUCTOR", ccp(0, 53));
+    this.dockTripleWidth = scene.assets.image("dock_triple.png").naturalWidth;
+    const dockImage = scene.assets.image("dock_triple.png");
+    for (let groupIndex = 0; groupIndex < this.orbital.dockGroups.length; groupIndex += 1) {
+      this.sprite(dockImage, ccp(groupIndex * (this.dockTripleWidth + 2), 8));
+    }
+    this.sprite(scene.assets.image("icons_cc.png"), ccp(0, 7), ccp(0, 1));
+  }
+
+  dockPosition(index) {
+    const groupIndex = Math.floor(index / 3);
+    const groupX = groupIndex * (this.dockTripleWidth + 2);
+    return ccp(groupX + [-1, 25, 51][index % 3], 8);
+  }
+}
+
+class RegionLayer extends CCNode {
+  constructor(scene, layout) {
+    super();
+    this.scene = scene;
+    this.region = scene.state[layout.property];
+    this.colonyNodes = [];
+    this.setPosition(ccp(...layout.position));
+    if (layout.upperTitle) {
+      this.addRegionLabel(layout.upperTitle, ccp(8, 15));
+    }
+    this.addRegionLabel(layout.title, ccp(8, 1));
+    const bonus = new CCSprite(scene.assets.image(layout.bonus));
+    bonus.setPosition(ccp(8, -19));
+    this.addChild(bonus, 1);
+    this.refresh();
+  }
+
+  addRegionLabel(text, position) {
+    const label = new CCLabelTTF(text, "DIN-Medium", 12, "#fff");
+    label.opacity = 204;
+    label.setPosition(position);
+    this.addChild(label, 1);
+  }
+
+  refresh() {
+    for (const node of this.colonyNodes) {
+      this.removeChild(node);
+    }
+    this.colonyNodes.length = 0;
+    const playersWithColonies = this.scene.state.players.filter((player) =>
+      this.region.coloniesForPlayer(player.playerIndex) > 0);
+    playersWithColonies.forEach((player, activeIndex) => {
+      const colonyCount = this.region.coloniesForPlayer(player.playerIndex);
+      const colonyX = (playersWithColonies.length * 0.5 - (activeIndex + 1)) * 25;
+      const colony = new CCSprite(this.scene.assets.image(PLAYER_COLONY_IMAGES_FULL[player.colorIndex]));
+      colony.setAnchorPoint(ccp(0, 0));
+      colony.setPosition(ccp(colonyX, -65));
+      this.addChild(colony, 2);
+      this.colonyNodes.push(colony);
+
+      const counter = new CCLabelTTF(colonyCount, "DIN-Black", 20, "#fff");
+      counter.setAnchorPoint(ccp(0, 0));
+      counter.setPosition(ccp(colonyX + 15, -55));
+      this.addChild(counter, 3);
+      this.colonyNodes.push(counter);
+    });
+  }
+}
+
 class ShipSprite extends CCNode {
   constructor(scene, ship) {
     super();
@@ -229,6 +339,22 @@ export class GameScene extends AFLayer {
     this.addChild(this.shipyardLayer, 4);
     this.marketLayer = new OrbitalMarketLayer(this);
     this.addChild(this.marketLayer, 4);
+    this.constructorLayer = new ColonyConstructorLayer(this);
+    this.addChild(this.constructorLayer, 4);
+
+    this.regionLayers = REGION_LAYOUTS.map((layout) => {
+      const layer = new RegionLayer(this, layout);
+      this.addChild(layer, 3);
+      return layer;
+    });
+    this.regionHitArea = new CCNode();
+    this.regionHitArea.contentSize = { width: 420, height: 420 };
+    this.regionHitArea.setAnchorPoint(ccp(0.5, 0.5));
+    this.regionHitArea.setPosition(ccp(381, 580));
+    this.regionHitArea.interactive = true;
+    this.regionHitArea.enabled = false;
+    this.regionHitArea.activate = (point) => this.selectRegionAt(point);
+    this.addChild(this.regionHitArea, 3);
 
     this.buildHUD();
     this.ensureShipSprites();
@@ -300,6 +426,7 @@ export class GameScene extends AFLayer {
       [this.state.lunarMine, this.lunarLayer],
       [this.state.shipyard, this.shipyardLayer],
       [this.state.orbitalMarket, this.marketLayer],
+      [this.state.colonyConstructor, this.constructorLayer],
     ]).get(orbital);
     if (!layer) {
       throw new Error(`No layer for docked orbital: ${orbital.title}`);
@@ -336,6 +463,13 @@ export class GameScene extends AFLayer {
     this.state.gotoNextPlayer();
   }
 
+  selectRegionAt(point) {
+    const region = regionAtBoardPoint(this.state, point);
+    if (region) {
+      this.state.selectRegion(region);
+    }
+  }
+
   refresh() {
     const player = this.state.currentPlayer;
     this.ensureShipSprites();
@@ -343,6 +477,7 @@ export class GameScene extends AFLayer {
       shipSprite.refresh();
     }
     const isHumanTurn = player.aiType === AIType.human;
+    const isSelectingRegion = isHumanTurn && player.coloniesToLaunch > 0;
     if (isHumanTurn && this.aiTimer) {
       clearTimeout(this.aiTimer);
       this.aiTimer = null;
@@ -350,14 +485,19 @@ export class GameScene extends AFLayer {
     this.rollButton.visible = !player.initialRollDone;
     this.setButtonIsEnabled(this.rollButton, isHumanTurn);
     this.setButtonIsEnabled(this.doneButton, isHumanTurn && this.state.canEndTurn);
-    this.playerLabel.setString("0");
+    this.playerLabel.setString(player.vps);
     this.oreLabel.setString(player.ore);
     this.fuelLabel.setString(player.fuel);
     this.colonyLabel.setString(player.coloniesLeft);
     this.diceLabel.setString(player.activeShips.length);
     this.hintLabel.setString(isHumanTurn
-      ? player.initialRollDone ? "SELECT DICE, THEN A FACILITY" : "ROLL YOUR SHIPS"
+      ? isSelectingRegion ? "SELECT A REGION FOR YOUR COLONY"
+        : player.initialRollDone ? "SELECT DICE, THEN A FACILITY" : "ROLL YOUR SHIPS"
       : "AI TURN");
+    this.regionHitArea.enabled = isSelectingRegion;
+    for (const regionLayer of this.regionLayers) {
+      regionLayer.refresh();
+    }
     this.marketLayer.refresh();
 
     this.updatePlayerIcon("colonyIcon", PLAYER_COLONY_IMAGES[player.colorIndex], ccp(254, 60));

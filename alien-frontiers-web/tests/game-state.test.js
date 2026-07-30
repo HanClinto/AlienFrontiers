@@ -137,3 +137,74 @@ test("Orbital Market sets a pair price, trades fuel for ore, and resets", () => 
   assert.equal(player.marketPrice, 0);
   assert.equal(player.ableToMarketTrade, false);
 });
+
+test("regions resolve majority ties and colony victory points", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const region = state.heinleinPlains;
+
+  assert.equal(region.playerWithMajority, -1);
+  region.addColony(0);
+  assert.equal(region.playerWithMajority, 0);
+  assert.equal(state.players[0].vps, 2);
+  region.addColony(1);
+  assert.equal(region.playerWithMajority, -1);
+  assert.deepEqual(state.players.map((player) => player.vps), [1, 1]);
+  region.hasPositronField = true;
+  region.addColony(0);
+  assert.equal(state.players[0].vps, 4);
+});
+
+test("Colony Constructor queues and lands a colony before turn end", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  player.initialRollDone = true;
+  player.ore = 3;
+  for (const ship of player.activeShips) {
+    ship.value = 4;
+    state.toggleShipSelection(ship);
+  }
+
+  assert.equal(state.commitSelectedShips(state.colonyConstructor), true);
+  assert.equal(player.ore, 0);
+  assert.equal(player.coloniesToLaunch, 1);
+  assert.equal(state.canEndTurn, false);
+  state.bradburyPlateau.hasRepulsorField = true;
+  assert.equal(state.selectRegion(state.bradburyPlateau), false);
+  assert.equal(state.selectRegion(state.heinleinPlains), true);
+  assert.equal(player.coloniesToLaunch, 0);
+  assert.equal(player.coloniesLeft, 7);
+  assert.equal(state.heinleinPlains.coloniesForPlayer(0), 1);
+  assert.equal(player.vps, 2);
+  assert.equal(state.canEndTurn, true);
+});
+
+test("Bradbury control reduces Colony Constructor ore cost", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  state.bradburyPlateau.addColony(0);
+  player.initialRollDone = true;
+  player.ore = 2;
+  for (const ship of player.activeShips) {
+    ship.value = 5;
+    state.toggleShipSelection(ship);
+  }
+
+  assert.equal(state.commitSelectedShips(state.colonyConstructor), true);
+  assert.equal(player.ore, 0);
+});
+
+test("SimpleAI uses Colony Constructor and lands its pending colony", () => {
+  const state = new GameState(2, [AIType.easy, AIType.human], () => 0.4);
+  const player = state.currentPlayer;
+  player.ore = 3;
+
+  SimpleAI.step(state);
+  SimpleAI.step(state);
+
+  assert.deepEqual(player.activeShips.map((ship) => ship.value), [3, 3, 3]);
+  assert.equal(player.ore, 0);
+  assert.equal(player.coloniesToLaunch, 0);
+  assert.equal(player.coloniesLeft, 7);
+  assert.equal(state.heinleinPlains.coloniesForPlayer(0), 1);
+  assert.equal(player.vps, 2);
+});

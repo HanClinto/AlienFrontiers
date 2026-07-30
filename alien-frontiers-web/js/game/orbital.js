@@ -243,3 +243,33 @@ export class OrbitalMarket extends Orbital {
     return true;
   }
 }
+
+export class ColonyConstructor extends Orbital {
+  constructor(state) {
+    super(state, state.numPlayers <= 2 ? 1 : 2, 3);
+    this.title = "Colony Constructor";
+  }
+
+  oreCostForPlayer(player) {
+    return this.state.bradburyPlateau.playerHasBonus(player) ? 2 : 3;
+  }
+
+  isValidMoveFromPlayer(player, selectedShips) {
+    return this.numEmptyGroups > 0
+      && selectedShips.length === 3
+      && selectedShips.every((ship) => ship.value === selectedShips[0].value)
+      && player.ore >= this.oreCostForPlayer(player);
+  }
+
+  commitShipsFromPlayer(player, selectedShips) {
+    if (!this.isValidMoveFromPlayer(player, selectedShips)) {
+      return false;
+    }
+    player.ore -= this.oreCostForPlayer(player);
+    player.addColony();
+    this.firstEmptyGroup.dockShips(selectedShips);
+    this.state.postEvent(EventName.resourcesChanged, player);
+    this.finishCommit(selectedShips);
+    return true;
+  }
+}

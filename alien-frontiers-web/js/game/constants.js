@@ -16,6 +16,8 @@ export const EventName = Object.freeze({
   shipsDocked: "ships-docked",
   shipsRolled: "ships-rolled",
   marketPriceChanged: "market-price-changed",
+  coloniesChanged: "colonies-changed",
+  launchColony: "launch-colony",
   nextPlayer: "next-player",
   nextTurn: "next-turn",
   stateChanged: "state-changed",

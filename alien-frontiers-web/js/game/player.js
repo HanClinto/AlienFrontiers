@@ -10,6 +10,7 @@ export class Player {
     this.fuel = playerIndex === 1 || playerIndex === 3 ? 1 : 0;
     this.ore = playerIndex === 2 || playerIndex === 3 ? 1 : 0;
     this.coloniesLeft = 6 + (4 - numPlayers);
+    this.coloniesToLaunch = 0;
     this.marketPrice = 0;
     this.initialRollDone = false;
     this.allShips = Array.from({ length: 6 }, (_, index) => new Ship(this, index));
@@ -39,6 +40,20 @@ export class Player {
 
   get ableToMarketTrade() {
     return this.marketPrice > 0 && this.fuel >= this.marketPrice;
+  }
+
+  get vps() {
+    return this.state.regions.reduce((total, region) => {
+      const colonies = region.coloniesForPlayer(this.playerIndex);
+      const controlsRegion = region.playerWithMajority === this.playerIndex;
+      return total + colonies + (controlsRegion ? 1 : 0)
+        + (controlsRegion && region.hasPositronField ? 1 : 0);
+    }, 0);
+  }
+
+  addColony() {
+    this.coloniesToLaunch += 1;
+    this.state.postEvent(EventName.launchColony, this);
   }
 
   setMarketPrice(price) {
