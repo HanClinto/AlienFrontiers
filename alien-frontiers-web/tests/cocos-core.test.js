@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { CCLayer, CCNode, CCSprite, ccp } from "../js/cocos/core.js";
-import { CCEaseSineInOut, CCMoveTo } from "../js/cocos/actions.js";
+import { CCEaseElasticOut, CCEaseSineInOut, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo } from "../js/cocos/actions.js";
 
 function assertPoint(actual, expected) {
   assert.ok(Math.abs(actual.x - expected.x) < 0.000001, `${actual.x} != ${expected.x}`);
@@ -76,4 +76,31 @@ test("clipped descendants cannot render interactions outside their viewport", ()
   assert.equal(root.findTopmostNodeAt(ccp(120, 50), (node) => node.interactive), null);
   child.setPosition(80, 50);
   assert.equal(root.findTopmostNodeAt(ccp(80, 50), (node) => node.interactive), child);
+});
+
+test("scale and rotation actions finish at their Cocos targets", () => {
+  const node = new CCNode();
+  node.runAction(new CCScaleTo(0.5, 1.5));
+  node.runAction(new CCRotateBy(0.5, 720));
+  node.update(0.5);
+  assert.equal(node.scaleX, 1.5);
+  assert.equal(node.scaleY, 1.5);
+  assert.equal(node.rotation, 720);
+});
+
+test("repeat-forever rotations continue across action boundaries", () => {
+  const node = new CCNode();
+  node.runAction(new CCRepeatForever(new CCRotateBy(4, 360)));
+  node.update(4);
+  node.update(1);
+  assert.equal(node.rotation, 450);
+});
+
+test("elastic-out movement settles at its exact destination", () => {
+  const node = new CCNode();
+  node.runAction(new CCEaseElasticOut(new CCMoveTo(0.8, ccp(89, 0)), 0.8));
+  node.update(0.4);
+  assert.notEqual(node.position.x, 44.5);
+  node.update(0.4);
+  assertPoint(node.position, ccp(89, 0));
 });

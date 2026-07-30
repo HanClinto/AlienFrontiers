@@ -1,5 +1,5 @@
 import { AFLayer } from "../af-layer.js";
-import { CCEaseSineInOut, CCMoveTo } from "../cocos/actions.js?v=2";
+import { CCEaseElasticOut, CCEaseSineInOut, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo } from "../cocos/actions.js?v=3";
 import { CCLayerColor, CCLabelTTF, CCNode, CCSprite, ccp } from "../cocos/core.js";
 import { AIType, EventName } from "../game/constants.js";
 import { SimpleAI } from "../game/simple-ai.js";
@@ -519,7 +519,7 @@ class TechCardTray extends CCNode {
     this.layout = layout;
     this.onCardActivate = onCardActivate;
     this.cardNodes = [];
-    this.signature = "";
+    this.cardSignature = "";
     this.scrollOffset = 0;
     this.dragged = false;
     this.dragStart = null;
@@ -601,22 +601,26 @@ class TechCardTray extends CCNode {
   }
 
   refresh(player) {
-    const signature = player.cards
-      .map((card) => `${card.cardID}:${card.tapped ? 1 : 0}`)
-      .join(",") + `|${player.selectedCard?.cardID ?? -1}`;
-    if (signature === this.signature) {
+    const cardSignature = player.cards.map((card) => card.cardID).join(",");
+    if (cardSignature === this.cardSignature) {
+      this.cardNodes.forEach((cardNode) => cardNode.refresh());
       return;
     }
-    this.signature = signature;
+    this.cardSignature = cardSignature;
     for (const cardNode of this.cardNodes) {
       this.cardContent.removeChild(cardNode);
     }
     this.cardNodes.length = 0;
     player.cards.forEach((card, cardIndex) => {
       const cardNode = new TechCardView(this.scene, card, this.layout);
-      cardNode.setPosition(techCardPosition(this.layout, cardIndex));
+      const destination = techCardPosition(this.layout, cardIndex);
+      cardNode.setPosition(techCardPosition(this.layout, 0));
       this.cardContent.addChild(cardNode, cardIndex + 1);
       this.cardNodes.push(cardNode);
+      cardNode.runAction(new CCEaseElasticOut(
+        new CCMoveTo(0.8, destination),
+        0.8,
+      ));
     });
     this.setScrollOffset(this.scrollOffset);
   }
@@ -931,6 +935,8 @@ class ShipSprite extends CCNode {
     this.scene = scene;
     this.ship = ship;
     this.targetPosition = null;
+    this.lastRollIndex = ship.rollIndex;
+    this.selectionAnimating = false;
     this.contentSize = { width: 43, height: 43 };
     this.setAnchorPoint(ccp(0.5, 0.5));
     this.interactive = true;
@@ -947,16 +953,35 @@ class ShipSprite extends CCNode {
   refresh() {
     this.visible = this.ship.active;
     this.selectionSprite.visible = this.ship.isSelected;
+    if (this.ship.isSelected && !this.selectionAnimating) {
+      this.selectionAnimating = true;
+      this.selectionSprite.runAction(new CCRepeatForever(new CCRotateBy(4, 360)));
+    } else if (!this.ship.isSelected && this.selectionAnimating) {
+      this.selectionAnimating = false;
+      this.selectionSprite.stopAllActions();
+      this.selectionSprite.rotation = 0;
+    }
     this.opacity = !this.ship.docked && !this.ship.player.initialRollDone ? 128 : 255;
 
-    if (this.frameSprite) {
-      this.removeChild(this.frameSprite);
-    }
     const prefix = PLAYER_DIE_PREFIXES[this.ship.player.colorIndex];
     const frameIndex = this.ship.value >= 1 && this.ship.value <= 6 ? this.ship.value - 1 : 0;
-    this.frameSprite = this.scene.director.frameCache.spriteFrameByName(`${prefix}-${frameIndex}.png`);
-    this.frameSprite.setPosition(ccp(21.5, 21.5));
-    this.addChild(this.frameSprite, 1);
+    const nextFrame = this.scene.director.frameCache.spriteFrameByName(`${prefix}-${frameIndex}.png`);
+    if (!this.frameSprite) {
+      this.frameSprite = nextFrame;
+      this.frameSprite.setPosition(ccp(21.5, 21.5));
+      this.addChild(this.frameSprite, 1);
+    } else {
+      this.frameSprite.image = nextFrame.image;
+      this.frameSprite.sourceRect = nextFrame.sourceRect;
+    }
+    if (this.ship.rollIndex !== this.lastRollIndex) {
+      this.lastRollIndex = this.ship.rollIndex;
+      this.frameSprite.stopAllActions();
+      this.frameSprite.setScale(1.5);
+      this.frameSprite.rotation = 0;
+      this.frameSprite.runAction(new CCScaleTo(0.5, 1));
+      this.frameSprite.runAction(new CCRotateBy(0.5, 720));
+    }
     const destination = this.scene.shipPosition(this.ship);
     if (!this.targetPosition) {
       this.setPosition(destination);

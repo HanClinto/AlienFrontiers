@@ -45,7 +45,8 @@ Teleporter can reuse a docked die at a different facility. Heinlein, Van Vogt, H
 Lem, Bradbury, Asimov, and Pohl
 majority bonuses affect their connected systems. Original background music and core UI,
 dice, docking, colony, card, ship, and turn effects play after the first interaction;
-ships and player panels use Cocos-style eased movement. AI seats automatically play through the
+ships and player panels use Cocos-style eased movement, tech cards slide elastically into
+their trays, and dice scale/rotate when rolled with rotating selection rings. AI seats automatically play through the
 ported rules using the original SimpleAI fallback priority. The remaining facilities,
 remaining region fields/bonuses, personality-specific ExhaustiveAI strategies, remaining
 active/discard tech abilities, full animation coverage, undo/redo, saving, and endgame

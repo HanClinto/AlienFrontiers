@@ -48,6 +48,41 @@ export class CCMoveTo extends CCActionInterval {
   }
 }
 
+export class CCScaleTo extends CCActionInterval {
+  constructor(duration, scaleX, scaleY = scaleX) {
+    super(duration);
+    this.endScaleX = scaleX;
+    this.endScaleY = scaleY;
+  }
+
+  onStart() {
+    this.startScaleX = this.target.scaleX;
+    this.startScaleY = this.target.scaleY;
+  }
+
+  update(progress) {
+    this.target.setScale(
+      this.startScaleX + (this.endScaleX - this.startScaleX) * progress,
+      this.startScaleY + (this.endScaleY - this.startScaleY) * progress,
+    );
+  }
+}
+
+export class CCRotateBy extends CCActionInterval {
+  constructor(duration, angle) {
+    super(duration);
+    this.angle = angle;
+  }
+
+  onStart() {
+    this.startRotation = this.target.rotation;
+  }
+
+  update(progress) {
+    this.target.rotation = this.startRotation + this.angle * progress;
+  }
+}
+
 export class CCDelayTime extends CCActionInterval {}
 
 export class CCSequence {
@@ -87,6 +122,31 @@ export class CCSequence {
   }
 }
 
+export class CCRepeatForever {
+  constructor(action) {
+    this.action = action;
+    this.target = null;
+    this.done = false;
+  }
+
+  start(target) {
+    this.target = target;
+    this.done = false;
+    this.action.start(target);
+  }
+
+  step(deltaTime) {
+    let remaining = this.action.step(deltaTime);
+    if (this.action.done) {
+      this.action.start(this.target);
+      if (remaining > 0) {
+        remaining = this.action.step(remaining);
+      }
+    }
+    return remaining;
+  }
+}
+
 export class CCEaseElasticInOut extends CCActionInterval {
   constructor(action, period = 0.3) {
     super(action.duration);
@@ -110,6 +170,29 @@ export class CCEaseElasticInOut extends CCActionInterval {
         * Math.sin(((doubled - 1) - periodOffset) * Math.PI * 2 / this.period)
       : 2 ** (-10 * (doubled - 1))
         * Math.sin(((doubled - 1) - periodOffset) * Math.PI * 2 / this.period) * 0.5 + 1;
+    this.action.update(eased);
+  }
+}
+
+export class CCEaseElasticOut extends CCActionInterval {
+  constructor(action, period = 0.3) {
+    super(action.duration);
+    this.action = action;
+    this.period = period;
+  }
+
+  onStart() {
+    this.action.start(this.target);
+  }
+
+  update(progress) {
+    if (progress === 0 || progress === 1) {
+      this.action.update(progress);
+      return;
+    }
+    const periodOffset = this.period / 4;
+    const eased = 2 ** (-10 * progress)
+      * Math.sin((progress - periodOffset) * Math.PI * 2 / this.period) + 1;
     this.action.update(eased);
   }
 }
