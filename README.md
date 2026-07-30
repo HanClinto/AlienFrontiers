@@ -30,8 +30,9 @@ and literal iPad coordinates where practical.
 The main menu and game setup screens are functional, including two-to-four-player
 configuration and multiple local human players. The first rules-driven gameplay slice
 supports rolling and selecting ships, using the Solar Converter, Maintenance Bay,
-Lunar Mine, Shipyard, Orbital Market, and Colony Constructor, purchasing additional
-ships, trading resources, landing colonies across all eight regions, scoring majority
+Lunar Mine, Shipyard, Orbital Market, Colony Constructor, and Alien Artifact, purchasing
+additional ships and tech cards, cycling the tech display, trading resources, landing
+colonies across all eight regions, scoring majority
 victory points, and advancing a pass-and-play turn. The exact 20-card Alien Tech deck is
 shuffled and dealt into the original current/opponent trays; Alien City, Alien Monument,
 and Resource Cache passive effects are active. AI seats automatically play through the

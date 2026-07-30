@@ -302,16 +302,20 @@ class RegionLayer extends CCNode {
 }
 
 class TechCardView extends CCNode {
-  constructor(scene, card, layout) {
+  constructor(scene, card, layout, onActivate = null) {
     super();
     this.card = card;
+    this.layout = layout;
     const isTall = layout === "tall";
+    const isTransparent = layout === "transparent";
 
-    const background = new CCSprite(scene.assets.image(
-      isTall ? "tech_layer_bg.png" : "tech_layer_bg_mini_horiz.png",
-    ));
-    background.setPosition(isTall ? ccp(0, 0) : ccp(58, 0));
-    this.addChild(background, 0);
+    if (!isTransparent) {
+      const background = new CCSprite(scene.assets.image(
+        isTall ? "tech_layer_bg.png" : "tech_layer_bg_mini_horiz.png",
+      ));
+      background.setPosition(isTall ? ccp(0, 0) : ccp(58, 0));
+      this.addChild(background, 0);
+    }
 
     this.cardImage = new CCSprite(scene.assets.image(card.imageFilename));
     this.cardImage.setPosition(isTall ? ccp(0, 14) : ccp(8, 0));
@@ -322,11 +326,26 @@ class TechCardView extends CCNode {
 
     this.title1 = this.addTitle(card.title1, isTall ? ccp(0, -13) : ccp(38, 5), isTall);
     this.title2 = this.addTitle(card.title2, isTall ? ccp(0, -27) : ccp(38, -9), isTall);
+    if (onActivate) {
+      const hitArea = new CCNode();
+      hitArea.contentSize = { width: 130, height: 40 };
+      hitArea.setPosition(ccp(-22, -20));
+      hitArea.interactive = true;
+      hitArea.enabled = true;
+      hitArea.touchPriority = -10;
+      hitArea.activate = () => onActivate(card);
+      this.addChild(hitArea, 3);
+    }
     this.refresh();
   }
 
   addTitle(text, position, centered) {
-    const label = new CCLabelTTF(text, "DIN-Medium", 12, "#000");
+    const label = new CCLabelTTF(
+      text,
+      "DIN-Medium",
+      12,
+      this.layout === "transparent" ? "#fff" : "#000",
+    );
     label.setAnchorPoint(centered ? ccp(0.5, 1) : ccp(0, 0.5));
     label.setPosition(position);
     this.addChild(label, 2);
@@ -374,6 +393,164 @@ class TechCardTray extends CCNode {
       this.addChild(cardNode, cardIndex + 1);
       this.cardNodes.push(cardNode);
     });
+  }
+}
+
+class AlienArtifactLayer extends FacilityLayer {
+  constructor(scene) {
+    super(scene, scene.state.alienArtifact, ccp(601, 794), { x: 0, y: -170, width: 140, height: 260 });
+    this.label("ALIEN", ccp(12, 80));
+    this.label("ARTIFACT", ccp(12, 67));
+    const dockImage = scene.assets.image("dock_normal.png");
+    for (const dock of this.orbital.docks) {
+      this.sprite(dockImage, this.dockPosition(dock.index));
+    }
+    this.sprite(scene.assets.image("icons_aa.png"), ccp(12, -156), ccp(0, 1));
+
+    this.cycleButton = scene.buttonFromImage(
+      "ondark_button.png",
+      "ondark_button_active.png",
+      () => this.cycleCards(),
+      {
+        inactiveImage: "ondark_button_inactive.png",
+        label: "CYCLE",
+        fontSize: 11,
+      },
+    );
+    this.cycleButton.setPosition(ccp(78, 31));
+    this.addChild(this.cycleButton, 3);
+    this.cardViews = [];
+    this.signature = "";
+    this.refresh();
+  }
+
+  dockPosition(index) {
+    return ccp(12 + index * 28, -154);
+  }
+
+  cycleCards() {
+    if (this.scene.state.currentPlayer.aiType === AIType.human) {
+      this.scene.state.currentPlayer.shuffleCards();
+    }
+  }
+
+  refresh() {
+    const player = this.scene.state.currentPlayer;
+    this.scene.setButtonIsEnabled(
+      this.cycleButton,
+      player.aiType === AIType.human && player.canShuffleCards,
+    );
+    const signature = this.scene.state.techDisplayDeck.map((card) => card.cardID).join(",");
+    if (signature === this.signature) {
+      return;
+    }
+    this.signature = signature;
+    for (const cardView of this.cardViews) {
+      this.removeChild(cardView);
+    }
+    this.cardViews.length = 0;
+    this.scene.state.techDisplayDeck.forEach((card, cardIndex) => {
+      const cardView = new TechCardView(
+        this.scene,
+        card,
+        "transparent",
+        (selectedCard) => this.scene.openArtifactCard(selectedCard),
+      );
+      cardView.setPosition(ccp(30, -5 - 42 * cardIndex));
+      this.addChild(cardView, 2);
+      this.cardViews.push(cardView);
+    });
+  }
+}
+
+class ArtifactCardDetail extends CCNode {
+  constructor(scene) {
+    super();
+    this.scene = scene;
+    this.card = null;
+    this.visible = false;
+
+    const blocker = new CCLayerColor("rgba(0,0,0,0.35)");
+    blocker.interactive = true;
+    blocker.enabled = true;
+    blocker.touchPriority = -100;
+    blocker.activate = () => {};
+    this.addChild(blocker, 0);
+
+    this.background = new CCSprite(scene.assets.image("aa_card_detail_box.png"));
+    this.background.setPosition(ccp(678, 712));
+    this.addChild(this.background, 1);
+    const halfWidth = this.background.contentSize.width * 0.5;
+    const height = this.background.contentSize.height;
+
+    this.takeButton = scene.buttonFromImage(
+      "ondark_button.png",
+      "ondark_button_active.png",
+      () => this.takeCard(),
+      { inactiveImage: "ondark_button_inactive.png", label: "TAKE", fontSize: 11 },
+    );
+    this.takeButton.setPosition(ccp(halfWidth, 16));
+    this.background.addChild(this.takeButton, 3);
+
+    this.backButton = scene.buttonFromImage(
+      "aa_back_button.png",
+      "aa_back_button_active.png",
+      () => this.close(),
+    );
+    this.backButton.setPosition(ccp(18, height - 18));
+    this.background.addChild(this.backButton, 3);
+
+    this.title1 = this.detailLabel("", ccp(halfWidth, height - 63));
+    this.title2 = this.detailLabel("", ccp(halfWidth, height - 77));
+    this.creditLabel = this.detailLabel("", ccp(halfWidth, 84));
+    this.cardImage = null;
+  }
+
+  detailLabel(text, position) {
+    const label = new CCLabelTTF(text, "DIN-Medium", 12, "#fff");
+    label.setPosition(position);
+    this.background.addChild(label, 2);
+    return label;
+  }
+
+  open(card) {
+    this.card = card;
+    if (this.cardImage) {
+      this.background.removeChild(this.cardImage);
+    }
+    this.cardImage = new CCSprite(this.scene.assets.image(card.imageFilename));
+    this.cardImage.setPosition(ccp(
+      this.background.contentSize.width * 0.5,
+      this.background.contentSize.height - 36,
+    ));
+    this.background.addChild(this.cardImage, 2);
+    this.title1.setString(card.title1);
+    this.title2.setString(card.title2);
+    this.refresh();
+    this.visible = true;
+  }
+
+  refresh() {
+    if (!this.card) {
+      return;
+    }
+    const player = this.scene.state.currentPlayer;
+    this.creditLabel.setString(`CREDIT ${player.artifactCreditAvailable} / 8`);
+    this.scene.setButtonIsEnabled(
+      this.takeButton,
+      player.aiType === AIType.human && player.canPurchaseCard(this.card),
+    );
+  }
+
+  takeCard() {
+    if (this.card && this.scene.state.currentPlayer.purchaseCard(this.card)) {
+      this.close();
+    }
+  }
+
+  close() {
+    this.visible = false;
+    this.card = null;
   }
 }
 
@@ -522,6 +699,8 @@ export class GameScene extends AFLayer {
     this.addChild(this.marketLayer, 4);
     this.constructorLayer = new ColonyConstructorLayer(this);
     this.addChild(this.constructorLayer, 4);
+    this.artifactLayer = new AlienArtifactLayer(this);
+    this.addChild(this.artifactLayer, 4);
 
     this.regionLayers = REGION_LAYOUTS.map((layout) => {
       const layer = new RegionLayer(this, layout);
@@ -544,6 +723,8 @@ export class GameScene extends AFLayer {
       return miniHUD;
     });
     this.ensureShipSprites();
+    this.artifactDetail = new ArtifactCardDetail(this);
+    this.addChild(this.artifactDetail, 12);
   }
 
   buildHUD() {
@@ -617,6 +798,7 @@ export class GameScene extends AFLayer {
       [this.state.shipyard, this.shipyardLayer],
       [this.state.orbitalMarket, this.marketLayer],
       [this.state.colonyConstructor, this.constructorLayer],
+      [this.state.alienArtifact, this.artifactLayer],
     ]).get(orbital);
     if (!layer) {
       throw new Error(`No layer for docked orbital: ${orbital.title}`);
@@ -660,6 +842,10 @@ export class GameScene extends AFLayer {
     }
   }
 
+  openArtifactCard(card) {
+    this.artifactDetail.open(card);
+  }
+
   refresh() {
     const player = this.state.currentPlayer;
     this.ensureShipSprites();
@@ -693,6 +879,8 @@ export class GameScene extends AFLayer {
       miniHUD.refresh();
     }
     this.marketLayer.refresh();
+    this.artifactLayer.refresh();
+    this.artifactDetail.refresh();
 
     this.updatePlayerIcon("colonyIcon", PLAYER_COLONY_IMAGES[player.colorIndex], ccp(254, 60));
     this.updatePlayerIcon("dieIcon", PLAYER_DIE_IMAGES[player.colorIndex], ccp(289, 60));

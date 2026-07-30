@@ -273,3 +273,28 @@ export class ColonyConstructor extends Orbital {
     return true;
   }
 }
+
+export class AlienArtifact extends Orbital {
+  constructor(state) {
+    super(state, 4);
+    this.title = "Alien Artifact";
+  }
+
+  isValidMoveFromPlayer(_player, selectedShips) {
+    return selectedShips.length > 0 && selectedShips.length <= this.numEmptyGroups;
+  }
+
+  commitShipsFromPlayer(player, selectedShips) {
+    if (!this.isValidMoveFromPlayer(player, selectedShips)) {
+      return false;
+    }
+    for (const ship of selectedShips) {
+      player.artifactCreditAvailable += ship.value;
+      player.artifactShufflesAvailable += 1;
+      this.dockShip(ship);
+    }
+    this.finishCommit(selectedShips);
+    this.state.postEvent(EventName.techCardsChanged, player);
+    return true;
+  }
+}

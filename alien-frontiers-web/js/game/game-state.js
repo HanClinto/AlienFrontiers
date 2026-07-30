@@ -1,6 +1,6 @@
 import { AIType, EventName } from "./constants.js";
 import { EventBus } from "./event-bus.js";
-import { ColonyConstructor, LunarMine, MaintenanceBay, OrbitalMarket, Shipyard, SolarConverter } from "./orbital.js";
+import { AlienArtifact, ColonyConstructor, LunarMine, MaintenanceBay, OrbitalMarket, Shipyard, SolarConverter } from "./orbital.js";
 import { Player } from "./player.js";
 import { Region, REGION_DEFINITIONS } from "./region.js";
 import { buildTechDeck, shuffleTechCards } from "./tech-card.js";
@@ -33,6 +33,7 @@ export class GameState {
     this.shipyard = new Shipyard(this);
     this.orbitalMarket = new OrbitalMarket(this);
     this.colonyConstructor = new ColonyConstructor(this);
+    this.alienArtifact = new AlienArtifact(this);
 
     this.allTech = buildTechDeck(this);
     this.techDrawDeck = shuffleTechCards(this.allTech, this.cardRandom);

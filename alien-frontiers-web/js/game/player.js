@@ -16,6 +16,8 @@ export class Player {
     this.cards = [];
     this.selectedCard = null;
     this.techsDiscarded = 0;
+    this.artifactCreditAvailable = 0;
+    this.artifactShufflesAvailable = 0;
     this.initialRollDone = false;
     this.allShips = Array.from({ length: 6 }, (_, index) => new Ship(this, index));
     this.activeShips = [];
@@ -98,6 +100,44 @@ export class Player {
     this.state.postEvent(EventName.resourcesChanged, this);
   }
 
+  canPurchaseCard(card) {
+    return this.artifactCreditAvailable >= 8
+      && this.state.techDisplayDeck.includes(card)
+      && !this.cards.some((ownedCard) => ownedCard.type === card.type);
+  }
+
+  purchaseCard(card) {
+    if (!this.canPurchaseCard(card)) {
+      return false;
+    }
+    this.state.techDisplayDeck.splice(this.state.techDisplayDeck.indexOf(card), 1);
+    this.addCard(card);
+    this.state.fillTechDisplayPile();
+    this.artifactCreditAvailable = 0;
+    this.artifactShufflesAvailable = 0;
+    this.state.postEvent(EventName.techCardsChanged, this);
+    this.state.logMove(`${this.playerName}: Purchased tech ${card.title}`);
+    return true;
+  }
+
+  get canShuffleCards() {
+    return this.artifactShufflesAvailable > 0 && this.state.techDisplayDeck.length > 0;
+  }
+
+  shuffleCards() {
+    if (!this.canShuffleCards) {
+      return false;
+    }
+    for (const card of this.state.techDisplayDeck) {
+      this.state.discardTechCard(card);
+    }
+    this.state.techDisplayDeck = [];
+    this.state.fillTechDisplayPile();
+    this.artifactShufflesAvailable -= 1;
+    this.state.postEvent(EventName.techCardsChanged, this);
+    return true;
+  }
+
   addColony() {
     this.coloniesToLaunch += 1;
     this.state.postEvent(EventName.launchColony, this);
@@ -162,6 +202,8 @@ export class Player {
     this.setMarketPrice(0);
     this.initialRollDone = false;
     this.techsDiscarded = 0;
+    this.artifactCreditAvailable = 0;
+    this.artifactShufflesAvailable = 0;
     for (const card of this.cards) {
       card.setTapped(false);
     }

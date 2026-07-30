@@ -261,3 +261,53 @@ test("Resource Cache resolves odd, even, and tied initial rolls", () => {
   assert.equal(player.cards.includes(cache), false);
   assert.equal(state.techDiscardDeck.includes(cache), true);
 });
+
+test("Alien Artifact turns dice into credit and purchases a displayed card", () => {
+  const state = new GameState(2, [AIType.human, AIType.human], Math.random, () => 0.25);
+  const player = state.currentPlayer;
+  player.initialRollDone = true;
+  player.activeShips[0].value = 3;
+  player.activeShips[1].value = 5;
+  state.toggleShipSelection(player.activeShips[0]);
+  state.toggleShipSelection(player.activeShips[1]);
+
+  assert.equal(state.commitSelectedShips(state.alienArtifact), true);
+  assert.equal(player.artifactCreditAvailable, 8);
+  assert.equal(player.artifactShufflesAvailable, 2);
+  const card = state.techDisplayDeck[0];
+  const drawCount = state.techDrawDeck.length;
+  assert.equal(player.canPurchaseCard(card), true);
+  assert.equal(player.purchaseCard(card), true);
+  assert.equal(card.owner, player);
+  assert.equal(player.cards.includes(card), true);
+  assert.equal(state.techDisplayDeck.length, 3);
+  assert.equal(state.techDrawDeck.length, drawCount - 1);
+  assert.equal(player.artifactCreditAvailable, 0);
+  assert.equal(player.artifactShufflesAvailable, 0);
+});
+
+test("Alien Artifact rejects duplicate purchases and cycles the display", () => {
+  const state = new GameState(2, [AIType.human, AIType.human], Math.random, () => 0.25);
+  const player = state.currentPlayer;
+  const displayedWithDuplicate = state.techDisplayDeck.find((displayed) =>
+    state.allTech.some((card) => card !== displayed && card.type === displayed.type));
+  const duplicate = state.allTech.find((card) =>
+    card !== displayedWithDuplicate && card.type === displayedWithDuplicate.type);
+  player.cards = [];
+  player.addCard(duplicate);
+  player.artifactCreditAvailable = 8;
+  assert.equal(player.canPurchaseCard(displayedWithDuplicate), false);
+
+  const previousDisplay = [...state.techDisplayDeck];
+  player.artifactShufflesAvailable = 1;
+  assert.equal(player.shuffleCards(), true);
+  assert.equal(player.artifactShufflesAvailable, 0);
+  assert.equal(state.techDisplayDeck.length, 3);
+  assert.equal(previousDisplay.every((card) => state.techDiscardDeck.includes(card)), true);
+
+  player.artifactCreditAvailable = 10;
+  player.artifactShufflesAvailable = 2;
+  player.endTurnCleanup();
+  assert.equal(player.artifactCreditAvailable, 0);
+  assert.equal(player.artifactShufflesAvailable, 0);
+});
