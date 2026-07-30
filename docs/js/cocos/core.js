@@ -55,6 +55,7 @@ export class CCNode {
     this.zOrder = 0;
     this._arrivalOrder = 0;
     this._nextArrivalOrder = 0;
+    this._actions = [];
   }
 
   setPosition(pointOrX, y) {
@@ -164,6 +165,26 @@ export class CCNode {
     }
     return predicate(this) && this.containsWorldPoint(point) ? this : null;
   }
+
+  runAction(action) {
+    action.start(this);
+    this._actions.push(action);
+    return action;
+  }
+
+  stopAllActions() {
+    this._actions.length = 0;
+  }
+
+  update(deltaTime) {
+    this._actions = this._actions.filter((action) => {
+      action.step(deltaTime);
+      return !action.done;
+    });
+    for (const child of this.children) {
+      child.update(deltaTime);
+    }
+  }
 }
 
 export class CCLayer extends CCNode {}
@@ -171,9 +192,85 @@ export class CCLayer extends CCNode {}
 export class CCScene extends CCNode {}
 
 export class CCSprite extends CCNode {
-  constructor(width = 0, height = 0) {
+  constructor(imageOrWidth = 0, height = 0) {
     super();
     this.anchorPoint = ccp(0.5, 0.5);
+    if (typeof imageOrWidth === "number") {
+      this.image = null;
+      this.contentSize = { width: imageOrWidth, height };
+    } else {
+      this.image = imageOrWidth;
+      this.contentSize = {
+        width: imageOrWidth.naturalWidth || imageOrWidth.width,
+        height: imageOrWidth.naturalHeight || imageOrWidth.height,
+      };
+    }
+  }
+
+  draw(context) {
+    if (!this.image) {
+      return;
+    }
+    const { width, height } = this.contentSize;
+    context.save();
+    context.scale(1, -1);
+    context.drawImage(this.image, 0, -height, width, height);
+    context.restore();
+  }
+}
+
+export class CCLayerColor extends CCLayer {
+  constructor(color, width = DESIGN_WIDTH, height = DESIGN_HEIGHT) {
+    super();
+    this.color = color;
     this.contentSize = { width, height };
+  }
+
+  draw(context) {
+    context.fillStyle = this.color;
+    context.fillRect(0, 0, this.contentSize.width, this.contentSize.height);
+  }
+}
+
+export class CCLabelTTF extends CCNode {
+  constructor(text, fontName, fontSize, color = "#fff") {
+    super();
+    this.text = String(text);
+    this.fontName = fontName;
+    this.fontSize = fontSize;
+    this.color = color;
+    this.anchorPoint = ccp(0.5, 0.5);
+    this._measure();
+  }
+
+  setString(text) {
+    this.text = String(text);
+    this._measure();
+  }
+
+  _measure() {
+    const fallbackWidth = Math.max(1, this.text.length * this.fontSize * 0.62);
+    if (typeof document === "undefined") {
+      this.contentSize = { width: fallbackWidth, height: this.fontSize * 1.2 };
+      return;
+    }
+    const context = document.createElement("canvas").getContext("2d");
+    context.font = `${this.fontSize}px "${this.fontName}"`;
+    this.contentSize = {
+      width: Math.max(1, context.measureText(this.text).width),
+      height: this.fontSize * 1.2,
+    };
+  }
+
+  draw(context) {
+    context.save();
+    context.translate(0, this.contentSize.height);
+    context.scale(1, -1);
+    context.fillStyle = this.color;
+    context.font = `${this.fontSize}px "${this.fontName}"`;
+    context.textAlign = "left";
+    context.textBaseline = "top";
+    context.fillText(this.text, 0, 0);
+    context.restore();
   }
 }
