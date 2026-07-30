@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { CCLayer, CCNode, CCSprite, ccp } from "../js/cocos/core.js";
+import { CCEaseSineInOut, CCMoveTo } from "../js/cocos/actions.js";
 
 function assertPoint(actual, expected) {
   assert.ok(Math.abs(actual.x - expected.x) < 0.000001, `${actual.x} != ${expected.x}`);
@@ -51,4 +52,14 @@ test("Cocos touch priority is independent from visual z-order", () => {
   root.addChild(ship, 10);
 
   assert.equal(root.findTopmostNodeAt(ccp(50, 50), (node) => node.interactive), menuItem);
+});
+
+test("sine-eased movement reaches the original Cocos destination", () => {
+  const node = new CCNode();
+  node.runAction(new CCEaseSineInOut(new CCMoveTo(1, ccp(10, 20))));
+  node.update(0.25);
+  assert.ok(node.position.x > 1 && node.position.x < 2);
+  assert.ok(node.position.y > 2 && node.position.y < 4);
+  node.update(0.75);
+  assertPoint(node.position, ccp(10, 20));
 });

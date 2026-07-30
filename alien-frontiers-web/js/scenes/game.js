@@ -1,4 +1,5 @@
 import { AFLayer } from "../af-layer.js";
+import { CCEaseSineInOut, CCMoveTo } from "../cocos/actions.js?v=2";
 import { CCLayerColor, CCLabelTTF, CCNode, CCSprite, ccp } from "../cocos/core.js";
 import { AIType, EventName } from "../game/constants.js";
 import { SimpleAI } from "../game/simple-ai.js";
@@ -582,6 +583,7 @@ class PlayerMiniHUD extends CCNode {
     this.player = player;
     this.expanded = false;
     this.raidForced = false;
+    this.targetPosition = null;
 
     this.frame = new CCSprite(scene.assets.image("hud_port_player_tab_full.png"));
     this.frame.setAnchorPoint(ccp(0.5, 1));
@@ -663,12 +665,22 @@ class PlayerMiniHUD extends CCNode {
   }
 
   updatePosition() {
-    this.setPosition(miniHUDPosition(
+    const destination = miniHUDPosition(
       this.scene.state.numPlayers,
       this.player.playerIndex,
       this.expanded,
       this.frame.contentSize.width,
-    ));
+    );
+    if (!this.targetPosition) {
+      this.setPosition(destination);
+    } else if (
+      destination.x !== this.targetPosition.x
+      || destination.y !== this.targetPosition.y
+    ) {
+      this.stopAllActions();
+      this.runAction(new CCEaseSineInOut(new CCMoveTo(0.5, destination)));
+    }
+    this.targetPosition = destination;
   }
 
   refresh() {
@@ -714,6 +726,7 @@ class ShipSprite extends CCNode {
     super();
     this.scene = scene;
     this.ship = ship;
+    this.targetPosition = null;
     this.contentSize = { width: 43, height: 43 };
     this.setAnchorPoint(ccp(0.5, 0.5));
     this.interactive = true;
@@ -740,7 +753,17 @@ class ShipSprite extends CCNode {
     this.frameSprite = this.scene.director.frameCache.spriteFrameByName(`${prefix}-${frameIndex}.png`);
     this.frameSprite.setPosition(ccp(21.5, 21.5));
     this.addChild(this.frameSprite, 1);
-    this.setPosition(this.scene.shipPosition(this.ship));
+    const destination = this.scene.shipPosition(this.ship);
+    if (!this.targetPosition) {
+      this.setPosition(destination);
+    } else if (
+      destination.x !== this.targetPosition.x
+      || destination.y !== this.targetPosition.y
+    ) {
+      this.stopAllActions();
+      this.runAction(new CCEaseSineInOut(new CCMoveTo(0.45, destination)));
+    }
+    this.targetPosition = destination;
   }
 }
 
@@ -860,11 +883,13 @@ export class GameScene extends AFLayer {
   }
 
   onEnter() {
+    this.director.soundManager?.bindState(this.state);
     this.unsubscribe.push(this.state.events.on(EventName.stateChanged, () => this.refresh()));
     this.scheduleAI();
   }
 
   onExit() {
+    this.director.soundManager?.unbindState();
     clearTimeout(this.aiTimer);
     this.aiTimer = null;
     for (const unsubscribe of this.unsubscribe) {

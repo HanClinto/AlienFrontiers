@@ -8,6 +8,7 @@ export class CCMenuItemImage extends CCSprite {
     this.disabledImage = disabledImage;
     this.callback = callback;
     this.interactive = true;
+    this.isMenuItem = true;
     this.touchPriority = -128;
     this.enabled = true;
     this.selected = false;

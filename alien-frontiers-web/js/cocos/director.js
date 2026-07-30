@@ -33,6 +33,7 @@ export class CCDirector {
   _installPointerEvents() {
     this.canvas.addEventListener("pointerdown", (event) => {
       event.preventDefault();
+      this.soundManager?.unlock();
       const point = this.convertToGL(event.clientX, event.clientY);
       this._pressedNode = this.scene?.findTopmostNodeAt(
         point,
@@ -40,7 +41,13 @@ export class CCDirector {
       ) ?? null;
       if (this._pressedNode) {
         this._pressedNode.selected = true;
-        this.canvas.setPointerCapture(event.pointerId);
+        try {
+          this.canvas.setPointerCapture(event.pointerId);
+        } catch (error) {
+          if (error.name !== "NotFoundError") {
+            throw error;
+          }
+        }
       }
     });
 
@@ -57,6 +64,9 @@ export class CCDirector {
       }
       this._pressedNode = null;
       if (pressedNode && pressedNode === releasedNode && pressedNode.enabled) {
+        if (pressedNode.isMenuItem) {
+          this.soundManager?.play("button");
+        }
         pressedNode.activate(point);
       }
     });

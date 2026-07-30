@@ -113,3 +113,18 @@ export class CCEaseElasticInOut extends CCActionInterval {
     this.action.update(eased);
   }
 }
+
+export class CCEaseSineInOut extends CCActionInterval {
+  constructor(action) {
+    super(action.duration);
+    this.action = action;
+  }
+
+  onStart() {
+    this.action.start(this.target);
+  }
+
+  update(progress) {
+    this.action.update(-(Math.cos(Math.PI * progress) - 1) / 2);
+  }
+}
