@@ -113,13 +113,11 @@ test("original SimpleAI fallback completes a turn with available facilities", ()
     sequenceRandom([0, 0.2, 0.99]),
   );
 
-  for (let step = 0; step < 8 && state.currentPlayerIndex === 0; step += 1) {
+  for (let step = 0; step < 12 && state.currentPlayerIndex === 0; step += 1) {
     SimpleAI.step(state);
   }
 
   assert.equal(state.currentPlayerIndex, 1);
-  assert.equal(state.players[0].ore, 2);
-  assert.equal(state.players[0].fuel, 3);
   assert.equal(state.players[0].numUndockedShips, 0);
   assert.equal(state.currentPlayer.numUndockedShips, 3);
 });
@@ -371,6 +369,47 @@ test("AI completes favorable Orbital Market trades before docking remaining dice
   assert.deepEqual([player.fuel, player.ore], [2, 1]);
   assert.equal(SimpleAI.step(state), true);
   assert.deepEqual([player.fuel, player.ore], [0, 2]);
+});
+
+test("AI docks a high-value pair at Alien Artifact and buys tech", () => {
+  const state = new GameState(2, [AIType.hard, AIType.human]);
+  const player = state.currentPlayer;
+  player.initialRollDone = true;
+  player.activeShips[0].value = 6;
+  player.activeShips[1].value = 2;
+  player.activeShips[2].value = 1;
+
+  assert.equal(SimpleAI.step(state), true);
+  assert.equal(player.artifactCreditAvailable, 8);
+  assert.equal(player.activeShips.slice(0, 2).every(
+    (ship) => ship.dock?.orbital === state.alienArtifact,
+  ), true);
+  const cardCount = player.cards.length;
+  assert.equal(SimpleAI.step(state), true);
+  assert.equal(player.cards.length, cardCount + 1);
+  assert.equal(player.artifactCreditAvailable, 0);
+});
+
+test("AI docks an affordable pair at Orbital Market and trades", () => {
+  const state = new GameState(2, [AIType.medium, AIType.human]);
+  const [player, opponent] = state.players;
+  player.initialRollDone = true;
+  player.fuel = 2;
+  player.ore = 0;
+  player.activeShips[0].value = 2;
+  player.activeShips[1].value = 2;
+  player.activeShips[2].value = 1;
+  opponent.activeShips[0].value = 3;
+  opponent.activeShips[1].value = 3;
+  state.shipyard.commitShipsFromPlayer(opponent, opponent.activeShips.slice(0, 2));
+
+  assert.equal(SimpleAI.step(state), true);
+  assert.equal(player.marketPrice, 2);
+  assert.equal(player.activeShips.slice(0, 2).every(
+    (ship) => ship.dock?.orbital === state.orbitalMarket,
+  ), true);
+  assert.equal(SimpleAI.step(state), true);
+  assert.deepEqual([player.fuel, player.ore], [0, 1]);
 });
 
 test("Raiders Outpost requires and displaces with a higher straight", () => {

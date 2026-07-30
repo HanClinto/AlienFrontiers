@@ -61,7 +61,8 @@ docks while unavailable docks fade to the original subdued gray.
 AI seats automatically play through the ported rules using a reliable heuristic turn
 driver. Cadet, Spacer, Admiral, and Pirate apply the original aggression, decision-noise,
 and human-prejudice profiles to raid and colony choices; they also use earned Artifact
-credit and favorable Market trades. Stable game states autosave locally, and unfinished
+credit, dock dice to create Artifact purchases, and open favorable Market trades. Stable
+game states autosave locally, and unfinished
 games can be resumed from the main menu after navigation or reload. Original recursive
 undo/redo controls restore complete model snapshots without crossing roll or turn boundaries,
 and their history survives Resume. Exhaustive state search,

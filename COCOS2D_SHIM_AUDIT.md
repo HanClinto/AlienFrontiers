@@ -161,7 +161,7 @@ The intended 20-card deck and core facilities are present. Remaining major gaps 
 
 | Checklist | Gap | Impact |
 |---|---|---|
-| [ ] | Personality-specific `ExhaustiveAI` | The heuristic AI now applies original aggression, noise, and human-prejudice profiles to raid/colony decisions and uses Artifact credit/Market trades. Exhaustive state search and full tech/facility planning remain unported. |
+| [ ] | Personality-specific `ExhaustiveAI` | The heuristic AI applies original aggression/noise/human prejudice, creates and spends Artifact credit, and opens/uses favorable Market trades. Exhaustive state search and active tech/facility sequencing remain unported. |
 | [x] | Cancellable/step-back selection queues | Undo steps Gravity, Polarity, and Teleporter back one queue stage while retaining the first selection; at stage zero it safely cancels the active raid or tech queue. |
 | [ ] | Options scene and colorblind dice | Main-menu OPTIONS is not a complete scene; original alternate green dice and preference UI are absent. |
 | [ ] | Generalized Cocos touch dispatcher | Manual forwarding handles known overlap cases, but future overlapping targets can still diverge from targeted delegate ordering. |

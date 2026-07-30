@@ -108,6 +108,18 @@ export class SimpleAI {
       return true;
     }
 
+    const artifactPair = this.findArtifactPair(state, player);
+    if (artifactPair) {
+      state.alienArtifact.commitShipsFromPlayer(player, artifactPair);
+      return true;
+    }
+
+    const marketPair = this.findMarketPair(state, player, shipsByValue);
+    if (marketPair) {
+      state.orbitalMarket.commitShipsFromPlayer(player, marketPair);
+      return true;
+    }
+
     const lunarShips = [...player.undockedShips]
       .sort((left, right) => left.value - right.value)
       .filter((ship) => state.lunarMine.isValidMoveFromPlayer(player, [ship]));
@@ -132,6 +144,46 @@ export class SimpleAI {
 
     state.maintenanceBay.commitShipsFromPlayer(player, player.undockedShips);
     return true;
+  }
+
+  static findArtifactPair(state, player) {
+    if (state.alienArtifact.numEmptyGroups < 2) {
+      return null;
+    }
+    const ships = [...player.undockedShips].sort((left, right) => right.value - left.value);
+    for (let first = 0; first < ships.length - 1; first += 1) {
+      for (let second = first + 1; second < ships.length; second += 1) {
+        const pair = [ships[first], ships[second]];
+        if (
+          pair[0].value + pair[1].value >= 8
+          && state.alienArtifact.isValidMoveFromPlayer(player, pair)
+        ) {
+          return pair;
+        }
+      }
+    }
+    return null;
+  }
+
+  static findMarketPair(state, player, shipsByValue) {
+    if (player.marketPrice !== 0 || state.orbitalMarket.numEmptyGroups === 0) {
+      return null;
+    }
+    const pairs = [...shipsByValue.entries()]
+      .filter(([, ships]) => ships.length >= 2)
+      .sort(([leftValue], [rightValue]) => leftValue - rightValue);
+    for (const [value, ships] of pairs) {
+      const effectivePrice = state.heinleinPlains.playerHasBonus(player) ? 1 : value;
+      const pair = ships.slice(0, 2);
+      if (
+        effectivePrice <= 2
+        && player.fuel >= effectivePrice
+        && state.orbitalMarket.isValidMoveFromPlayer(player, pair)
+      ) {
+        return pair;
+      }
+    }
+    return null;
   }
 
   static useArtifactCredit(state, player) {
