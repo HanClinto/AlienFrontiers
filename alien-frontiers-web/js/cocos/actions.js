@@ -101,6 +101,25 @@ export class CCRotateBy extends CCActionInterval {
 
 export class CCDelayTime extends CCActionInterval {}
 
+export class CCCallFunc {
+  constructor(callback) {
+    this.callback = callback;
+    this.target = null;
+    this.done = false;
+  }
+
+  start(target) {
+    this.target = target;
+    this.done = false;
+  }
+
+  step(deltaTime) {
+    this.callback(this.target);
+    this.done = true;
+    return deltaTime;
+  }
+}
+
 export class CCSequence {
   constructor(...actions) {
     this.actions = actions.flat();
@@ -225,5 +244,35 @@ export class CCEaseSineInOut extends CCActionInterval {
 
   update(progress) {
     this.action.update(-(Math.cos(Math.PI * progress) - 1) / 2);
+  }
+}
+
+export class CCEaseSineIn extends CCActionInterval {
+  constructor(action) {
+    super(action.duration);
+    this.action = action;
+  }
+
+  onStart() {
+    this.action.start(this.target);
+  }
+
+  update(progress) {
+    this.action.update(1 - Math.cos(progress * Math.PI / 2));
+  }
+}
+
+export class CCEaseSineOut extends CCActionInterval {
+  constructor(action) {
+    super(action.duration);
+    this.action = action;
+  }
+
+  onStart() {
+    this.action.start(this.target);
+  }
+
+  update(progress) {
+    this.action.update(Math.sin(progress * Math.PI / 2));
   }
 }

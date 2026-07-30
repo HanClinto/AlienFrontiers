@@ -1,5 +1,5 @@
 import { AFLayer } from "../af-layer.js";
-import { CCDelayTime, CCEaseElasticInOut, CCEaseElasticOut, CCEaseSineInOut, CCFadeTo, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo, CCSequence } from "../cocos/actions.js?v=4";
+import { CCCallFunc, CCDelayTime, CCEaseElasticInOut, CCEaseElasticOut, CCEaseSineIn, CCEaseSineInOut, CCEaseSineOut, CCFadeTo, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo, CCSequence } from "../cocos/actions.js?v=5";
 import { CCLayerColor, CCLabelTTF, CCNode, CCSprite, ccp } from "../cocos/core.js";
 import { AIType, EventName } from "../game/constants.js";
 import { GameHistory } from "../game/game-history.js";
@@ -1182,9 +1182,50 @@ class ShipSprite extends CCNode {
       || destination.y !== this.targetPosition.y
     ) {
       this.stopAllActions();
-      this.runAction(new CCEaseSineInOut(new CCMoveTo(0.45, destination)));
+      this.frameSprite.stopAllActions();
+      const deltaX = destination.x - this.position.x;
+      const deltaY = destination.y - this.position.y;
+      const firstMove = ccp(
+        this.position.x + deltaX * 0.2,
+        this.position.y + deltaY * 0.2,
+      );
+      const postWarp = ccp(
+        destination.x - deltaX * 0.2,
+        destination.y - deltaY * 0.2,
+      );
+      this.runAction(new CCSequence(
+        new CCDelayTime(0.12),
+        new CCEaseSineIn(new CCMoveTo(0.48, firstMove)),
+        new CCCallFunc((target) => target.setPosition(postWarp)),
+        new CCEaseSineOut(new CCMoveTo(0.48, destination)),
+      ));
+      this.frameSprite.runAction(new CCSequence(
+        new CCScaleTo(0.24, 1.5),
+        new CCDelayTime(0.06),
+        new CCCallFunc(() => this.spawnFlare()),
+        new CCFadeTo(0.3, 0),
+        new CCFadeTo(0.3, 255),
+        new CCCallFunc(() => this.spawnFlare()),
+        new CCDelayTime(0.06),
+        new CCScaleTo(0.24, 1),
+      ));
     }
     this.targetPosition = destination;
+  }
+
+  spawnFlare() {
+    const flare = new CCSprite(this.scene.assets.image("flare.png"));
+    flare.setPosition(this.position);
+    flare.opacity = 0;
+    this.scene.addChild(flare, 7);
+    flare.runAction(new CCSequence(
+      new CCScaleTo(0.3, 2),
+      new CCCallFunc((target) => target.parent?.removeChild(target)),
+    ));
+    flare.runAction(new CCSequence(
+      new CCFadeTo(0.1, 96),
+      new CCFadeTo(0.2, 0),
+    ));
   }
 }
 

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { CCLayer, CCNode, CCSprite, ccp } from "../js/cocos/core.js";
-import { CCEaseElasticOut, CCEaseSineInOut, CCFadeTo, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo } from "../js/cocos/actions.js";
+import { CCCallFunc, CCDelayTime, CCEaseElasticOut, CCEaseSineIn, CCEaseSineInOut, CCEaseSineOut, CCFadeTo, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo, CCSequence } from "../js/cocos/actions.js";
 
 function assertPoint(actual, expected) {
   assert.ok(Math.abs(actual.x - expected.x) < 0.000001, `${actual.x} != ${expected.x}`);
@@ -113,4 +113,25 @@ test("fade actions interpolate and settle at target opacity", () => {
   assert.equal(node.opacity, 80);
   node.update(0.25);
   assert.equal(node.opacity, 160);
+});
+
+test("staged callbacks bridge sine-in and sine-out moves", () => {
+  const node = new CCNode();
+  let callbackCount = 0;
+  node.runAction(new CCSequence(
+    new CCDelayTime(0.1),
+    new CCEaseSineIn(new CCMoveTo(0.4, ccp(2, 0))),
+    new CCCallFunc((target) => {
+      callbackCount += 1;
+      target.setPosition(8, 0);
+    }),
+    new CCEaseSineOut(new CCMoveTo(0.4, ccp(10, 0))),
+  ));
+  node.update(0.5);
+  assertPoint(node.position, ccp(2, 0));
+  node.update(0.001);
+  assert.equal(callbackCount, 1);
+  assert.ok(node.position.x >= 8);
+  node.update(0.399);
+  assertPoint(node.position, ccp(10, 0));
 });
