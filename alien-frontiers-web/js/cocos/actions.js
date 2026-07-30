@@ -84,6 +84,25 @@ export class CCFadeTo extends CCActionInterval {
   }
 }
 
+export class CCTintTo extends CCActionInterval {
+  constructor(duration, red, green, blue) {
+    super(duration);
+    this.endColor = { r: red, g: green, b: blue };
+  }
+
+  onStart() {
+    this.startColor = { ...this.target.color };
+  }
+
+  update(progress) {
+    this.target.color = {
+      r: this.startColor.r + (this.endColor.r - this.startColor.r) * progress,
+      g: this.startColor.g + (this.endColor.g - this.startColor.g) * progress,
+      b: this.startColor.b + (this.endColor.b - this.startColor.b) * progress,
+    };
+  }
+}
+
 export class CCRotateBy extends CCActionInterval {
   constructor(duration, angle) {
     super(duration);

@@ -71,6 +71,21 @@ test("Lunar Mine enforces opponents' high die and awards one ore per ship", () =
   assert.equal(playerOne.ore, 1);
 });
 
+test("touching a Lunar Mine die passes through for a later legal placement", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  player.initialRollDone = true;
+  player.activeShips[0].value = 3;
+  player.activeShips[1].value = 4;
+  state.toggleShipSelection(player.activeShips[0]);
+  assert.equal(state.commitSelectedShips(state.lunarMine), true);
+  state.toggleShipSelection(player.activeShips[1]);
+
+  assert.equal(state.touchShip(player.activeShips[0]), true);
+  assert.equal(player.activeShips[1].dock.orbital, state.lunarMine);
+  assert.equal(player.ore, 2);
+});
+
 test("Shipyard requires a payable pair and activates the next ship", () => {
   const state = new GameState(2, [AIType.human, AIType.human]);
   const player = state.currentPlayer;
@@ -335,6 +350,58 @@ test("Raiders Outpost requires and displaces with a higher straight", () => {
   assert.equal(state.commitSelectedShips(state.raidersOutpost), true);
   assert.deepEqual(state.raidersOutpost.docks.map((dock) => dock.dockedShip.value), [2, 3, 4]);
   assert.equal(raider.activeShips.every((ship) => ship.dock?.orbital === state.maintenanceBay), true);
+});
+
+test("touching an incumbent Raider die commits a selected higher straight", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const [firstPlayer, secondPlayer] = state.players;
+  firstPlayer.initialRollDone = true;
+  [1, 2, 3].forEach((value, index) => {
+    firstPlayer.activeShips[index].value = value;
+    state.toggleShipSelection(firstPlayer.activeShips[index]);
+  });
+  state.commitSelectedShips(state.raidersOutpost);
+  firstPlayer.isRaiding = false;
+
+  state.currentPlayerIndex = 1;
+  secondPlayer.gatherShips();
+  secondPlayer.initialRollDone = true;
+  [2, 3, 4].forEach((value, index) => {
+    secondPlayer.activeShips[index].value = value;
+    state.toggleShipSelection(secondPlayer.activeShips[index]);
+  });
+
+  assert.equal(state.touchShip(firstPlayer.activeShips[0]), true);
+  assert.deepEqual(
+    state.raidersOutpost.docks.map((dock) => dock.dockedShip.value),
+    [2, 3, 4],
+  );
+  assert.equal(
+    firstPlayer.activeShips.every((ship) => ship.dock?.orbital === state.maintenanceBay),
+    true,
+  );
+});
+
+test("facility potential includes legal completions around selected dice", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  player.initialRollDone = true;
+  player.activeShips[0].value = 4;
+  player.activeShips[1].value = 4;
+  player.activeShips[2].value = 6;
+  state.toggleShipSelection(player.activeShips[0]);
+
+  assert.equal(state.canUseOrbital(state.solarConverter), true);
+  assert.equal(state.canUseOrbital(state.lunarMine), true);
+  assert.equal(state.canUseOrbital(state.shipyard), false);
+  player.fuel = 1;
+  player.ore = 1;
+  assert.equal(state.canUseOrbital(state.shipyard), true);
+  assert.equal(state.canUseOrbital(state.colonyConstructor), false);
+  assert.equal(state.canUseOrbital(state.maintenanceBay), true);
+
+  player.activeShips[0].teleportRestriction = state.solarConverter;
+  assert.equal(state.canUseOrbital(state.solarConverter), false);
 });
 
 test("resource raids cap at four and finish when scarce resources are exhausted", () => {

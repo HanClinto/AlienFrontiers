@@ -218,6 +218,7 @@ export class CCSprite extends CCNode {
   constructor(imageOrWidth = 0, height = 0) {
     super();
     this.anchorPoint = ccp(0.5, 0.5);
+    this.color = { r: 255, g: 255, b: 255 };
     if (typeof imageOrWidth === "number") {
       this.image = null;
       this.contentSize = { width: imageOrWidth, height };
@@ -237,6 +238,9 @@ export class CCSprite extends CCNode {
     }
     const { width, height } = this.contentSize;
     context.save();
+    if (this.color.r === this.color.g && this.color.g === this.color.b) {
+      context.filter = `brightness(${this.color.r / 255})`;
+    }
     context.scale(1, -1);
     if (this.sourceRect) {
       const { x, y, width: sourceWidth, height: sourceHeight } = this.sourceRect;

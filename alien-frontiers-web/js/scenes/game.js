@@ -1,5 +1,5 @@
 import { AFLayer } from "../af-layer.js";
-import { CCCallFunc, CCDelayTime, CCEaseElasticInOut, CCEaseElasticOut, CCEaseSineIn, CCEaseSineInOut, CCEaseSineOut, CCFadeTo, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo, CCSequence } from "../cocos/actions.js?v=5";
+import { CCCallFunc, CCDelayTime, CCEaseElasticInOut, CCEaseElasticOut, CCEaseSineIn, CCEaseSineInOut, CCEaseSineOut, CCFadeTo, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo, CCSequence, CCTintTo } from "../cocos/actions.js?v=6";
 import { CCLayerColor, CCLabelTTF, CCNode, CCSprite, ccp } from "../cocos/core.js";
 import { AIType, EventName } from "../game/constants.js";
 import { GameHistory } from "../game/game-history.js";
@@ -117,6 +117,8 @@ class FacilityLayer extends CCNode {
     super();
     this.scene = scene;
     this.orbital = orbital;
+    this.showingPotential = null;
+    this.dockSprites = [];
     this.setPosition(position);
 
     const hitArea = new CCNode();
@@ -126,6 +128,29 @@ class FacilityLayer extends CCNode {
     hitArea.enabled = true;
     hitArea.activate = () => this.scene.commitShips(this.orbital);
     this.addChild(hitArea, -1);
+  }
+
+  setPotential(showingPotential) {
+    if (this.showingPotential === showingPotential) {
+      return;
+    }
+    this.showingPotential = showingPotential;
+    const brightness = showingPotential ? 255 : 100;
+    for (const dockSprite of this.dockSprites) {
+      dockSprite.stopAllActions();
+      dockSprite.runAction(new CCTintTo(
+        0.25,
+        brightness,
+        brightness,
+        brightness,
+      ));
+    }
+  }
+
+  dockSprite(image, position, anchor = ccp(0, 0)) {
+    const sprite = this.sprite(image, position, anchor);
+    this.dockSprites.push(sprite);
+    return sprite;
   }
 
   label(text, position) {
@@ -151,7 +176,7 @@ class SolarConverterLayer extends FacilityLayer {
     this.label("SOLAR CONVERTER", ccp(0, 82));
     const dockImage = scene.assets.image("dock_normal.png");
     for (const dock of this.orbital.docks) {
-      this.sprite(dockImage, this.dockPosition(dock.index));
+      this.dockSprite(dockImage, this.dockPosition(dock.index));
     }
     this.sprite(scene.assets.image("icons_sc.png"), ccp(0, 6), ccp(0, 1));
   }
@@ -169,7 +194,7 @@ class MaintenanceBayLayer extends FacilityLayer {
     this.sprite(scene.assets.image("dock_mb.png"), ccp(27, 35), ccp(0, 1));
     const dockImage = scene.assets.image("dock_blank.png");
     for (const dock of this.orbital.docks) {
-      this.sprite(dockImage, this.dockPosition(dock.index));
+      this.dockSprite(dockImage, this.dockPosition(dock.index));
     }
   }
 
@@ -186,7 +211,7 @@ class LunarMineLayer extends FacilityLayer {
     this.sprite(scene.assets.image("icon_gte.png"), ccp(0, 12));
     const dockImage = scene.assets.image("dock_normal.png");
     for (const dock of this.orbital.docks) {
-      this.sprite(dockImage, this.dockPosition(dock.index));
+      this.dockSprite(dockImage, this.dockPosition(dock.index));
     }
     this.sprite(scene.assets.image("icons_lm.png"), ccp(0, 7), ccp(0, 1));
   }
@@ -203,7 +228,7 @@ class ShipyardLayer extends FacilityLayer {
     this.dockPairWidth = scene.assets.image("dock_pair.png").naturalWidth;
     const dockImage = scene.assets.image("dock_pair.png");
     for (let groupIndex = 0; groupIndex < this.orbital.dockGroups.length; groupIndex += 1) {
-      this.sprite(dockImage, ccp(groupIndex * (this.dockPairWidth + 2), 8));
+      this.dockSprite(dockImage, ccp(groupIndex * (this.dockPairWidth + 2), 8));
     }
     this.sprite(scene.assets.image("icons_sy.png"), ccp(0, 7), ccp(0, 1));
   }
@@ -222,7 +247,7 @@ class OrbitalMarketLayer extends FacilityLayer {
     this.dockPairWidth = scene.assets.image("dock_pair.png").naturalWidth;
     const dockImage = scene.assets.image("dock_pair.png");
     for (let groupIndex = 0; groupIndex < this.orbital.dockGroups.length; groupIndex += 1) {
-      this.sprite(dockImage, ccp(groupIndex * (this.dockPairWidth + 2), 8));
+      this.dockSprite(dockImage, ccp(groupIndex * (this.dockPairWidth + 2), 8));
     }
     this.sprite(scene.assets.image("icons_om.png"), ccp(0, 6), ccp(0, 1));
     this.tradeButton = scene.buttonFromImage(
@@ -260,7 +285,7 @@ class ColonyConstructorLayer extends FacilityLayer {
     this.dockTripleWidth = scene.assets.image("dock_triple.png").naturalWidth;
     const dockImage = scene.assets.image("dock_triple.png");
     for (let groupIndex = 0; groupIndex < this.orbital.dockGroups.length; groupIndex += 1) {
-      this.sprite(dockImage, ccp(groupIndex * (this.dockTripleWidth + 2), 8));
+      this.dockSprite(dockImage, ccp(groupIndex * (this.dockTripleWidth + 2), 8));
     }
     this.sprite(scene.assets.image("icons_cc.png"), ccp(0, 7), ccp(0, 1));
   }
@@ -277,7 +302,7 @@ class RaidersOutpostLayer extends FacilityLayer {
     super(scene, scene.state.raidersOutpost, ccp(613, 425), { x: -8, y: -5, width: 165, height: 70 });
     this.label("RAIDERS' OUTPOST", ccp(0, 53));
     this.sprite(scene.assets.image("icon_gt.png"), ccp(0, 12));
-    this.sprite(scene.assets.image("dock_straight.png"), ccp(22, 8));
+    this.dockSprite(scene.assets.image("dock_straight.png"), ccp(22, 8));
     this.sprite(scene.assets.image("icon_to_mb.png"), ccp(102, 10));
     this.sprite(scene.assets.image("icons_raiders.png"), ccp(0, 7), ccp(0, 1));
   }
@@ -298,7 +323,7 @@ class ColonistHubLayer extends FacilityLayer {
     this.markers = [];
     for (let playerIndex = 0; playerIndex < scene.state.numPlayers; playerIndex += 1) {
       for (let dockIndex = 0; dockIndex < 3; dockIndex += 1) {
-        this.sprite(dockImage, this.dockPosition(playerIndex * 3 + dockIndex));
+        this.dockSprite(dockImage, this.dockPosition(playerIndex * 3 + dockIndex));
       }
       for (let step = 0; step < 6; step += 1) {
         this.sprite(nodeImage, ccp(76 + step * 28, 8 - playerIndex * 28 - this.verticalOffset));
@@ -363,7 +388,7 @@ class TerraformingStationLayer extends FacilityLayer {
     super(scene, scene.state.terraformingStation, ccp(28, 703), { x: -8, y: -5, width: 85, height: 85 });
     this.label("TERRAFORMING", ccp(0, 67));
     this.label("STATION", ccp(0, 54));
-    this.sprite(scene.assets.image("dock_ts.png"), ccp(-5, 8));
+    this.dockSprite(scene.assets.image("dock_ts.png"), ccp(-5, 8));
     this.sprite(scene.assets.image("icons_ts.png"), ccp(0, 7), ccp(0, 1));
   }
 
@@ -663,7 +688,7 @@ class AlienArtifactLayer extends FacilityLayer {
     this.label("ARTIFACT", ccp(12, 67));
     const dockImage = scene.assets.image("dock_normal.png");
     for (const dock of this.orbital.docks) {
-      this.sprite(dockImage, this.dockPosition(dock.index));
+      this.dockSprite(dockImage, this.dockPosition(dock.index));
     }
     this.sprite(scene.assets.image("icons_aa.png"), ccp(12, -156), ccp(0, 1));
 
@@ -1269,6 +1294,18 @@ export class GameScene extends AFLayer {
     this.addChild(this.colonistHubLayer, 4);
     this.terraformingLayer = new TerraformingStationLayer(this);
     this.addChild(this.terraformingLayer, 4);
+    this.facilityLayers = [
+      this.solarLayer,
+      this.maintenanceLayer,
+      this.lunarLayer,
+      this.shipyardLayer,
+      this.marketLayer,
+      this.constructorLayer,
+      this.artifactLayer,
+      this.raidersLayer,
+      this.colonistHubLayer,
+      this.terraformingLayer,
+    ];
 
     this.regionLayers = REGION_LAYOUTS.map((layout) => {
       const layer = new RegionLayer(this, layout);
@@ -1482,7 +1519,7 @@ export class GameScene extends AFLayer {
       this.state.usePendingTechOnShip(ship);
       return;
     }
-    this.state.toggleShipSelection(ship);
+    this.state.touchShip(ship);
   }
 
   commitShips(orbital) {
@@ -1620,6 +1657,9 @@ export class GameScene extends AFLayer {
     this.marketLayer.refresh();
     this.artifactLayer.refresh();
     this.colonistHubLayer.refresh();
+    for (const facilityLayer of this.facilityLayers) {
+      facilityLayer.setPotential(this.state.canUseOrbital(facilityLayer.orbital));
+    }
     this.artifactDetail.refresh();
     if (this.state.gameOver) {
       this.gameOverOverlay.activate();

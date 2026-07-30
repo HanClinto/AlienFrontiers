@@ -184,11 +184,47 @@ export class GameState {
     return true;
   }
 
-  commitSelectedShips(orbital) {
-    if (this.currentPlayer.selectedShips.some((ship) => ship.teleportRestriction === orbital)) {
+  touchShip(ship) {
+    if (ship.docked) {
+      return this.commitSelectedShips(ship.dock.orbital);
+    }
+    return this.toggleShipSelection(ship);
+  }
+
+  canCommitShipsTo(orbital, ships) {
+    return !ships.some((ship) => ship.teleportRestriction === orbital)
+      && orbital.isValidMoveFromPlayer(this.currentPlayer, ships);
+  }
+
+  canUseOrbital(orbital) {
+    const player = this.currentPlayer;
+    if (
+      !player.initialRollDone
+      || player.isRaiding
+      || player.coloniesToLaunch > 0
+      || this.pendingTechCard
+    ) {
       return false;
     }
-    if (!orbital.isValidMoveFromPlayer(this.currentPlayer, this.currentPlayer.selectedShips)) {
+    const selected = player.selectedShips;
+    const candidates = player.undockedShips.filter((ship) => !ship.isSelected);
+    const subsetCount = 2 ** candidates.length;
+    for (let mask = 0; mask < subsetCount; mask += 1) {
+      const ships = [...selected];
+      for (let index = 0; index < candidates.length; index += 1) {
+        if (mask & (1 << index)) {
+          ships.push(candidates[index]);
+        }
+      }
+      if (ships.length > 0 && this.canCommitShipsTo(orbital, ships)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  commitSelectedShips(orbital) {
+    if (!this.canCommitShipsTo(orbital, this.currentPlayer.selectedShips)) {
       return false;
     }
     this.createUndoPoint();
