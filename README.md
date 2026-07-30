@@ -58,11 +58,13 @@ placement opens the ranked, blocking game-over results overlay. The lower HUD in
 the live game log, selected tech power/discard descriptions, HELP, and an animated blocking
 menu with persistent music/SFX controls, Resume, and Quit. Usable facilities retain white
 docks while unavailable docks fade to the original subdued gray.
-AI seats automatically play through the ported rules using the original SimpleAI fallback
-priority. Stable game states autosave locally, and unfinished games can be resumed from
-the main menu after navigation or reload. Original one-level undo/redo controls restore
-complete model snapshots without crossing roll or turn boundaries. Remaining tech abilities,
-animation coverage, and personality-specific ExhaustiveAI strategies are still being ported.
+AI seats automatically play through the ported rules using a reliable heuristic turn
+driver. Cadet, Spacer, Admiral, and Pirate apply the original aggression, decision-noise,
+and human-prejudice profiles to raid and colony choices; they also use earned Artifact
+credit and favorable Market trades. Stable game states autosave locally, and unfinished
+games can be resumed from the main menu after navigation or reload. Original one-level undo/redo controls restore
+complete model snapshots without crossing roll or turn boundaries. Exhaustive state search,
+full AI tech planning, and additional animation coverage are still being ported.
 
 Run the static site locally from the repository root:
 

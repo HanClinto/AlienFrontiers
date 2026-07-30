@@ -342,6 +342,37 @@ test("Alien Artifact rejects duplicate purchases and cycles the display", () => 
   assert.equal(player.artifactShufflesAvailable, 0);
 });
 
+test("AI spends Artifact credit on its highest-valued legal displayed tech", () => {
+  const state = new GameState(2, [AIType.hard, AIType.human]);
+  const player = state.currentPlayer;
+  const gravity = state.allTech.find((card) => card.type === TechCardType.gravityManipulator);
+  const polarity = state.allTech.find((card) => card.type === TechCardType.polarityDevice);
+  player.cards = [];
+  state.techDisplayDeck = [gravity, polarity];
+  player.artifactCreditAvailable = 8;
+  player.artifactShufflesAvailable = 1;
+  player.initialRollDone = true;
+
+  assert.equal(SimpleAI.step(state), true);
+  assert.equal(player.cards.includes(polarity), true);
+  assert.equal(player.cards.includes(gravity), false);
+  assert.equal(player.artifactCreditAvailable, 0);
+});
+
+test("AI completes favorable Orbital Market trades before docking remaining dice", () => {
+  const state = new GameState(2, [AIType.medium, AIType.human]);
+  const player = state.currentPlayer;
+  player.initialRollDone = true;
+  player.fuel = 4;
+  player.ore = 0;
+  player.marketPrice = 2;
+
+  assert.equal(SimpleAI.step(state), true);
+  assert.deepEqual([player.fuel, player.ore], [2, 1]);
+  assert.equal(SimpleAI.step(state), true);
+  assert.deepEqual([player.fuel, player.ore], [0, 2]);
+});
+
 test("Raiders Outpost requires and displaces with a higher straight", () => {
   const state = new GameState(2, [AIType.human, AIType.human]);
   const [raider, victim] = state.players;
@@ -495,6 +526,63 @@ test("SimpleAI uses a straight and resolves its raid", () => {
   assert.equal(raider.isRaiding, false);
   assert.deepEqual([raider.ore, raider.fuel], [2, 2]);
   assert.deepEqual([victim.ore, victim.fuel], [0, 0]);
+});
+
+test("Pirate prejudice changes raid targeting from the Admiral choice", () => {
+  const makeState = (aiType) => {
+    const state = new GameState(3, [aiType, AIType.medium, AIType.human]);
+    const [raider, aiVictim, humanVictim] = state.players;
+    for (const player of state.players) {
+      player.cards = [];
+    }
+    state.heinleinPlains.colonyCounts[aiVictim.playerIndex] = 5;
+    state.pohlFoothills.colonyCounts[humanVictim.playerIndex] = 4;
+    aiVictim.ore = 4;
+    humanVictim.ore = 4;
+    raider.startRaid();
+    return { state, raider, aiVictim, humanVictim };
+  };
+
+  const admiral = makeState(AIType.hard);
+  assert.equal(SimpleAI.finishRaid(admiral.state, admiral.raider), true);
+  assert.equal(admiral.aiVictim.ore, 0);
+  assert.equal(admiral.humanVictim.ore, 4);
+
+  const pirate = makeState(AIType.pirate);
+  assert.equal(SimpleAI.finishRaid(pirate.state, pirate.raider), true);
+  assert.equal(pirate.aiVictim.ore, 4);
+  assert.equal(pirate.humanVictim.ore, 0);
+});
+
+test("Pirate prejudice changes colony denial from the Admiral choice", () => {
+  const makeState = (aiType) => {
+    const state = new GameState(3, [aiType, AIType.medium, AIType.human], () => 0.5);
+    const [player, aiOpponent, humanOpponent] = state.players;
+    for (const candidate of state.players) {
+      candidate.cards = [];
+      candidate.ore = 0;
+      candidate.fuel = 0;
+    }
+    state.heinleinPlains.colonyCounts[player.playerIndex] = 1;
+    state.heinleinPlains.colonyCounts[aiOpponent.playerIndex] = 2;
+    state.pohlFoothills.colonyCounts[player.playerIndex] = 1;
+    state.pohlFoothills.colonyCounts[humanOpponent.playerIndex] = 2;
+    state.vanVogtMountains.colonyCounts[aiOpponent.playerIndex] = 1;
+    state.vanVogtMountains.colonyCounts[humanOpponent.playerIndex] = 1;
+    for (const region of state.regions.slice(2)) {
+      region.hasRepulsorField = true;
+    }
+    player.coloniesToLaunch = 1;
+    return { state, player };
+  };
+
+  const admiral = makeState(AIType.hard);
+  assert.equal(SimpleAI.launchColony(admiral.state, admiral.player), true);
+  assert.equal(admiral.state.heinleinPlains.coloniesForPlayer(0), 2);
+
+  const pirate = makeState(AIType.pirate);
+  assert.equal(SimpleAI.launchColony(pirate.state, pirate.player), true);
+  assert.equal(pirate.state.pohlFoothills.coloniesForPlayer(0), 2);
 });
 
 test("Booster, Stasis, and Polarity target one legal undocked ship", () => {

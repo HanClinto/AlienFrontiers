@@ -161,8 +161,8 @@ The intended 20-card deck and core facilities are present. Remaining major gaps 
 
 | Checklist | Gap | Impact |
 |---|---|---|
-| [ ] | Personality-specific `ExhaustiveAI` | Cadet, Spacer, Admiral and Pirate currently share the SimpleAI fallback and do not evaluate all tech/facility strategies. |
-| [ ] | Cancellable/step-back selection queues | Pending multi-step tech and colony actions cannot fully reproduce original queue cancel/undo behavior. |
+| [ ] | Personality-specific `ExhaustiveAI` | The heuristic AI now applies original aggression, noise, and human-prejudice profiles to raid/colony decisions and uses Artifact credit/Market trades. Exhaustive state search and full tech/facility planning remain unported. |
+| [ ] | Cancellable/step-back selection queues | Undo now cancels active raid and tech-selection queues safely. Original per-stage step-back behavior remains incomplete. |
 | [ ] | Options scene and colorblind dice | Main-menu OPTIONS is not a complete scene; original alternate green dice and preference UI are absent. |
 | [ ] | Generalized Cocos touch dispatcher | Manual forwarding handles known overlap cases, but future overlapping targets can still diverge from targeted delegate ordering. |
 | [ ] | Full render/blend fidelity | Region ownership overlays, HUD tint blending, glows and several resource effects remain absent. |
@@ -197,7 +197,7 @@ Out of scope by project decision: Game Center, achievements, landscape layouts, 
 
 ### 4. Remaining Product Behavior
 
-- [ ] Port personality-aware AI evaluation and tech use.
+- [ ] Port exhaustive AI state search and full tech/facility evaluation.
 - [ ] Implement the Options scene and colorblind dice preference.
 - [ ] Add remaining resource/ship particles and minor transitions.
 

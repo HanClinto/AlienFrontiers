@@ -1,4 +1,37 @@
+import { AIType } from "./constants.js";
+import { TechCardType } from "./tech-card.js";
+
+const AI_PROFILES = Object.freeze({
+  [AIType.easy]: Object.freeze({ aggression: 0.1, humanPrejudice: 1, randomness: 2 }),
+  [AIType.medium]: Object.freeze({ aggression: 0.3, humanPrejudice: 1, randomness: 1 }),
+  [AIType.hard]: Object.freeze({ aggression: 0.5, humanPrejudice: 1, randomness: 0 }),
+  [AIType.pirate]: Object.freeze({ aggression: 0.9, humanPrejudice: 1.5, randomness: 0 }),
+});
+
+const TECH_VALUES = Object.freeze({
+  [TechCardType.alienCity]: 1,
+  [TechCardType.alienMonument]: 1,
+  [TechCardType.boosterPod]: 1.75,
+  [TechCardType.plasmaCannon]: 1.5,
+  [TechCardType.resourceCache]: 1.2,
+  [TechCardType.stasisBeam]: 1.5,
+  [TechCardType.gravityManipulator]: 0.25,
+  [TechCardType.polarityDevice]: 2,
+  [TechCardType.dataCrystal]: 1.5,
+  [TechCardType.orbitalTeleporter]: 1.5,
+  [TechCardType.holographicDecoy]: 1.5,
+});
+
 export class SimpleAI {
+  static profileFor(player) {
+    return AI_PROFILES[player.aiType] ?? AI_PROFILES[AIType.easy];
+  }
+
+  static threatValue(player, profile) {
+    const prejudice = player.aiType === AIType.human ? profile.humanPrejudice : 1;
+    return player.score * prejudice;
+  }
+
   static step(state) {
     const player = state.currentPlayer;
     if (player.isRaiding) {
@@ -11,6 +44,14 @@ export class SimpleAI {
 
     if (player.coloniesToLaunch > 0) {
       return this.launchColony(state, player);
+    }
+
+    if (this.useArtifactCredit(state, player)) {
+      return true;
+    }
+
+    if (player.ableToMarketTrade && player.effectiveMarketPrice <= 2) {
+      return player.doMarketTrade();
     }
 
     if (state.colonistHub.ableToLaunch(player)) {
@@ -93,11 +134,28 @@ export class SimpleAI {
     return true;
   }
 
+  static useArtifactCredit(state, player) {
+    const card = state.techDisplayDeck
+      .filter((candidate) => player.canPurchaseCard(candidate))
+      .sort((left, right) =>
+        (TECH_VALUES[right.type] ?? 0) - (TECH_VALUES[left.type] ?? 0)
+        || left.cardID - right.cardID)[0];
+    if (card) {
+      return player.purchaseCard(card);
+    }
+    if (player.artifactCreditAvailable >= 8 && player.canShuffleCards) {
+      return player.shuffleCards();
+    }
+    return false;
+  }
+
   static finishRaid(state, player) {
-    for (const victim of state.players) {
-      if (victim === player) {
-        continue;
-      }
+    const profile = this.profileFor(player);
+    const victims = state.players
+      .filter((victim) => victim !== player)
+      .sort((left, right) =>
+        this.threatValue(right, profile) - this.threatValue(left, profile));
+    for (const victim of victims) {
       for (const resource of ["ore", "fuel"]) {
         while (!player.raidSelectionComplete && player.canRaidMore(victim, resource)) {
           player.adjustRaidResource(victim, resource, 1);
@@ -105,8 +163,7 @@ export class SimpleAI {
       }
     }
     if (!player.raidSelectionComplete) {
-      const card = state.players
-        .filter((victim) => victim !== player)
+      const card = victims
         .flatMap((victim) => victim.cards)
         .find((candidate) => player.canRaidCard(candidate));
       if (card) {
@@ -124,14 +181,25 @@ export class SimpleAI {
 
   static launchColony(state, player) {
     const legalRegions = state.regions.filter((region) => !region.hasRepulsorField);
-    const needs = legalRegions.map((region) => ({
-      region,
-      coloniesNeeded: region.coloniesNeededForMajority(player),
-    }));
-    const choice = needs.find(({ coloniesNeeded }) => coloniesNeeded === 1)
-      ?? needs.find(({ coloniesNeeded }) => coloniesNeeded === 2)
-      ?? needs.find(({ coloniesNeeded }) => coloniesNeeded === 0)
-      ?? [...needs].sort((left, right) => left.coloniesNeeded - right.coloniesNeeded)[0];
+    const profile = this.profileFor(player);
+    const choices = legalRegions.map((region, index) => {
+      const coloniesNeeded = region.coloniesNeededForMajority(player);
+      const majorityValue = coloniesNeeded === 1 ? 100
+        : coloniesNeeded === 2 ? 30
+          : coloniesNeeded === 0 ? 10 : 10 - coloniesNeeded;
+      const leader = region.playerWithMajority >= 0
+        ? state.players[region.playerWithMajority]
+        : null;
+      const denialValue = leader && leader !== player
+        ? this.threatValue(leader, profile) * profile.aggression
+        : 0;
+      const noise = profile.randomness > 0
+        ? (state.random() * 2 - 1) * profile.randomness
+        : 0;
+      return { region, score: majorityValue + denialValue + noise, index };
+    });
+    const choice = choices.sort((left, right) =>
+      right.score - left.score || left.index - right.index)[0];
     return choice ? state.selectRegion(choice.region) : false;
   }
 }
