@@ -35,13 +35,13 @@ The counts are useful for prioritization, but they are not percentages of render
 | Measure | Count | Percent |
 |---|---:|---:|
 | Distinct Cocos class/action symbols | 38 | 100% |
-| Equivalent or equivalent substitute | 26 | 68.4% |
-| Implemented with semantic differences | 6 | 15.8% |
+| Equivalent or equivalent substitute | 28 | 73.7% |
+| Implemented with semantic differences | 4 | 10.5% |
 | Missing and currently relevant | 1 | 2.6% |
 | Deferred/platform-only | 5 | 13.2% |
 | At least represented (`EQ` + `PARTIAL`) | 32 | 84.2% |
 
-The gameplay model is substantially further along than the rendering-equivalence percentage suggests. Most remaining fidelity problems cluster around text metrics, blend modes, clipping/bounds, and generalized touch delivery.
+The gameplay model is substantially further along than the rendering-equivalence percentage suggests. Most remaining fidelity problems cluster around exact text glyph metrics, unported overlay/glow call sites, clipping/bounds, and generalized touch delivery.
 
 ## Cocos Class And Action Inventory
 
@@ -49,7 +49,7 @@ The gameplay model is substantially further along than the rendering-equivalence
 
 | Checklist | Cocos symbol | References | Web equivalent | Status | Notes |
 |---|---|---:|---|---|---|
-| [x] | `CCSprite` | 240 | `CCSprite` | `[PARTIAL]` | Image, anchor, frame, opacity and grayscale tint work. General RGB tint and Cocos blend state are missing. |
+| [x] | `CCSprite` | 240 | `CCSprite` | `[EQ]` | Image/frame rendering, anchors, opacity, cached arbitrary RGB modulation, and active multiply/additive blend modes work. |
 | [x] | `CCLabelTTF` | 124 | `CCLabelTTF` | `[EQ]` | Supports measured ascent/descent, fixed dimensions, horizontal/vertical alignment, centered baselines, and fitted captions. |
 | [ ] | `CCNode` | 123 | `CCNode` | `[PARTIAL]` | Transform/tree/tag/action basics work. Negative-z visitation, lifecycle recursion and child-derived bounds differ. |
 | [x] | `CCSequence` | 46 | `CCSequence` | `[EQ]` | Consumes oversized frame deltas across every stage and completes zero-duration callbacks at exact boundaries. |
@@ -82,7 +82,7 @@ The gameplay model is substantially further along than the rendering-equivalence
 | [ ] | `CCGLView` | 2 | `<canvas>` | `[DEFERRED]` | iOS OpenGL view setup is platform-only. |
 | [x] | `CCRotateBy` | 2 | `CCRotateBy` | `[EQ]` | Roll and selection-ring animations work. |
 | [ ] | `CCTexture2D` | 2 | Browser image/canvas | `[DEFERRED]` | Pixel format and PVR configuration are platform-only. |
-| [ ] | `CCTintTo` | 2 | `CCTintTo` | `[PARTIAL]` | RGB interpolation exists; rendering currently reproduces grayscale dock tint only. |
+| [x] | `CCTintTo` | 2 | `CCTintTo` | `[EQ]` | RGB interpolation renders through cached arbitrary-color sprite modulation. |
 | [ ] | `CCDirectorIOS` | 1 | Browser director | `[DEFERRED]` | iOS-specific director subclass is not applicable. |
 | [x] | `CCMenuItem` | 1 | `CCMenuItemImage` | `[EQ]` | The active concrete item behavior is covered. |
 | [ ] | `CCRotateTo` | 1 | `CCRotateBy` substitute | `[PARTIAL]` | Current roll animation reaches the intended spin but lacks exact absolute-angle semantics. |
@@ -100,7 +100,7 @@ These rows capture high-volume APIs that class counts alone hide.
 | [ ] | Anchor point | 95 | `[PARTIAL]` | Transform semantics work; text metric differences make labels appear offset despite correct anchors. |
 | [x] | Sprite file construction | 98 | `[EQ]` | Original assets are preloaded and rendered directly. |
 | [x] | Visibility | 75 | `[EQ]` | Visibility gates rendering and hit testing. |
-| [ ] | Color/tint | 69 | `[PARTIAL]` | Grayscale brightness works. Ownership tint and arbitrary RGB modulation do not. |
+| [x] | Color/tint | 69 | `[EQ]` | Ownership tint and arbitrary RGB modulation render through cached tinted bitmaps. |
 | [x] | `buttonFromImage` helpers | 63 | `[EQ]` | Normal/pressed/disabled and labels are reproduced. |
 | [ ] | `contentSize` | 62 | `[PARTIAL]` | Images and labels own sizes, but constrained text dimensions and child-derived sizes differ. |
 | [x] | `runAction:` | 46 | `[EQ]` | Concurrent tracks are supported. |
@@ -110,7 +110,7 @@ These rows capture high-volume APIs that class counts alone hide.
 | [x] | `stopAllActions` | 18 | `[EQ]` | Stops all tracks on the target node. |
 | [ ] | `boundingBox` | 15 | `[MISSING]` | Hand-authored hit boxes currently substitute transformed sprite bounds. |
 | [x] | Scale | 15 | `[EQ]` | Node and sprite scaling work; some original call sites are not yet mirrored. |
-| [ ] | `setBlendFunc:` | 11 | `[MISSING]` | Destination-color ownership overlays and additive glows are absent. |
+| [ ] | `setBlendFunc:` | 11 | `[PARTIAL]` | Active destination-color and additive equations map to Canvas `multiply` and `lighter`; other OpenGL equations are not generalized. |
 | [ ] | Targeted touch delegate | 11 | `[PARTIAL]` | Numeric priority exists; multiple delegates/pass-through are not generalized. |
 | [x] | Children enumeration | 9 | `[EQ]` | Direct child arrays preserve order. |
 | [x] | `setTexture:` | 8 | `[EQ]` | Image replacement is used by cards and mini-HUD frames. |
@@ -133,16 +133,16 @@ These rows capture high-volume APIs that class counts alone hide.
 |---|---|---|---|
 | [x] | Label baseline and dimensions | `[EQ]` | `CCLabelTTF` now supports fixed dimensions/alignment, actual ascent/descent, centered alphabetic baselines, and fitted button captions. |
 | [ ] | BMFont descriptions | `[MISSING]` | Original symbol glyphs and centered line metrics are not represented. Current readable prose is functionally complete but not pixel-equivalent. |
-| [ ] | Destination-color blending | `[MISSING]` | Needed for player-color HUD corners and region ownership overlays (`GL_DST_COLOR`, `GL_ONE_MINUS_SRC_ALPHA`). |
-| [ ] | Additive blending | `[MISSING]` | Needed for die/roll/done/region glows and several flare/resource effects (`GL_SRC_ALPHA`, `GL_ONE`). |
-| [ ] | Region border/ownership overlay | `[MISSING]` | Assets exist in the iOS project but are not rendered by the web `RegionLayer`. Tint support is not sufficient without blend modes. |
+| [x] | Destination-color blending | `[EQ]` | Current/mini HUD masks use Canvas `multiply`, equivalent on the opaque authored HUD artwork to `GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA`. |
+| [x] | Additive blending | `[EQ]` | Canvas `lighter` supports active `GL_SRC_ALPHA, GL_ONE` glow call sites. |
+| [ ] | Region border/ownership overlay | `[MISSING]` | Blend/tint support now exists; original region border and ownership overlay call sites/assets still need porting. |
 | [ ] | Negative-z node visitation | `[PARTIAL]` | Director draws a node before all children; Cocos draws negative-z children first. |
 | [ ] | Child bounds and transformed rectangles | `[MISSING]` | Add `boundingBox`, `childBounds`, inset and union helpers; replace manual facility/card hit boxes incrementally. |
 | [ ] | General touch pass-through | `[PARTIAL]` | Docked-die forwarding fixes Lunar/Raiders. General `swallowsTouches:NO` behavior remains absent. |
 | [x] | Tray culling and shadows | `[EQ]` | Current and mini trays use original whole-card culling and place their HUD frame sprites above the tray, preserving the authored foreground lip/shadow. |
 | [ ] | Scrollable game log | `[PARTIAL]` | The original `172x142` Communications aperture and bottom-following lines render correctly; direct touch scrolling remains unimplemented. |
 | [ ] | Resource and HUD particles | `[MISSING]` | Original `LayerHUDPort.particleWithSprite` motion/fade/scale effects are not ported. |
-| [ ] | Roll/done/region glows | `[MISSING]` | Artwork exists; requires additive blend state and repeat actions at the original call sites. |
+| [ ] | Roll/done/region glows | `[PARTIAL]` | Roll and Done pulse with original additive artwork and timing; die potential and region glows remain unported. |
 
 ## Reported Fidelity Issues
 
@@ -153,7 +153,7 @@ These rows capture high-volume APIs that class counts alone hide.
 | [x] | Tech descriptions are misaligned | Current HUD, Artifact detail, and mini-HUD inspectors use original columns/centers and vertically centered anchors. | BMFont symbol glyphs and exact line metrics remain a visual-fidelity follow-up. |
 | [x] | Tech tray border/shadow cues clip | Fixed by whole-card culling plus original frame-over-tray z-order in current and mini HUDs. | Browser crops confirm the foreground lip and shadow overlay the card bottoms. |
 | [x] | Dice overlap Undo/Redo | Restored `SpriteShip.scale = 0.8`, original portrait rolling centers after legacy node compensation, and atlas-sized hit bounds. | A six-die browser crop confirms both rows remain inside the recessed tray above Undo/Redo. |
-| [ ] | Territory ownership tint absent | Region border/overlay assets and blend modes are not used. | Add sprite blend modes, then port `LayerRegion.updateLabels` border and ownership overlay behavior. |
+| [ ] | Territory ownership tint absent | Blend/tint support is complete, but region border/overlay call sites are not ported. | Port `LayerRegion.updateLabels` border and ownership overlay behavior. |
 
 ## Major Functional Gaps
 
@@ -166,7 +166,7 @@ The intended 20-card deck and core facilities are present. Remaining major gaps 
 | [x] | Card inspection and card raids | Artifact detail shows both abilities; current and opponent trays select/highlight cards; mini inspectors show abilities and an explicit `RAID CARD` action that completes theft. |
 | [ ] | Options scene and colorblind dice | Main-menu OPTIONS is not a complete scene; original alternate green dice and preference UI are absent. |
 | [ ] | Generalized Cocos touch dispatcher | Manual forwarding handles known overlap cases, but future overlapping targets can still diverge from targeted delegate ordering. |
-| [ ] | Full render/blend fidelity | Region ownership overlays, HUD tint blending, glows and several resource effects remain absent. |
+| [ ] | Full render/blend fidelity | Current/mini HUD tint blending and Roll/Done glows are restored; region overlays, die/region glows, and several resource effects remain absent. |
 | [ ] | Full animation coverage | Core card, die, panel, menu and ship warp animations exist; resource particles and several glows do not. |
 
 Out of scope by project decision: Game Center, achievements, landscape layouts, expansions, and legacy iPhone scenes.
@@ -184,10 +184,10 @@ Out of scope by project decision: Game Center, achievements, landscape layouts, 
 
 ### 2. Blend Modes And Territory Overlays
 
-- [ ] Add sprite blend state for destination-color and additive rendering.
+- [x] Add sprite blend state for destination-color and additive rendering.
 - [ ] Port region border, majority overlay and selected border behavior.
-- [ ] Port current/mini HUD corner and edge tint blending through the shim.
-- [ ] Add roll/done/die/region glow behavior.
+- [x] Port current/mini HUD corner and edge tint blending through the shim.
+- [ ] Add remaining die-potential and region glow behavior.
 
 ### 3. Scene Graph And Input Parity
 

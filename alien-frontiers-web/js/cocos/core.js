@@ -214,11 +214,14 @@ export class CCLayer extends CCNode {}
 
 export class CCScene extends CCNode {}
 
+const tintedSpriteCache = new WeakMap();
+
 export class CCSprite extends CCNode {
   constructor(imageOrWidth = 0, height = 0) {
     super();
     this.anchorPoint = ccp(0.5, 0.5);
     this.color = { r: 255, g: 255, b: 255 };
+    this.blendMode = "source-over";
     if (typeof imageOrWidth === "number") {
       this.image = null;
       this.contentSize = { width: imageOrWidth, height };
@@ -238,14 +241,13 @@ export class CCSprite extends CCNode {
     }
     const { width, height } = this.contentSize;
     context.save();
-    if (this.color.r === this.color.g && this.color.g === this.color.b) {
-      context.filter = `brightness(${this.color.r / 255})`;
-    }
+    context.globalCompositeOperation = this.blendMode;
     context.scale(1, -1);
+    const image = this.tintedImage();
     if (this.sourceRect) {
       const { x, y, width: sourceWidth, height: sourceHeight } = this.sourceRect;
       context.drawImage(
-        this.image,
+        image,
         x,
         y,
         sourceWidth,
@@ -256,9 +258,39 @@ export class CCSprite extends CCNode {
         height,
       );
     } else {
-      context.drawImage(this.image, 0, -height, width, height);
+      context.drawImage(image, 0, -height, width, height);
     }
     context.restore();
+  }
+
+  tintedImage() {
+    if (this.color.r === 255 && this.color.g === 255 && this.color.b === 255) {
+      return this.image;
+    }
+    if (typeof document === "undefined") {
+      return this.image;
+    }
+    let imageCache = tintedSpriteCache.get(this.image);
+    if (!imageCache) {
+      imageCache = new Map();
+      tintedSpriteCache.set(this.image, imageCache);
+    }
+    const cacheKey = `${this.color.r},${this.color.g},${this.color.b}`;
+    if (imageCache.has(cacheKey)) {
+      return imageCache.get(cacheKey);
+    }
+    const canvas = document.createElement("canvas");
+    canvas.width = this.image.naturalWidth || this.image.width;
+    canvas.height = this.image.naturalHeight || this.image.height;
+    const tintContext = canvas.getContext("2d");
+    tintContext.drawImage(this.image, 0, 0);
+    tintContext.globalCompositeOperation = "multiply";
+    tintContext.fillStyle = `rgb(${this.color.r},${this.color.g},${this.color.b})`;
+    tintContext.fillRect(0, 0, canvas.width, canvas.height);
+    tintContext.globalCompositeOperation = "destination-in";
+    tintContext.drawImage(this.image, 0, 0);
+    imageCache.set(cacheKey, canvas);
+    return canvas;
   }
 }
 

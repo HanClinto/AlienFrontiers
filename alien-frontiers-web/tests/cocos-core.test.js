@@ -163,6 +163,14 @@ test("tint actions interpolate unavailable docks to original Cocos gray", () => 
   assert.deepEqual(sprite.color, { r: 100, g: 100, b: 100 });
 });
 
+test("sprites expose Canvas equivalents for Cocos blend functions", () => {
+  const sprite = new CCSprite(26, 26);
+  sprite.blendMode = "multiply";
+  assert.equal(sprite.blendMode, "multiply");
+  sprite.blendMode = "lighter";
+  assert.equal(sprite.blendMode, "lighter");
+});
+
 test("staged callbacks bridge sine-in and sine-out moves", () => {
   const node = new CCNode();
   let callbackCount = 0;

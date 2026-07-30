@@ -25,6 +25,12 @@ const PLAYER_COLONY_IMAGES_FULL = [
   "colony_yellow.png",
 ];
 const PLAYER_COLORS = ["#ff343e", "#40ff60", "#45caff", "#ffff60"];
+const PLAYER_TINTS = [
+  { r: 255, g: 52, b: 62 },
+  { r: 64, g: 255, b: 96 },
+  { r: 69, g: 202, b: 255 },
+  { r: 255, g: 255, b: 96 },
+];
 export const SHIP_SPRITE_SCALE = 0.8;
 export const SHIP_SPRITE_SIZE = Object.freeze({ width: 32, height: 40 });
 const REGION_LAYOUTS = Object.freeze([
@@ -104,18 +110,6 @@ export function colonistHubTrackPosition(numPlayers, playerIndex, step) {
     step < 7 ? 48 + step * 28 : 251,
     y === 0 ? 0 : y,
   );
-}
-
-function tintedImage(image, color) {
-  const canvas = document.createElement("canvas");
-  canvas.width = image.naturalWidth;
-  canvas.height = image.naturalHeight;
-  const context = canvas.getContext("2d");
-  context.drawImage(image, 0, 0);
-  context.globalCompositeOperation = "source-in";
-  context.fillStyle = color;
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  return canvas;
 }
 
 class WrappedTextBox extends CCNode {
@@ -1213,11 +1207,9 @@ class PlayerMiniHUD extends CCNode {
     this.frame.setAnchorPoint(ccp(0.5, 1));
     this.addChild(this.frame, 1);
 
-    const cornerImage = tintedImage(
-      scene.assets.image("hud_port_corner_tint_mini.png"),
-      PLAYER_COLORS[player.colorIndex],
-    );
-    this.corner = new CCSprite(cornerImage);
+    this.corner = new CCSprite(scene.assets.image("hud_port_corner_tint_mini.png"));
+    this.corner.color = { ...PLAYER_TINTS[player.colorIndex] };
+    this.corner.blendMode = "multiply";
     this.corner.setPosition(ccp(66, -413));
     this.addChild(this.corner, 1);
 
@@ -1560,6 +1552,15 @@ export class GameScene extends AFLayer {
     const frame = new CCSprite(this.assets.image("hud_port_player_tab_large.png"));
     this.uiFrame.addChild(frame, 2);
 
+    this.currentCornerOverlay = new CCSprite(this.assets.image("hud_port_corner_tint.png"));
+    this.currentCornerOverlay.setPosition(ccp(332, 69));
+    this.currentCornerOverlay.blendMode = "multiply";
+    this.uiFrame.addChild(this.currentCornerOverlay, 2);
+    this.currentEdgeOverlay = new CCSprite(this.assets.image("hud_port_edge_tint.png"));
+    this.currentEdgeOverlay.setPosition(ccp(-354, 1));
+    this.currentEdgeOverlay.blendMode = "multiply";
+    this.uiFrame.addChild(this.currentEdgeOverlay, 2);
+
     this.rollButton = this.buttonFromImage(
       "button_roll_up.png",
       "button_roll_down.png",
@@ -1568,6 +1569,11 @@ export class GameScene extends AFLayer {
     );
     this.rollButton.setPosition(ccp(260, -25));
     this.uiFrame.addChild(this.rollButton, 2);
+    this.rollButtonGlow = new CCSprite(this.assets.image("button_roll_glow.png"));
+    this.rollButtonGlow.setPosition(ccp(260, -25));
+    this.rollButtonGlow.blendMode = "lighter";
+    this.rollButtonGlow.visible = false;
+    this.uiFrame.addChild(this.rollButtonGlow, 2);
 
     this.doneButton = this.buttonFromImage(
       "tray_btn_done.png",
@@ -1577,6 +1583,11 @@ export class GameScene extends AFLayer {
     );
     this.doneButton.setPosition(ccp(305, -75));
     this.uiFrame.addChild(this.doneButton, 2);
+    this.doneButtonGlow = new CCSprite(this.assets.image("tray_btn_done_glow.png"));
+    this.doneButtonGlow.setPosition(ccp(305, -75));
+    this.doneButtonGlow.blendMode = "lighter";
+    this.doneButtonGlow.visible = false;
+    this.uiFrame.addChild(this.doneButtonGlow, 2);
 
     this.undoButton = this.buttonFromImage(
       "tray_btn_undo.png",
@@ -1854,6 +1865,8 @@ export class GameScene extends AFLayer {
     this.rollButton.visible = !player.initialRollDone;
     this.setButtonIsEnabled(this.rollButton, isHumanTurn);
     this.setButtonIsEnabled(this.doneButton, isHumanTurn && this.state.canEndTurn);
+    this.setButtonGlow(this.rollButtonGlow, isHumanTurn && !player.initialRollDone);
+    this.setButtonGlow(this.doneButtonGlow, isHumanTurn && this.state.canEndTurn);
     const hasPendingSelection = player.isRaiding || Boolean(this.state.pendingTechCard);
     this.setButtonIsEnabled(
       this.undoButton,
@@ -1871,6 +1884,8 @@ export class GameScene extends AFLayer {
       ),
     );
     this.playerLabel.setString(player.vps);
+    this.currentCornerOverlay.color = { ...PLAYER_TINTS[player.colorIndex] };
+    this.currentEdgeOverlay.color = { ...PLAYER_TINTS[player.colorIndex] };
     this.oreLabel.setString(player.ore);
     this.fuelLabel.setString(player.fuel);
     this.colonyLabel.setString(player.coloniesLeft);
@@ -1959,6 +1974,21 @@ export class GameScene extends AFLayer {
       return "SELECT A DOCKED DIE TO TELEPORT";
     }
     return "SELECT AN UNDOCKED DIE TO FLIP";
+  }
+
+  setButtonGlow(glow, visible) {
+    if (glow.visible === visible) {
+      return;
+    }
+    glow.visible = visible;
+    glow.stopAllActions();
+    if (visible) {
+      glow.opacity = 96;
+      glow.runAction(new CCRepeatForever(new CCSequence(
+        new CCFadeTo(1, 164),
+        new CCFadeTo(1, 96),
+      )));
+    }
   }
 
   colonyDiscardHint() {
