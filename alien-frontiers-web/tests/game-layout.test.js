@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { miniHUDPosition, regionAtBoardPoint, rollingTrayPosition, techCardPosition } from "../js/scenes/game.js";
+import { colonistHubTrackPosition, miniHUDPosition, regionAtBoardPoint, rollingTrayPosition, techCardPosition } from "../js/scenes/game.js";
 
 test("all six ships wrap into the original four-column tray", () => {
   assert.deepEqual(
@@ -77,4 +77,12 @@ test("tech cards use the original current and mini tray slots", () => {
       { x: 30, y: 81 },
     ],
   );
+});
+
+test("Colonist Hub tracks retain original compressed player rows", () => {
+  assert.deepEqual(colonistHubTrackPosition(4, 0, 0), { x: 48, y: 0 });
+  assert.deepEqual(colonistHubTrackPosition(4, 3, 6), { x: 216, y: -84 });
+  assert.deepEqual(colonistHubTrackPosition(4, 3, 7), { x: 251, y: -84 });
+  assert.deepEqual(colonistHubTrackPosition(2, 0, 2), { x: 104, y: -28 });
+  assert.deepEqual(colonistHubTrackPosition(2, 1, 7), { x: 251, y: -56 });
 });

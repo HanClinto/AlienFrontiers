@@ -13,6 +13,12 @@ export class SimpleAI {
       return this.launchColony(state, player);
     }
 
+    if (state.colonistHub.ableToLaunch(player)) {
+      state.colonistHub.launchColony(player);
+      this.launchColony(state, player);
+      return true;
+    }
+
     if (player.numUndockedShips === 0) {
       return state.gotoNextPlayer();
     }
@@ -62,6 +68,13 @@ export class SimpleAI {
       const highestShip = [...player.undockedShips]
         .sort((left, right) => right.value - left.value)[0];
       state.solarConverter.commitShipsFromPlayer(player, [highestShip]);
+      return true;
+    }
+
+    const hubGroup = state.colonistHub.dockGroups[player.playerIndex];
+    const hubShips = player.undockedShips.slice(0, Math.min(3, hubGroup.numOpenDocks));
+    if (state.colonistHub.isValidMoveFromPlayer(player, hubShips)) {
+      state.colonistHub.commitShipsFromPlayer(player, hubShips);
       return true;
     }
 

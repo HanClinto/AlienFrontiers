@@ -55,6 +55,15 @@ export function techCardPosition(layout, cardIndex) {
     : ccp(30, -84 + 55 * cardIndex);
 }
 
+export function colonistHubTrackPosition(numPlayers, playerIndex, step) {
+  const verticalOffset = (4 - numPlayers) * 14;
+  const y = -playerIndex * 28 - verticalOffset;
+  return ccp(
+    step < 7 ? 48 + step * 28 : 251,
+    y === 0 ? 0 : y,
+  );
+}
+
 function tintedImage(image, color) {
   const canvas = document.createElement("canvas");
   canvas.width = image.naturalWidth;
@@ -265,6 +274,77 @@ class RaidersOutpostLayer extends FacilityLayer {
 
   dockPosition(index) {
     return ccp([21, 47, 73][index], 8);
+  }
+}
+
+class ColonistHubLayer extends FacilityLayer {
+  constructor(scene) {
+    super(scene, scene.state.colonistHub, ccp(24, 314), { x: -8, y: -100, width: 330, height: 180 });
+    this.verticalOffset = (4 - scene.state.numPlayers) * 14;
+    this.label("COLONIST HUB", ccp(0, 53 - this.verticalOffset));
+    const dockImage = scene.assets.image("dock_normal.png");
+    const nodeImage = scene.assets.image("colonist_track_node_wide.png");
+    const endpointImage = scene.assets.image("colonist_track_endpoint_wide.png");
+    this.markers = [];
+    for (let playerIndex = 0; playerIndex < scene.state.numPlayers; playerIndex += 1) {
+      for (let dockIndex = 0; dockIndex < 3; dockIndex += 1) {
+        this.sprite(dockImage, this.dockPosition(playerIndex * 3 + dockIndex));
+      }
+      for (let step = 0; step < 6; step += 1) {
+        this.sprite(nodeImage, ccp(76 + step * 28, 8 - playerIndex * 28 - this.verticalOffset));
+      }
+      this.sprite(endpointImage, ccp(244, 8 - playerIndex * 28 - this.verticalOffset));
+      const marker = new CCSprite(scene.assets.image(PLAYER_COLONY_IMAGES_FULL[playerIndex]));
+      marker.setAnchorPoint(ccp(0, 0));
+      marker.visible = false;
+      this.addChild(marker, 3);
+      this.markers.push(marker);
+    }
+    this.sprite(scene.assets.image("icons_ch.png"), ccp(0, -77 + this.verticalOffset), ccp(0, 1));
+    this.launchButton = scene.buttonFromImage(
+      "button_medium_up.png",
+      "button_medium_down.png",
+      () => this.launch(),
+      { label: "LAUNCH", fontSize: 12 },
+    );
+    this.addChild(this.launchButton, 4);
+    this.refresh();
+  }
+
+  dockPosition(index) {
+    const playerIndex = Math.floor(index / 3);
+    const dockIndex = index % 3;
+    return ccp(dockIndex * 28, 8 - playerIndex * 28 - this.verticalOffset);
+  }
+
+  launch() {
+    if (this.scene.state.currentPlayer.aiType === AIType.human) {
+      this.scene.state.colonistHub.launchColony(this.scene.state.currentPlayer);
+    }
+  }
+
+  refresh() {
+    this.markers.forEach((marker, playerIndex) => {
+      const step = this.scene.state.colonistHub.colonyPosition(playerIndex);
+      const destination = colonistHubTrackPosition(
+        this.scene.state.numPlayers,
+        playerIndex,
+        step,
+      );
+      marker.visible = step !== 0;
+      if (!marker.visible || (marker.position.x === 0 && marker.position.y === 0)) {
+        marker.setPosition(destination);
+      } else if (marker.position.x !== destination.x || marker.position.y !== destination.y) {
+        marker.stopAllActions();
+        marker.runAction(new CCEaseSineInOut(new CCMoveTo(0.5, destination)));
+      }
+    });
+    const player = this.scene.state.currentPlayer;
+    this.launchButton.visible = this.scene.state.colonistHub.ableToLaunch(player);
+    this.launchButton.setPosition(ccp(
+      282,
+      20 - player.playerIndex * 28 - this.verticalOffset,
+    ));
   }
 }
 
@@ -835,6 +915,8 @@ export class GameScene extends AFLayer {
     this.addChild(this.artifactLayer, 4);
     this.raidersLayer = new RaidersOutpostLayer(this);
     this.addChild(this.raidersLayer, 4);
+    this.colonistHubLayer = new ColonistHubLayer(this);
+    this.addChild(this.colonistHubLayer, 4);
 
     this.regionLayers = REGION_LAYOUTS.map((layout) => {
       const layer = new RegionLayer(this, layout);
@@ -967,6 +1049,7 @@ export class GameScene extends AFLayer {
       [this.state.colonyConstructor, this.constructorLayer],
       [this.state.alienArtifact, this.artifactLayer],
       [this.state.raidersOutpost, this.raidersLayer],
+      [this.state.colonistHub, this.colonistHubLayer],
     ]).get(orbital);
     if (!layer) {
       throw new Error(`No layer for docked orbital: ${orbital.title}`);
@@ -1070,6 +1153,7 @@ export class GameScene extends AFLayer {
     }
     this.marketLayer.refresh();
     this.artifactLayer.refresh();
+    this.colonistHubLayer.refresh();
     this.artifactDetail.refresh();
 
     this.updatePlayerIcon("colonyIcon", PLAYER_COLONY_IMAGES[player.colorIndex], ccp(254, 60));

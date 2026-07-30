@@ -8,6 +8,7 @@ export class Region {
     this.hasPositronField = false;
     this.hasRepulsorField = false;
     this.hasIsolationField = false;
+    this.bonusUsedThisTurn = false;
   }
 
   coloniesForPlayer(playerIndex) {

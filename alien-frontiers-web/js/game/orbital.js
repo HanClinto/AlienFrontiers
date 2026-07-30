@@ -49,6 +49,10 @@ export class DockGroup {
     return this.docks.find((dock) => !dock.occupied) ?? null;
   }
 
+  get numOpenDocks() {
+    return this.docks.filter((dock) => !dock.occupied).length;
+  }
+
   dockShips(ships) {
     for (const ship of [...ships].sort((left, right) => left.value - right.value)) {
       const dock = this.nextOpenDock;
@@ -331,6 +335,64 @@ export class RaidersOutpost extends Orbital {
     this.firstEmptyGroup.dockShips(selectedShips);
     player.startRaid();
     this.finishCommit(selectedShips);
+    return true;
+  }
+}
+
+export class ColonistHub extends Orbital {
+  constructor(state) {
+    super(state, state.numPlayers, 3);
+    this.title = "Colonist Hub";
+    this.colonyPositions = [0, 0, 0, 0];
+    this.advancementThisTurn = 0;
+  }
+
+  colonyPosition(playerIndex) {
+    return this.colonyPositions[playerIndex];
+  }
+
+  isValidMoveFromPlayer(player, selectedShips) {
+    const playerDocks = this.dockGroups[player.playerIndex];
+    return selectedShips.length > 0
+      && playerDocks.numOpenDocks >= selectedShips.length
+      && this.colonyPosition(player.playerIndex) < 7;
+  }
+
+  commitShipsFromPlayer(player, selectedShips) {
+    if (!this.isValidMoveFromPlayer(player, selectedShips)) {
+      return false;
+    }
+    let advancement = selectedShips.length;
+    if (
+      this.advancementThisTurn + advancement >= 2
+      && this.state.asimovCrater.playerHasBonus(player)
+      && !this.state.asimovCrater.bonusUsedThisTurn
+    ) {
+      this.state.asimovCrater.bonusUsedThisTurn = true;
+      advancement += 1;
+    }
+    this.advancementThisTurn += advancement;
+    this.colonyPositions[player.playerIndex] += advancement;
+    this.dockGroups[player.playerIndex].dockShips(selectedShips);
+    this.finishCommit(selectedShips);
+    return true;
+  }
+
+  ableToLaunch(player) {
+    return this.colonyPosition(player.playerIndex) >= 7
+      && player.ore >= 1
+      && player.fuel >= 1;
+  }
+
+  launchColony(player) {
+    if (!this.ableToLaunch(player)) {
+      return false;
+    }
+    player.ore -= 1;
+    player.fuel -= 1;
+    this.colonyPositions[player.playerIndex] -= 7;
+    player.addColony();
+    this.state.postEvent(EventName.resourcesChanged, player);
     return true;
   }
 }

@@ -312,6 +312,12 @@ export class Player {
 
   endTurnCleanup() {
     this.setMarketPrice(0);
+    this.state.colonistHub.colonyPositions[this.playerIndex] = Math.min(
+      this.state.colonistHub.colonyPosition(this.playerIndex),
+      7,
+    );
+    this.state.colonistHub.advancementThisTurn = 0;
+    this.state.asimovCrater.bonusUsedThisTurn = false;
     this.initialRollDone = false;
     this.techsDiscarded = 0;
     this.artifactCreditAvailable = 0;

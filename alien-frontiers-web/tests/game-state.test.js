@@ -512,3 +512,36 @@ test("Booster removes fields while Stasis and Gravity move their fields", () => 
   ], [false, false, false]);
   assert.equal(state.beginTechDiscard(state.allTech.find((card) => card.type === TechCardType.stasisBeam)), false);
 });
+
+test("Colonist Hub advances private tracks with Asimov bonus and launches overflow", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  state.asimovCrater.addColony(0);
+  state.colonistHub.colonyPositions[0] = 5;
+  player.initialRollDone = true;
+  player.ore = 1;
+  player.fuel = 1;
+  state.toggleShipSelection(player.activeShips[0]);
+  state.toggleShipSelection(player.activeShips[1]);
+
+  assert.equal(state.commitSelectedShips(state.colonistHub), true);
+  assert.equal(state.colonistHub.colonyPosition(0), 8);
+  assert.equal(state.asimovCrater.bonusUsedThisTurn, true);
+  assert.equal(state.colonistHub.advancementThisTurn, 3);
+  assert.equal(state.colonistHub.launchColony(player), true);
+  assert.equal(state.colonistHub.colonyPosition(0), 1);
+  assert.deepEqual([player.ore, player.fuel, player.coloniesToLaunch], [0, 0, 1]);
+  assert.equal(state.selectRegion(state.heinleinPlains), true);
+});
+
+test("Colonist Hub clamps unlaunched overflow and resets turn bonuses", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  state.colonistHub.colonyPositions[0] = 9;
+  state.colonistHub.advancementThisTurn = 3;
+  state.asimovCrater.bonusUsedThisTurn = true;
+  player.endTurnCleanup();
+  assert.equal(state.colonistHub.colonyPosition(0), 7);
+  assert.equal(state.colonistHub.advancementThisTurn, 0);
+  assert.equal(state.asimovCrater.bonusUsedThisTurn, false);
+});
