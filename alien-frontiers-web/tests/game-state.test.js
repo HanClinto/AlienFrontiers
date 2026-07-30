@@ -451,3 +451,25 @@ test("active tech powers reject illegal ships and honor Pohl discount", () => {
   assert.equal(booster.tapped, false);
   assert.equal(player.selectedCard, null);
 });
+
+test("Gravity Manipulator raises then lowers two different legal ships", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const gravity = state.allTech.find((card) => card.type === TechCardType.gravityManipulator);
+  player.cards = [];
+  player.addCard(gravity);
+  player.fuel = 2;
+  player.initialRollDone = true;
+  player.activeShips[0].value = 4;
+  player.activeShips[1].value = 3;
+
+  assert.equal(state.beginTechPower(gravity), true);
+  assert.equal(state.usePendingTechOnShip(player.activeShips[0]), true);
+  assert.equal(state.pendingTechTargets[0], player.activeShips[0]);
+  assert.equal(state.usePendingTechOnShip(player.activeShips[0]), false);
+  assert.equal(state.usePendingTechOnShip(player.activeShips[1]), true);
+  assert.deepEqual(player.activeShips.slice(0, 2).map((ship) => ship.value), [5, 2]);
+  assert.equal(player.fuel, 0);
+  assert.equal(gravity.tapped, true);
+  assert.equal(state.pendingTechCard, null);
+});

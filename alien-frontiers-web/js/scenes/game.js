@@ -1042,6 +1042,11 @@ export class GameScene extends AFLayer {
   }
 
   techPowerHint(card) {
+    if (card.type === "gravity-manipulator") {
+      return this.state.pendingTechTargets.length === 0
+        ? "SELECT AN UNDOCKED DIE TO INCREASE"
+        : "SELECT A DIFFERENT DIE TO DECREASE";
+    }
     if (card.type === "booster-pod") {
       return "SELECT AN UNDOCKED DIE TO INCREASE";
     }

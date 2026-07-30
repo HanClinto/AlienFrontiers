@@ -68,7 +68,19 @@ export class TechCard {
     if (this.type === TechCardType.stasisBeam) {
       return ship.value > 1;
     }
+    if (this.type === TechCardType.gravityManipulator) {
+      return ship.value < 6;
+    }
     return this.type === TechCardType.polarityDevice;
+  }
+
+  canLowerGravityShip(ship, shipToRaise) {
+    return this.canUsePower
+      && ship
+      && ship !== shipToRaise
+      && ship.player === this.owner
+      && !ship.docked
+      && ship.value > 1;
   }
 
   usePowerOnShip(ship) {
@@ -87,6 +99,26 @@ export class TechCard {
     this.setTapped(true);
     this.state.postEvent("resources-changed", this.owner);
     this.state.postEvent("ship-changed", ship);
+    return true;
+  }
+
+  useGravityPower(shipToRaise, shipToLower) {
+    if (
+      this.type !== TechCardType.gravityManipulator
+      || !this.canUsePowerOnShip(shipToRaise)
+      || !this.canLowerGravityShip(shipToLower, shipToRaise)
+    ) {
+      return false;
+    }
+    this.owner.fuel -= this.adjustedFuelCost;
+    shipToRaise.value += 1;
+    shipToLower.value -= 1;
+    shipToRaise.rollIndex += 1;
+    shipToLower.rollIndex += 1;
+    this.setTapped(true);
+    this.state.postEvent("resources-changed", this.owner);
+    this.state.postEvent("ship-changed", shipToRaise);
+    this.state.postEvent("ship-changed", shipToLower);
     return true;
   }
 

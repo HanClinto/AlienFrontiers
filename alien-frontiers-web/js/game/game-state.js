@@ -17,6 +17,7 @@ export class GameState {
     this.currentPlayerIndex = 0;
     this.numTurns = 0;
     this.pendingTechCard = null;
+    this.pendingTechTargets = [];
     this.gameLog = [`Began new ${numPlayers} player game`];
 
     this.players = Array.from(
@@ -129,11 +130,17 @@ export class GameState {
   }
 
   beginTechPower(card) {
-    const hasTarget = this.currentPlayer.undockedShips.some((ship) => card.canUsePowerOnShip(ship));
+    const hasTarget = card.type === "gravity-manipulator"
+      ? this.currentPlayer.undockedShips.some((shipToRaise) =>
+        card.canUsePowerOnShip(shipToRaise)
+        && this.currentPlayer.undockedShips.some((shipToLower) =>
+          card.canLowerGravityShip(shipToLower, shipToRaise)))
+      : this.currentPlayer.undockedShips.some((ship) => card.canUsePowerOnShip(ship));
     if (!this.currentPlayer.cards.includes(card) || !card.canUsePower || !hasTarget) {
       return false;
     }
     this.pendingTechCard = card;
+    this.pendingTechTargets = [];
     this.postEvent(EventName.techCardsChanged, card);
     return true;
   }
@@ -143,10 +150,28 @@ export class GameState {
       return false;
     }
     const card = this.pendingTechCard;
+    if (card.type === "gravity-manipulator") {
+      if (this.pendingTechTargets.length === 0) {
+        if (!card.canUsePowerOnShip(ship)) {
+          return false;
+        }
+        this.pendingTechTargets.push(ship);
+        this.postEvent(EventName.techCardsChanged, card);
+        return true;
+      }
+      if (!card.useGravityPower(this.pendingTechTargets[0], ship)) {
+        return false;
+      }
+      this.pendingTechCard = null;
+      this.pendingTechTargets = [];
+      this.postEvent(EventName.techCardsChanged, card);
+      return true;
+    }
     if (!card.usePowerOnShip(ship)) {
       return false;
     }
     this.pendingTechCard = null;
+    this.pendingTechTargets = [];
     this.postEvent(EventName.techCardsChanged, card);
     return true;
   }
@@ -168,6 +193,7 @@ export class GameState {
     }
     this.currentPlayer.endTurnCleanup();
     this.pendingTechCard = null;
+    this.pendingTechTargets = [];
     const nextPlayerIndex = (this.currentPlayerIndex + 1) % this.numPlayers;
     if (nextPlayerIndex < this.currentPlayerIndex) {
       this.numTurns += 1;
