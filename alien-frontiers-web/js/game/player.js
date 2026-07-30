@@ -285,13 +285,30 @@ export class Player {
     this.activeShips.push(ship);
     ship.active = true;
     this.state.maintenanceBay.dockShip(ship);
-    this.state.postEvent(EventName.shipActivated, ship);
+    this.state.postEvent(EventName.shipDestroyed, ship);
   }
 
   gatherShips() {
+    for (const ship of [...this.activeShips]) {
+      if (ship.dock?.orbital === this.state.terraformingStation) {
+        this.deactivateShip(ship);
+      }
+    }
     for (const ship of this.activeShips) {
       ship.undock();
     }
+  }
+
+  deactivateShip(ship) {
+    if (!this.activeShips.includes(ship) || this.activeShips.length <= 3) {
+      return false;
+    }
+    ship.undock();
+    this.activeShips.splice(this.activeShips.indexOf(ship), 1);
+    this.inactiveShips.push(ship);
+    ship.active = false;
+    this.state.postEvent(EventName.shipActivated, ship);
+    return true;
   }
 
   rollShips(random = Math.random) {

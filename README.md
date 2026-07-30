@@ -30,8 +30,9 @@ and literal iPad coordinates where practical.
 The main menu and game setup screens are functional, including two-to-four-player
 configuration and multiple local human players. The first rules-driven gameplay slice
 supports rolling and selecting ships, using the Solar Converter, Maintenance Bay,
-Lunar Mine, Shipyard, Orbital Market, Colony Constructor, Colonist Hub, Alien Artifact,
-and Raiders' Outpost, purchasing additional ships and tech cards, advancing and launching
+Lunar Mine, Shipyard, Orbital Market, Colony Constructor, Colonist Hub, Terraforming
+Station, Alien Artifact, and Raiders' Outpost, purchasing or sacrificing ships, purchasing
+tech cards, advancing and launching
 colonies with the Asimov bonus, cycling the tech display, trading
 or raiding resources and cards with Holographic Decoy protection, landing
 colonies across all eight regions, scoring majority

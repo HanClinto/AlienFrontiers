@@ -37,6 +37,13 @@ export class SimpleAI {
       this.launchColony(state, player);
       return true;
     }
+    const terraformingShip = player.undockedShips.find((ship) =>
+      state.terraformingStation.isValidMoveFromPlayer(player, [ship]));
+    if (terraformingShip) {
+      state.terraformingStation.commitShipsFromPlayer(player, [terraformingShip]);
+      this.launchColony(state, player);
+      return true;
+    }
     const undocked = player.undockedShips;
     for (let first = 0; first < undocked.length - 2; first += 1) {
       for (let second = first + 1; second < undocked.length - 1; second += 1) {

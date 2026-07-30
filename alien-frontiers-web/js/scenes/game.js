@@ -348,6 +348,20 @@ class ColonistHubLayer extends FacilityLayer {
   }
 }
 
+class TerraformingStationLayer extends FacilityLayer {
+  constructor(scene) {
+    super(scene, scene.state.terraformingStation, ccp(28, 703), { x: -8, y: -5, width: 85, height: 85 });
+    this.label("TERRAFORMING", ccp(0, 67));
+    this.label("STATION", ccp(0, 54));
+    this.sprite(scene.assets.image("dock_ts.png"), ccp(-5, 8));
+    this.sprite(scene.assets.image("icons_ts.png"), ccp(0, 7), ccp(0, 1));
+  }
+
+  dockPosition() {
+    return ccp(0, 8);
+  }
+}
+
 class RegionLayer extends CCNode {
   constructor(scene, layout) {
     super();
@@ -917,6 +931,8 @@ export class GameScene extends AFLayer {
     this.addChild(this.raidersLayer, 4);
     this.colonistHubLayer = new ColonistHubLayer(this);
     this.addChild(this.colonistHubLayer, 4);
+    this.terraformingLayer = new TerraformingStationLayer(this);
+    this.addChild(this.terraformingLayer, 4);
 
     this.regionLayers = REGION_LAYOUTS.map((layout) => {
       const layer = new RegionLayer(this, layout);
@@ -1050,6 +1066,7 @@ export class GameScene extends AFLayer {
       [this.state.alienArtifact, this.artifactLayer],
       [this.state.raidersOutpost, this.raidersLayer],
       [this.state.colonistHub, this.colonistHubLayer],
+      [this.state.terraformingStation, this.terraformingLayer],
     ]).get(orbital);
     if (!layer) {
       throw new Error(`No layer for docked orbital: ${orbital.title}`);

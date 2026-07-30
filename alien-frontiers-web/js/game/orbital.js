@@ -396,3 +396,32 @@ export class ColonistHub extends Orbital {
     return true;
   }
 }
+
+export class TerraformingStation extends Orbital {
+  constructor(state) {
+    super(state, 1);
+    this.title = "Terraforming Station";
+  }
+
+  isValidMoveFromPlayer(player, selectedShips) {
+    return this.numEmptyGroups > 0
+      && selectedShips.length === 1
+      && selectedShips[0].value === 6
+      && player.activeShips.length > 3
+      && player.ore >= 1
+      && player.fuel >= 1;
+  }
+
+  commitShipsFromPlayer(player, selectedShips) {
+    if (!this.isValidMoveFromPlayer(player, selectedShips)) {
+      return false;
+    }
+    player.ore -= 1;
+    player.fuel -= 1;
+    player.addColony();
+    this.firstEmptyGroup.dockShips(selectedShips);
+    this.state.postEvent(EventName.resourcesChanged, player);
+    this.finishCommit(selectedShips);
+    return true;
+  }
+}

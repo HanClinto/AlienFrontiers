@@ -545,3 +545,34 @@ test("Colonist Hub clamps unlaunched overflow and resets turn bonuses", () => {
   assert.equal(state.colonistHub.advancementThisTurn, 0);
   assert.equal(state.asimovCrater.bonusUsedThisTurn, false);
 });
+
+test("Terraforming Station launches a colony and destroys its die next gather", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  player.activateShip();
+  player.initialRollDone = true;
+  player.ore = 1;
+  player.fuel = 1;
+  player.activeShips[0].value = 6;
+  state.toggleShipSelection(player.activeShips[0]);
+
+  assert.equal(state.commitSelectedShips(state.terraformingStation), true);
+  assert.deepEqual([player.ore, player.fuel, player.coloniesToLaunch], [0, 0, 1]);
+  assert.equal(player.activeShips[0].dock.orbital, state.terraformingStation);
+  assert.equal(state.selectRegion(state.lemBadlands), true);
+  player.gatherShips();
+  assert.equal(player.activeShips.length, 3);
+  assert.equal(player.inactiveShips.includes(player.allShips[0]), true);
+  assert.equal(player.allShips[0].active, false);
+});
+
+test("Terraforming Station rejects native dice until a fourth ship exists", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  player.initialRollDone = true;
+  player.ore = 1;
+  player.fuel = 1;
+  player.activeShips[0].value = 6;
+  state.toggleShipSelection(player.activeShips[0]);
+  assert.equal(state.commitSelectedShips(state.terraformingStation), false);
+});

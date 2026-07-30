@@ -57,6 +57,7 @@ export class GameAudioManager {
       [EventName.shipSelected, "select"],
       [EventName.shipsDocked, "dock"],
       [EventName.shipActivated, "ship"],
+      [EventName.shipDestroyed, "ship"],
       [EventName.launchColony, "colony"],
       [EventName.techCardsChanged, "card"],
       [EventName.cardTapped, "card"],

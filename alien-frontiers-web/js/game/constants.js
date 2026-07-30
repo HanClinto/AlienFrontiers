@@ -10,6 +10,7 @@ export const AIType = Object.freeze({
 export const EventName = Object.freeze({
   resourcesChanged: "resources-changed",
   shipActivated: "ship-activated",
+  shipDestroyed: "ship-destroyed",
   shipDocked: "ship-docked",
   shipRolled: "ship-rolled",
   shipChanged: "ship-changed",

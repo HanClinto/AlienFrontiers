@@ -22,6 +22,8 @@ const MENU_IMAGES = [
   "colonist_track_node_wide.png",
   "colonist_track_endpoint_wide.png",
   "icons_ch.png",
+  "dock_ts.png",
+  "icons_ts.png",
   "menu_back.png",
   "menu_back_pushed.png",
   "menu_button_blank.png",
