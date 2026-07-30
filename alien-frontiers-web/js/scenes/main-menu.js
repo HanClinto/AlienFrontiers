@@ -9,6 +9,7 @@ const Tags = Object.freeze({
   title: 2,
   play: 3,
   rules: 4,
+  resume: 5,
   options: 7,
 });
 
@@ -31,25 +32,43 @@ export class MainMenuScene extends AFLayer {
     title.setPosition(ccp(halfWinWidth, 900));
     this.addChild(title, Tags.title, Tags.title);
 
+    const hasSavedGame = this.director.persistence?.hasSavedGame;
+    if (hasSavedGame) {
+      const resumeButton = this.buttonFromImage(
+        "menu_button_blank.png",
+        "menu_button_blank_pushed.png",
+        () => this.resumeButtonTapped(),
+        { label: "RESUME GAME", fontSize: 24, fontColor: "#000" },
+      );
+      resumeButton.setPosition(ccp(-halfWinWidth - resumeButton.contentSize.width * 0.5, 640));
+      this.addChild(resumeButton, Tags.resume, Tags.resume);
+      resumeButton.runAction(new CCEaseElasticInOut(
+        new CCMoveTo(0.8, ccp(halfWinWidth, 640)),
+        0.8,
+      ));
+    }
+
     const playButton = this.buttonFromImage(
       "menu_play_big.png",
       "menu_play_big_pushed.png",
       () => this.playButtonTapped(),
     );
-    playButton.setPosition(ccp(-halfWinWidth - playButton.contentSize.width * 0.5, 600));
+    const playY = hasSavedGame ? 550 : 600;
+    playButton.setPosition(ccp(-halfWinWidth - playButton.contentSize.width * 0.5, playY));
     this.addChild(playButton, Tags.play, Tags.play);
-    playButton.runAction(new CCEaseElasticInOut(new CCMoveTo(0.8, ccp(halfWinWidth, 600)), 0.8));
+    playButton.runAction(new CCEaseElasticInOut(new CCMoveTo(0.8, ccp(halfWinWidth, playY)), 0.8));
 
     const rulesButton = this.buttonFromImage(
       "menu_rules.png",
       "menu_rules_pushed.png",
       () => this.rulesButtonTapped(),
     );
-    rulesButton.setPosition(ccp(-halfWinWidth - rulesButton.contentSize.width * 0.5, 520));
+    const rulesY = hasSavedGame ? 470 : 520;
+    rulesButton.setPosition(ccp(-halfWinWidth - rulesButton.contentSize.width * 0.5, rulesY));
     this.addChild(rulesButton, Tags.rules, Tags.rules);
     rulesButton.runAction(new CCSequence(
       new CCDelayTime(0.1),
-      new CCEaseElasticInOut(new CCMoveTo(0.8, ccp(halfWinWidth, 520)), 0.8),
+      new CCEaseElasticInOut(new CCMoveTo(0.8, ccp(halfWinWidth, rulesY)), 0.8),
     ));
 
     const optionsButton = this.buttonFromImage(
@@ -58,16 +77,32 @@ export class MainMenuScene extends AFLayer {
       () => this.optionsButtonTapped(),
       { label: "OPTIONS", fontSize: 24, fontColor: "#000" },
     );
-    optionsButton.setPosition(ccp(-halfWinWidth - optionsButton.contentSize.width * 0.5, 440));
+    const optionsY = hasSavedGame ? 390 : 440;
+    optionsButton.setPosition(ccp(-halfWinWidth - optionsButton.contentSize.width * 0.5, optionsY));
     this.addChild(optionsButton, Tags.options, Tags.options);
     optionsButton.runAction(new CCSequence(
       new CCDelayTime(0.2),
-      new CCEaseElasticInOut(new CCMoveTo(0.8, ccp(halfWinWidth, 440)), 0.8),
+      new CCEaseElasticInOut(new CCMoveTo(0.8, ccp(halfWinWidth, optionsY)), 0.8),
     ));
   }
 
   playButtonTapped() {
     this.director.replaceScene(new StartGameScene(this.director, this.assets));
+  }
+
+  async resumeButtonTapped() {
+    try {
+      const state = this.director.persistence.load();
+      if (!state) {
+        return;
+      }
+      const { GameScene } = await import("./game.js");
+      this.director.replaceScene(new GameScene(this.director, this.assets, state));
+    } catch (error) {
+      console.error("Unable to restore saved Alien Frontiers game", error);
+      this.director.persistence.clear();
+      this.director.replaceScene(new MainMenuScene(this.director, this.assets));
+    }
   }
 
   rulesButtonTapped() {

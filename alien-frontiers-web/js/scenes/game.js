@@ -1352,12 +1352,14 @@ export class GameScene extends AFLayer {
 
   onEnter() {
     this.director.soundManager?.bindState(this.state);
+    this.director.persistence?.bindState(this.state);
     this.unsubscribe.push(this.state.events.on(EventName.stateChanged, () => this.refresh()));
     this.scheduleAI();
   }
 
   onExit() {
     this.director.soundManager?.unbindState();
+    this.director.persistence?.unbindState();
     clearTimeout(this.aiTimer);
     this.aiTimer = null;
     for (const unsubscribe of this.unsubscribe) {

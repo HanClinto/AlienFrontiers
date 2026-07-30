@@ -97,6 +97,7 @@ export class StartGameScene extends AFLayer {
       detail,
     }));
     const { GameScene } = await import("./game.js");
+    this.director.persistence?.clear();
     const state = new GameState(detail.numPlayers, detail.playerPersonalities, Math.random, Math.random);
     this.director.replaceScene(new GameScene(this.director, this.assets, state));
   }

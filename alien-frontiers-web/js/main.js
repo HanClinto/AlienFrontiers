@@ -3,6 +3,7 @@ import { CCDirector } from "./cocos/director.js";
 import { CCSpriteFrameCache } from "./cocos/sprite-frame-cache.js";
 import { MainMenuScene } from "./scenes/main-menu.js";
 import { GameAudioManager } from "./audio.js";
+import { GamePersistence } from "./game/game-persistence.js";
 
 const MENU_IMAGES = [
   "af_game_setup.png",
@@ -127,6 +128,7 @@ async function start() {
   canvas.hidden = false;
   const director = new CCDirector(canvas);
   director.soundManager = new GameAudioManager(new URL("../assets/audio/", import.meta.url));
+  director.persistence = new GamePersistence();
   director.frameCache = frameCache;
   globalThis.AlienFrontiers = Object.freeze({ director });
   director.runWithScene(new MainMenuScene(director, assets));
