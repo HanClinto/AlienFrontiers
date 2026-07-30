@@ -1,6 +1,6 @@
 import { AIType, EventName } from "./constants.js";
 import { EventBus } from "./event-bus.js";
-import { LunarMine, MaintenanceBay, Shipyard, SolarConverter } from "./orbital.js";
+import { LunarMine, MaintenanceBay, OrbitalMarket, Shipyard, SolarConverter } from "./orbital.js";
 import { Player } from "./player.js";
 
 export class GameState {
@@ -23,6 +23,7 @@ export class GameState {
     this.maintenanceBay = new MaintenanceBay(this);
     this.lunarMine = new LunarMine(this);
     this.shipyard = new Shipyard(this);
+    this.orbitalMarket = new OrbitalMarket(this);
 
     for (const player of this.players) {
       player.activateStartingShips();

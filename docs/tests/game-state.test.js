@@ -116,3 +116,24 @@ test("local input cannot select ships during an AI turn", () => {
   assert.equal(state.toggleShipSelection(ship), false);
   assert.equal(ship.isSelected, false);
 });
+
+test("Orbital Market sets a pair price, trades fuel for ore, and resets", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  player.initialRollDone = true;
+  player.fuel = 4;
+  player.activeShips[0].value = 2;
+  player.activeShips[1].value = 2;
+  state.toggleShipSelection(player.activeShips[0]);
+  state.toggleShipSelection(player.activeShips[1]);
+
+  assert.equal(state.commitSelectedShips(state.orbitalMarket), true);
+  assert.equal(player.marketPrice, 2);
+  assert.equal(player.ableToMarketTrade, true);
+  assert.equal(player.doMarketTrade(), true);
+  assert.deepEqual([player.fuel, player.ore], [2, 1]);
+
+  player.endTurnCleanup();
+  assert.equal(player.marketPrice, 0);
+  assert.equal(player.ableToMarketTrade, false);
+});

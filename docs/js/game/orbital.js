@@ -220,3 +220,26 @@ export class Shipyard extends Orbital {
     return true;
   }
 }
+
+export class OrbitalMarket extends Orbital {
+  constructor(state) {
+    super(state, state.numPlayers <= 3 ? 1 : 2, 2);
+    this.title = "Orbital Market";
+  }
+
+  isValidMoveFromPlayer(_player, selectedShips) {
+    return this.numEmptyGroups > 0
+      && selectedShips.length === 2
+      && selectedShips[0].value === selectedShips[1].value;
+  }
+
+  commitShipsFromPlayer(player, selectedShips) {
+    if (!this.isValidMoveFromPlayer(player, selectedShips)) {
+      return false;
+    }
+    player.setMarketPrice(selectedShips[0].value);
+    this.firstEmptyGroup.dockShips(selectedShips);
+    this.finishCommit(selectedShips);
+    return true;
+  }
+}

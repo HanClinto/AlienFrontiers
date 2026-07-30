@@ -120,6 +120,44 @@ class ShipyardLayer extends FacilityLayer {
   }
 }
 
+class OrbitalMarketLayer extends FacilityLayer {
+  constructor(scene) {
+    super(scene, scene.state.orbitalMarket, ccp(449, 825), { x: -8, y: -40, width: 115, height: 105 });
+    this.label("ORBITAL MARKET", ccp(0, 53));
+    this.dockPairWidth = scene.assets.image("dock_pair.png").naturalWidth;
+    const dockImage = scene.assets.image("dock_pair.png");
+    for (let groupIndex = 0; groupIndex < this.orbital.dockGroups.length; groupIndex += 1) {
+      this.sprite(dockImage, ccp(groupIndex * (this.dockPairWidth + 2), 8));
+    }
+    this.sprite(scene.assets.image("icons_om.png"), ccp(0, 6), ccp(0, 1));
+    this.tradeButton = scene.buttonFromImage(
+      "button_medium_up.png",
+      "button_medium_down.png",
+      () => this.trade(),
+      { label: "TRADE", fontSize: 12 },
+    );
+    this.tradeButton.setPosition(ccp(55, -27));
+    this.addChild(this.tradeButton, 2);
+  }
+
+  dockPosition(index) {
+    const groupIndex = Math.floor(index / 2);
+    const groupX = groupIndex * (this.dockPairWidth + 2);
+    return ccp(groupX + (index % 2 === 0 ? -1 : 25), 8);
+  }
+
+  trade() {
+    if (this.scene.state.currentPlayer.aiType === AIType.human) {
+      this.scene.state.currentPlayer.doMarketTrade();
+    }
+  }
+
+  refresh() {
+    const player = this.scene.state.currentPlayer;
+    this.tradeButton.visible = player.aiType === AIType.human && player.ableToMarketTrade;
+  }
+}
+
 class ShipSprite extends CCNode {
   constructor(scene, ship) {
     super();
@@ -182,6 +220,8 @@ export class GameScene extends AFLayer {
     this.addChild(this.lunarLayer, 4);
     this.shipyardLayer = new ShipyardLayer(this);
     this.addChild(this.shipyardLayer, 4);
+    this.marketLayer = new OrbitalMarketLayer(this);
+    this.addChild(this.marketLayer, 4);
 
     this.buildHUD();
     this.ensureShipSprites();
@@ -252,6 +292,7 @@ export class GameScene extends AFLayer {
       [this.state.maintenanceBay, this.maintenanceLayer],
       [this.state.lunarMine, this.lunarLayer],
       [this.state.shipyard, this.shipyardLayer],
+      [this.state.orbitalMarket, this.marketLayer],
     ]).get(orbital);
     if (!layer) {
       throw new Error(`No layer for docked orbital: ${orbital.title}`);
@@ -310,6 +351,7 @@ export class GameScene extends AFLayer {
     this.hintLabel.setString(isHumanTurn
       ? player.initialRollDone ? "SELECT DICE, THEN A FACILITY" : "ROLL YOUR SHIPS"
       : "AI TURN");
+    this.marketLayer.refresh();
 
     this.updatePlayerIcon("colonyIcon", PLAYER_COLONY_IMAGES[player.colorIndex], ccp(254, 60));
     this.updatePlayerIcon("dieIcon", PLAYER_DIE_IMAGES[player.colorIndex], ccp(289, 60));

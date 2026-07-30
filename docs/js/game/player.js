@@ -10,6 +10,7 @@ export class Player {
     this.fuel = playerIndex === 1 || playerIndex === 3 ? 1 : 0;
     this.ore = playerIndex === 2 || playerIndex === 3 ? 1 : 0;
     this.coloniesLeft = 6 + (4 - numPlayers);
+    this.marketPrice = 0;
     this.initialRollDone = false;
     this.allShips = Array.from({ length: 6 }, (_, index) => new Ship(this, index));
     this.activeShips = [];
@@ -34,6 +35,26 @@ export class Player {
 
   get resourcesNeededForNextShip() {
     return this.activeShips.length - 2;
+  }
+
+  get ableToMarketTrade() {
+    return this.marketPrice > 0 && this.fuel >= this.marketPrice;
+  }
+
+  setMarketPrice(price) {
+    this.marketPrice = price;
+    this.state.postEvent(EventName.marketPriceChanged, this);
+  }
+
+  doMarketTrade() {
+    if (!this.ableToMarketTrade) {
+      return false;
+    }
+    this.fuel -= this.marketPrice;
+    this.ore += 1;
+    this.state.postEvent(EventName.resourcesChanged, this);
+    this.state.logMove(`${this.playerName}: Traded ${this.marketPrice} fuel for 1 ore.`);
+    return true;
   }
 
   activateStartingShips() {
@@ -75,6 +96,7 @@ export class Player {
   }
 
   endTurnCleanup() {
+    this.setMarketPrice(0);
     this.initialRollDone = false;
     for (const ship of this.allShips) {
       ship.isSelected = false;

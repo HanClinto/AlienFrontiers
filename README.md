@@ -30,8 +30,8 @@ and literal iPad coordinates where practical.
 The main menu and game setup screens are functional, including two-to-four-player
 configuration and multiple local human players. The first rules-driven gameplay slice
 supports rolling and selecting ships, using the Solar Converter, Maintenance Bay,
-Lunar Mine, and Shipyard, purchasing additional ships, and advancing a pass-and-play
-turn. AI seats automatically play through the ported rules using the original SimpleAI
+Lunar Mine, Shipyard, and Orbital Market, purchasing additional ships, trading resources,
+and advancing a pass-and-play turn. AI seats automatically play through the ported rules using the original SimpleAI
 fallback priority. The remaining facilities, personality-specific ExhaustiveAI strategies,
 territories, alien tech cards, undo/redo, saving, audio, and endgame are still being ported.
 
