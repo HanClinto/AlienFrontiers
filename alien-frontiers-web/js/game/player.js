@@ -74,6 +74,13 @@ export class Player {
     return regionVPs + this.cards.reduce((total, card) => total + card.victoryPoints, 0);
   }
 
+  get score() {
+    return this.vps
+      + 0.01 * this.cards.length
+      + 0.0001 * this.ore
+      + 0.000001 * this.fuel;
+  }
+
   get hasHolographicDecoy() {
     return this.cards.some((card) => card.type === TechCardType.holographicDecoy);
   }

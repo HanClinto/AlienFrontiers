@@ -65,6 +65,7 @@ export class Region {
     this.state.logMove(`${player.playerName}: Landed colony at ${this.title}`);
     this.state.postEvent(EventName.coloniesChanged, this);
     this.state.checkArtifactShipControl();
+    this.state.checkGameOver();
     return true;
   }
 }

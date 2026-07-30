@@ -68,6 +68,22 @@ export class CCScaleTo extends CCActionInterval {
   }
 }
 
+export class CCFadeTo extends CCActionInterval {
+  constructor(duration, opacity) {
+    super(duration);
+    this.endOpacity = opacity;
+  }
+
+  onStart() {
+    this.startOpacity = this.target.opacity;
+  }
+
+  update(progress) {
+    this.target.opacity = this.startOpacity
+      + (this.endOpacity - this.startOpacity) * progress;
+  }
+}
+
 export class CCRotateBy extends CCActionInterval {
   constructor(duration, angle) {
     super(duration);

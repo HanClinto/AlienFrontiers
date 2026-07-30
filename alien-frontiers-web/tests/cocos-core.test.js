@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { CCLayer, CCNode, CCSprite, ccp } from "../js/cocos/core.js";
-import { CCEaseElasticOut, CCEaseSineInOut, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo } from "../js/cocos/actions.js";
+import { CCEaseElasticOut, CCEaseSineInOut, CCFadeTo, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo } from "../js/cocos/actions.js";
 
 function assertPoint(actual, expected) {
   assert.ok(Math.abs(actual.x - expected.x) < 0.000001, `${actual.x} != ${expected.x}`);
@@ -103,4 +103,14 @@ test("elastic-out movement settles at its exact destination", () => {
   assert.notEqual(node.position.x, 44.5);
   node.update(0.4);
   assertPoint(node.position, ccp(89, 0));
+});
+
+test("fade actions interpolate and settle at target opacity", () => {
+  const node = new CCNode();
+  node.opacity = 0;
+  node.runAction(new CCFadeTo(0.5, 160));
+  node.update(0.25);
+  assert.equal(node.opacity, 80);
+  node.update(0.25);
+  assert.equal(node.opacity, 160);
 });

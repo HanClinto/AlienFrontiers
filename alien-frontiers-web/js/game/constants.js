@@ -25,6 +25,7 @@ export const EventName = Object.freeze({
   raidChanged: "raid-changed",
   beginRaid: "begin-raid",
   finishRaid: "finish-raid",
+  gameOver: "game-over",
   nextPlayer: "next-player",
   nextTurn: "next-turn",
   stateChanged: "state-changed",

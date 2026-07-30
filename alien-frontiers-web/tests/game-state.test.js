@@ -787,3 +787,30 @@ test("artifact ship is lost immediately when Burroughs control is lost", () => {
   assert.equal(state.artifactShip.player, null);
   assert.equal(owner.activeShips.includes(state.artifactShip), false);
 });
+
+test("game ends when a player's final pending colony lands", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  player.coloniesLeft = 1;
+  player.coloniesToLaunch = 1;
+  assert.equal(state.gameOver, false);
+  assert.equal(state.selectRegion(state.heinleinPlains), true);
+  assert.equal(player.coloniesLeft, 0);
+  assert.equal(player.coloniesToLaunch, 0);
+  assert.equal(state.gameOver, true);
+  assert.equal(state.canEndTurn, false);
+});
+
+test("game-over ranking breaks VP ties by tech cards, ore, then fuel", () => {
+  const state = new GameState(3, [AIType.human, AIType.human, AIType.human]);
+  for (const player of state.players) {
+    player.cards = [];
+  }
+  state.players[0].fuel = 1;
+  state.players[1].ore = 1;
+  state.players[2].addCard(state.allTech.find((card) => card.type === TechCardType.boosterPod));
+  assert.deepEqual(
+    state.winningPlayers.map((player) => player.playerIndex),
+    [2, 1, 0],
+  );
+});

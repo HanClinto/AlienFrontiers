@@ -17,6 +17,7 @@ export class GameState {
     this.events = new EventBus();
     this.currentPlayerIndex = 0;
     this.numTurns = 0;
+    this.gameOver = false;
     this.pendingTechCard = null;
     this.pendingTechTargets = [];
     this.pendingColonyTargets = [];
@@ -62,7 +63,8 @@ export class GameState {
   }
 
   get canEndTurn() {
-    return this.currentPlayer.initialRollDone
+    return !this.gameOver
+      && this.currentPlayer.initialRollDone
       && this.currentPlayer.numUndockedShips === 0
       && this.currentPlayer.coloniesToLaunch === 0
       && !this.currentPlayer.isRaiding
@@ -76,6 +78,22 @@ export class GameState {
 
   logMove(message) {
     this.gameLog.push(message);
+  }
+
+  checkGameOver() {
+    if (this.gameOver) {
+      return true;
+    }
+    this.gameOver = this.players.some((player) =>
+      player.coloniesLeft === 0 && player.coloniesToLaunch === 0);
+    if (this.gameOver) {
+      this.postEvent(EventName.gameOver, this);
+    }
+    return this.gameOver;
+  }
+
+  get winningPlayers() {
+    return [...this.players].sort((left, right) => right.score - left.score);
   }
 
   drawTechCard() {

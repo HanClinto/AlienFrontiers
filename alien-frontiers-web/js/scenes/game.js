@@ -1,5 +1,5 @@
 import { AFLayer } from "../af-layer.js";
-import { CCEaseElasticOut, CCEaseSineInOut, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo } from "../cocos/actions.js?v=3";
+import { CCDelayTime, CCEaseElasticInOut, CCEaseElasticOut, CCEaseSineInOut, CCFadeTo, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo, CCSequence } from "../cocos/actions.js?v=4";
 import { CCLayerColor, CCLabelTTF, CCNode, CCSprite, ccp } from "../cocos/core.js";
 import { AIType, EventName } from "../game/constants.js";
 import { SimpleAI } from "../game/simple-ai.js";
@@ -813,6 +813,78 @@ class ArtifactCardDetail extends CCNode {
   }
 }
 
+class GameOverOverlay extends CCNode {
+  constructor(scene) {
+    super();
+    this.scene = scene;
+    this.visible = false;
+    this.resultNodes = [];
+
+    this.shade = new CCLayerColor("#000");
+    this.shade.opacity = 0;
+    this.shade.interactive = true;
+    this.shade.enabled = true;
+    this.shade.touchPriority = -200;
+    this.shade.activate = () => {};
+    this.addChild(this.shade, 0);
+
+    this.gameOverButton = scene.buttonFromImage(
+      "menu_button_blank.png",
+      "menu_button_blank_pushed.png",
+      () => scene.returnToMainMenu(),
+      { label: "GAME OVER", fontSize: 12 },
+    );
+    const menuItem = this.gameOverButton.getChildByTag(0)?.children[0];
+    if (menuItem) {
+      menuItem.touchPriority = -256;
+    }
+    this.addChild(this.gameOverButton, 2);
+  }
+
+  activate() {
+    if (this.visible) {
+      return;
+    }
+    this.visible = true;
+    this.shade.runAction(new CCFadeTo(0.5, 160));
+    this.gameOverButton.setPosition(ccp(-500, 62));
+    this.gameOverButton.runAction(new CCSequence(
+      new CCDelayTime(0.1),
+      new CCEaseElasticInOut(new CCMoveTo(0.8, ccp(384, 62)), 0.8),
+    ));
+
+    const ranking = this.scene.state.winningPlayers;
+    const winner = ranking[0];
+    this.addResultLabel(
+      `Congratulations, Player ${winner.playerIndex + 1}!!!`,
+      48,
+      ccp(384, 925),
+      "#ffc200",
+    );
+    ranking.forEach((player, rank) => {
+      this.addResultLabel(
+        `Player ${player.playerIndex + 1}: ${player.vps}`,
+        48,
+        ccp(384, 850 - rank * 75),
+        PLAYER_COLORS[player.colorIndex],
+      );
+    });
+    this.addResultLabel(
+      `Completed in ${this.scene.state.numTurns + 1} turns`,
+      22,
+      ccp(384, 520),
+      "#fff",
+    );
+  }
+
+  addResultLabel(text, fontSize, position, color) {
+    const label = new CCLabelTTF(text, "DIN-Black", fontSize, color);
+    label.setPosition(position);
+    this.addChild(label, 1);
+    this.resultNodes.push(label);
+  }
+}
+
 class PlayerMiniHUD extends CCNode {
   constructor(scene, player) {
     super();
@@ -1091,6 +1163,8 @@ export class GameScene extends AFLayer {
     this.ensureShipSprites();
     this.artifactDetail = new ArtifactCardDetail(this);
     this.addChild(this.artifactDetail, 12);
+    this.gameOverOverlay = new GameOverOverlay(this);
+    this.addChild(this.gameOverOverlay, 13);
   }
 
   buildHUD() {
@@ -1268,6 +1342,11 @@ export class GameScene extends AFLayer {
     this.artifactDetail.open(card);
   }
 
+  async returnToMainMenu() {
+    const { MainMenuScene } = await import("./main-menu.js");
+    this.director.replaceScene(new MainMenuScene(this.director, this.assets));
+  }
+
   refresh() {
     const player = this.state.currentPlayer;
     this.ensureShipSprites();
@@ -1356,6 +1435,9 @@ export class GameScene extends AFLayer {
     this.artifactLayer.refresh();
     this.colonistHubLayer.refresh();
     this.artifactDetail.refresh();
+    if (this.state.gameOver) {
+      this.gameOverOverlay.activate();
+    }
 
     this.updatePlayerIcon("colonyIcon", PLAYER_COLONY_IMAGES[player.colorIndex], ccp(254, 60));
     this.updatePlayerIcon("dieIcon", PLAYER_DIE_IMAGES[player.colorIndex], ccp(289, 60));
