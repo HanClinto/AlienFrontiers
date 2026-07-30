@@ -131,7 +131,7 @@ These rows capture high-volume APIs that class counts alone hide.
 
 | Checklist | Semantic area | Status | Verified gap / next action |
 |---|---|---|---|
-| [ ] | Label baseline and dimensions | `[PARTIAL]` | Add fixed dimensions, horizontal/vertical alignment and actual ascent/descent to `CCLabelTTF`. This is the root fix for numeric labels appearing too high. |
+| [x] | Label baseline and dimensions | `[EQ]` | `CCLabelTTF` now supports fixed dimensions/alignment, actual ascent/descent, centered alphabetic baselines, and fitted button captions. |
 | [ ] | BMFont descriptions | `[MISSING]` | Original symbol glyphs and centered line metrics are not represented. Current readable prose is functionally complete but not pixel-equivalent. |
 | [ ] | Destination-color blending | `[MISSING]` | Needed for player-color HUD corners and region ownership overlays (`GL_DST_COLOR`, `GL_ONE_MINUS_SRC_ALPHA`). |
 | [ ] | Additive blending | `[MISSING]` | Needed for die/roll/done/region glows and several flare/resource effects (`GL_SRC_ALPHA`, `GL_ONE`). |
@@ -139,8 +139,8 @@ These rows capture high-volume APIs that class counts alone hide.
 | [ ] | Negative-z node visitation | `[PARTIAL]` | Director draws a node before all children; Cocos draws negative-z children first. |
 | [ ] | Child bounds and transformed rectangles | `[MISSING]` | Add `boundingBox`, `childBounds`, inset and union helpers; replace manual facility/card hit boxes incrementally. |
 | [ ] | General touch pass-through | `[PARTIAL]` | Docked-die forwarding fixes Lunar/Raiders. General `swallowsTouches:NO` behavior remains absent. |
-| [ ] | Tray culling and shadows | `[PARTIAL]` | Web pixel-clips the tray. Original culls whole cards and lets authored border/shadow pixels remain visible. |
-| [ ] | Scrollable game log | `[PARTIAL]` | Correct aperture and bottom-following lines now render, but direct touch scrolling is not implemented. |
+| [x] | Tray culling and shadows | `[EQ]` | Current and mini trays use the original whole-card visible-index ranges, preserving authored border/shadow pixels. |
+| [ ] | Scrollable game log | `[PARTIAL]` | The original `172x142` Communications aperture and bottom-following lines render correctly; direct touch scrolling remains unimplemented. |
 | [ ] | Resource and HUD particles | `[MISSING]` | Original `LayerHUDPort.particleWithSprite` motion/fade/scale effects are not ported. |
 | [ ] | Roll/done/region glows | `[MISSING]` | Artwork exists; requires additive blend state and repeat actions at the original call sites. |
 
@@ -148,10 +148,10 @@ These rows capture high-volume APIs that class counts alone hide.
 
 | Checklist | Reported issue | Verified cause | Root fix |
 |---|---|---|---|
-| [ ] | Numeric labels look too high | Browser `CCLabelTTF` always uses intrinsic `measureText` width and `1.2em` height with top-baseline drawing. Original mini-HUD labels use fixed `30x30` and score uses `50x60` constrained textures. | Implement label dimensions/alignment and font ascent/descent, then use original boxes in current and mini HUDs. |
-| [ ] | Log clips oddly near menu | Current `172x142` clip is literal, but Canvas text has no native `UITextView` scrolling/insets and may not match the artwork aperture. | Define the aperture from HUD artwork, add padding and drag/wheel scrolling while keeping bottom-follow mode. |
-| [ ] | Tech descriptions are misaligned | Original `CCLabelBMFont` centers wrapped lines in `160/324`-wide columns; `WrappedTextBox` is left-aligned. | Add centered wrapped-text alignment immediately; BMFont glyph metrics are the full-fidelity follow-up. |
-| [ ] | Tech tray border/shadow cues clip | Web uses a hard pixel scissor at `331x91` / `182x202`; original hides whole off-range cards rather than clipping card pixels. | Replace exact pixel clip with original index visibility culling or expand clip to preserve authored shadow extent. |
+| [x] | Numeric labels look too high | Fixed by measured ascent/descent, centered alphabetic baselines, and original mini-HUD `30x30` / score `50x60` text boxes. | Browser validation confirms current and mini-HUD counters are centered in their authored cells. |
+| [ ] | Log clips oddly near menu | The original `172x142` aperture at `(40,36)` is restored and no longer overlaps the hint/header. | Add drag/wheel scrolling while keeping bottom-follow mode. |
+| [ ] | Tech descriptions are misaligned | Wrapped descriptions are now centered like the original columns. | BMFont symbol glyphs and exact line metrics remain the full-fidelity follow-up. |
+| [x] | Tech tray border/shadow cues clip | Fixed by removing the pixel scissor and restoring original whole-card index culling. | Current and mini tray frame sprites now retain authored border/shadow pixels. |
 | [ ] | Dice overlap Undo/Redo | Tray centers match original, but original `SpriteShip` is scaled to `0.8`; web ship sprites are currently full-size. | Apply original `0.8` scale to ship visuals/hit areas; keep tray coordinates and controls unchanged. |
 | [ ] | Territory ownership tint absent | Region border/overlay assets and blend modes are not used. | Add sprite blend modes, then port `LayerRegion.updateLabels` border and ownership overlay behavior. |
 
@@ -175,11 +175,11 @@ Out of scope by project decision: Game Center, achievements, landscape layouts, 
 ### 1. Text And HUD Geometry
 
 - [ ] Add `CCLabelTTF` fixed dimensions and alignment.
-- [ ] Correct numeric score/resource baselines in current and mini HUDs.
+- [x] Correct numeric score/resource baselines in current and mini HUDs.
 - [ ] Restore original `0.8` ship scale and verify tray/control separation.
-- [ ] Center tech-description wrapping.
-- [ ] Correct game-log aperture/insets and add scrolling.
-- [ ] Replace exact tray pixel clipping with original whole-card culling/shadow behavior.
+- [x] Center tech-description wrapping.
+- [ ] Add game-log drag/wheel scrolling to the restored original aperture.
+- [x] Replace exact tray pixel clipping with original whole-card culling/shadow behavior.
 
 ### 2. Blend Modes And Territory Overlays
 

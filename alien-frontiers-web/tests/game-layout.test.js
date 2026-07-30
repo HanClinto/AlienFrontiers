@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { colonistHubTrackPosition, miniHUDPosition, regionAtBoardPoint, rollingTrayPosition, techCardPosition, techTrayScrollBounds } from "../js/scenes/game.js";
+import { colonistHubTrackPosition, gameLogPosition, miniHUDPosition, regionAtBoardPoint, rollingTrayPosition, techCardPosition, techTrayScrollBounds, techTrayVisibleRange } from "../js/scenes/game.js";
 
 test("all six ships wrap into the original four-column tray", () => {
   assert.deepEqual(
@@ -84,6 +84,17 @@ test("tech tray scrolling is bounded to the original viewport play", () => {
   assert.deepEqual(techTrayScrollBounds("tall", 6), { min: -203, max: 0 });
   assert.deepEqual(techTrayScrollBounds("wide", 4), { min: -22, max: 0 });
   assert.deepEqual(techTrayScrollBounds("wide", 6), { min: -134, max: 0 });
+});
+
+test("tech trays hide whole cards using the original visible index range", () => {
+  assert.deepEqual(techTrayVisibleRange("tall", 0), { min: 0, max: 3 });
+  assert.deepEqual(techTrayVisibleRange("tall", -89), { min: 1, max: 4 });
+  assert.deepEqual(techTrayVisibleRange("wide", 0), { min: 0, max: 3 });
+  assert.deepEqual(techTrayVisibleRange("wide", -56), { min: 1, max: 4 });
+});
+
+test("game log occupies the original wrapped UITextView aperture", () => {
+  assert.deepEqual(gameLogPosition(), { x: 40, y: 36 });
 });
 
 test("Colonist Hub tracks retain original compressed player rows", () => {

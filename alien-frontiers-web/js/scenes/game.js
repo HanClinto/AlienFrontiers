@@ -65,6 +65,19 @@ export function techTrayScrollBounds(layout, cardCount) {
     : { min: 0, max: -play };
 }
 
+export function techTrayVisibleRange(layout, scrollOffset) {
+  const cardSpan = layout === "tall" ? 89 : 56;
+  const viewportSize = layout === "tall" ? 331 : 202;
+  return {
+    min: Math.max(0, Math.trunc(-scrollOffset / cardSpan)),
+    max: Math.trunc((viewportSize - scrollOffset) / cardSpan),
+  };
+}
+
+export function gameLogPosition(height = 142) {
+  return ccp(40, 1024 - 846 - height);
+}
+
 export function colonistHubTrackPosition(numPlayers, playerIndex, step) {
   const verticalOffset = (4 - numPlayers) * 14;
   const y = -playerIndex * 28 - verticalOffset;
@@ -98,6 +111,7 @@ class WrappedTextBox extends CCNode {
     this.color = options.color ?? "#000";
     this.padding = options.padding ?? 2;
     this.followEnd = options.followEnd ?? false;
+    this.textAlign = options.textAlign ?? "left";
   }
 
   setText(text) {
@@ -134,7 +148,7 @@ class WrappedTextBox extends CCNode {
     context.scale(1, -1);
     context.font = `${this.fontSize}px "${this.fontName}"`;
     context.fillStyle = this.color;
-    context.textAlign = "left";
+    context.textAlign = this.textAlign;
     context.textBaseline = "top";
     const maxLines = Math.floor(
       (this.contentSize.height - this.padding * 2) / this.lineHeight,
@@ -147,7 +161,10 @@ class WrappedTextBox extends CCNode {
       ? this.contentSize.height - this.padding - lines.length * this.lineHeight
       : this.padding;
     lines.forEach((line, index) => {
-      context.fillText(line, this.padding, startY + index * this.lineHeight);
+      const x = this.textAlign === "center"
+        ? this.contentSize.width / 2
+        : this.textAlign === "right" ? this.contentSize.width - this.padding : this.padding;
+      context.fillText(line, x, startY + index * this.lineHeight);
     });
     context.restore();
   }
@@ -654,19 +671,19 @@ class TechCardTray extends CCNode {
     this.addChild(background, 0);
 
     this.viewport = new CCNode();
-    this.viewport.clipRect = layout === "tall"
-      ? { x: -3, y: -57.5, width: 331, height: 91 }
-      : { x: -3, y: -113, width: 182, height: 202 };
     this.addChild(this.viewport, 1);
     this.cardContent = new CCNode();
     this.viewport.addChild(this.cardContent);
 
+    this.viewportRect = layout === "tall"
+      ? { x: -3, y: -57.5, width: 331, height: 91 }
+      : { x: -3, y: -113, width: 182, height: 202 };
     const hitArea = new CCNode();
     hitArea.contentSize = {
-      width: this.viewport.clipRect.width,
-      height: this.viewport.clipRect.height,
+      width: this.viewportRect.width,
+      height: this.viewportRect.height,
     };
-    hitArea.setPosition(ccp(this.viewport.clipRect.x, this.viewport.clipRect.y));
+    hitArea.setPosition(ccp(this.viewportRect.x, this.viewportRect.y));
     hitArea.interactive = true;
     hitArea.enabled = true;
     hitArea.touchPriority = -20;
@@ -702,6 +719,10 @@ class TechCardTray extends CCNode {
     this.cardContent.setPosition(
       this.layout === "tall" ? ccp(this.scrollOffset, 0) : ccp(0, this.scrollOffset),
     );
+    const visibleRange = techTrayVisibleRange(this.layout, this.scrollOffset);
+    this.cardNodes.forEach((cardNode, cardIndex) => {
+      cardNode.visible = cardIndex >= visibleRange.min && cardIndex <= visibleRange.max;
+    });
   }
 
   activateCard(point) {
@@ -1086,11 +1107,11 @@ class PlayerMiniHUD extends CCNode {
     this.corner.setPosition(ccp(66, -413));
     this.addChild(this.corner, 1);
 
-    this.scoreLabel = this.label("0", 42, ccp(64, -409), "#fff");
-    this.oreLabel = this.label("0", 22, ccp(-75, -430), "#000");
-    this.fuelLabel = this.label("0", 22, ccp(-40, -430), "#000");
-    this.colonyLabel = this.label("0", 22, ccp(-5, -430), "#000");
-    this.diceLabel = this.label("0", 22, ccp(30, -430), "#000");
+    this.scoreLabel = this.label("0", 42, ccp(64, -409), "#fff", { width: 50, height: 60 });
+    this.oreLabel = this.label("0", 22, ccp(-75, -430), "#000", { width: 30, height: 30 });
+    this.fuelLabel = this.label("0", 22, ccp(-40, -430), "#000", { width: 30, height: 30 });
+    this.colonyLabel = this.label("0", 22, ccp(-5, -430), "#000", { width: 30, height: 30 });
+    this.diceLabel = this.label("0", 22, ccp(30, -430), "#000", { width: 30, height: 30 });
 
     this.colonyIcon = new CCSprite(scene.assets.image(PLAYER_COLONY_IMAGES[player.colorIndex]));
     this.colonyIcon.setPosition(ccp(-5, -406));
@@ -1122,8 +1143,8 @@ class PlayerMiniHUD extends CCNode {
     this.refresh();
   }
 
-  label(text, fontSize, position, color) {
-    const label = new CCLabelTTF(text, "DIN-Black", fontSize, color);
+  label(text, fontSize, position, color, dimensions = null) {
+    const label = new CCLabelTTF(text, "DIN-Black", fontSize, color, { dimensions });
     label.setPosition(position);
     this.addChild(label, 2);
     return label;
@@ -1468,7 +1489,8 @@ export class GameScene extends AFLayer {
       lineHeight: 13,
       followEnd: true,
     });
-    this.gameLogView.setPosition(ccp(-374, -10));
+    const logPosition = gameLogPosition();
+    this.gameLogView.setPosition(ccp(logPosition.x - 384, logPosition.y - 98));
     this.uiFrame.addChild(this.gameLogView, 2);
 
     this.currentTechTray = new TechCardTray(
@@ -1500,6 +1522,7 @@ export class GameScene extends AFLayer {
     this.techPowerDescription = new WrappedTextBox(154, 52, {
       fontSize: 10,
       lineHeight: 12,
+      textAlign: "center",
     });
     this.techPowerDescription.setPosition(ccp(-164, -53));
     this.uiFrame.addChild(this.techPowerDescription, 2);
@@ -1507,6 +1530,7 @@ export class GameScene extends AFLayer {
     this.techDiscardDescription = new WrappedTextBox(154, 52, {
       fontSize: 10,
       lineHeight: 12,
+      textAlign: "center",
     });
     this.techDiscardDescription.setPosition(ccp(10, -53));
     this.uiFrame.addChild(this.techDiscardDescription, 2);

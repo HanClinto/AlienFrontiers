@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { CCLayer, CCNode, CCSprite, ccp } from "../js/cocos/core.js";
+import { CCLayer, CCLabelTTF, CCNode, CCSprite, ccp } from "../js/cocos/core.js";
 import { CCCallFunc, CCDelayTime, CCEaseElasticOut, CCEaseSineIn, CCEaseSineInOut, CCEaseSineOut, CCFadeTo, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo, CCSequence, CCTintTo } from "../js/cocos/actions.js";
 
 function assertPoint(actual, expected) {
@@ -16,6 +16,30 @@ test("sprites use Cocos-style center anchors", () => {
   assertPoint(sprite.convertToNodeSpace(ccp(484, 640)), ccp(200, 80));
   assert.equal(sprite.containsWorldPoint(ccp(384, 600)), true);
   assert.equal(sprite.containsWorldPoint(ccp(500, 600)), false);
+});
+
+test("labels preserve explicit Cocos dimensions across text changes", () => {
+  const label = new CCLabelTTF("1", "DIN-Black", 22, "#000", {
+    dimensions: { width: 30, height: 30 },
+  });
+
+  assert.deepEqual(label.contentSize, { width: 30, height: 30 });
+  assert.deepEqual(label.anchorPoint, ccp(0.5, 0.5));
+  assert.equal(label.horizontalAlignment, "center");
+  assert.equal(label.verticalAlignment, "center");
+  label.setString("100");
+  assert.deepEqual(label.contentSize, { width: 30, height: 30 });
+});
+
+test("labels fit long captions inside fixed button text boxes", () => {
+  const label = new CCLabelTTF("RESUME GAME", "DIN-Black", 24, "#000", {
+    dimensions: { width: 130, height: 45 },
+    maxWidth: 118,
+  });
+
+  assert.deepEqual(label.contentSize, { width: 130, height: 45 });
+  assert.ok(label.textMetrics.width <= 118);
+  assert.ok(label.renderFontSize < 24);
 });
 
 test("parent translation, scale, rotation, and anchors compose", () => {

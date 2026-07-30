@@ -28,12 +28,28 @@ export class AFLayer extends CCLayer {
     wrapper.addChild(buttonMenu, ButtonTags.sprite, ButtonTags.sprite);
 
     if (options.label !== undefined) {
+      const labelOptions = {
+        dimensions: { ...button.contentSize },
+        maxWidth: Math.max(1, button.contentSize.width - 12),
+      };
       if (options.textShadow) {
-        const shadow = new CCLabelTTF(options.label, "DIN-Black", options.fontSize, "rgba(0,0,0,0.5)");
+        const shadow = new CCLabelTTF(
+          options.label,
+          "DIN-Black",
+          options.fontSize,
+          "rgba(0,0,0,0.5)",
+          labelOptions,
+        );
         shadow.setPosition(ccp(3, -1));
         wrapper.addChild(shadow, ButtonTags.labelShadow, ButtonTags.labelShadow);
       }
-      const label = new CCLabelTTF(options.label, "DIN-Black", options.fontSize, options.fontColor ?? "#fff");
+      const label = new CCLabelTTF(
+        options.label,
+        "DIN-Black",
+        options.fontSize,
+        options.fontColor ?? "#fff",
+        labelOptions,
+      );
       label.setPosition(ccp(1, 1));
       wrapper.addChild(label, ButtonTags.label, ButtonTags.label);
     }

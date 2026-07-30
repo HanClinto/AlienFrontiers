@@ -284,12 +284,17 @@ export class CCLayerColor extends CCLayer {
 }
 
 export class CCLabelTTF extends CCNode {
-  constructor(text, fontName, fontSize, color = "#fff") {
+  constructor(text, fontName, fontSize, color = "#fff", options = {}) {
     super();
     this.text = String(text);
     this.fontName = fontName;
     this.fontSize = fontSize;
     this.color = color;
+    this.dimensions = options.dimensions ?? null;
+    this.maxWidth = options.maxWidth ?? null;
+    this.horizontalAlignment = options.horizontalAlignment ?? "center";
+    this.verticalAlignment = options.verticalAlignment ?? "center";
+    this.renderFontSize = fontSize;
     this.anchorPoint = ccp(0.5, 0.5);
     this._measure();
   }
@@ -301,16 +306,46 @@ export class CCLabelTTF extends CCNode {
 
   _measure() {
     const fallbackWidth = Math.max(1, this.text.length * this.fontSize * 0.62);
+    const fallbackMetrics = {
+      width: fallbackWidth,
+      ascent: this.fontSize * 0.8,
+      descent: this.fontSize * 0.2,
+    };
     if (typeof document === "undefined") {
-      this.contentSize = { width: fallbackWidth, height: this.fontSize * 1.2 };
+      const scale = this.maxWidth && fallbackWidth > this.maxWidth
+        ? this.maxWidth / fallbackWidth
+        : 1;
+      this.renderFontSize = this.fontSize * scale;
+      this.textMetrics = {
+        width: fallbackMetrics.width * scale,
+        ascent: fallbackMetrics.ascent * scale,
+        descent: fallbackMetrics.descent * scale,
+      };
+      this.contentSize = this.dimensions
+        ? { ...this.dimensions }
+        : { width: this.textMetrics.width, height: this.renderFontSize };
       return;
     }
     const context = document.createElement("canvas").getContext("2d");
     context.font = `${this.fontSize}px "${this.fontName}"`;
-    this.contentSize = {
-      width: Math.max(1, context.measureText(this.text).width),
-      height: this.fontSize * 1.2,
+    const initialMetrics = context.measureText(this.text);
+    const scale = this.maxWidth && initialMetrics.width > this.maxWidth
+      ? this.maxWidth / initialMetrics.width
+      : 1;
+    this.renderFontSize = this.fontSize * scale;
+    context.font = `${this.renderFontSize}px "${this.fontName}"`;
+    const metrics = context.measureText(this.text);
+    this.textMetrics = {
+      width: Math.max(1, metrics.width),
+      ascent: metrics.actualBoundingBoxAscent || fallbackMetrics.ascent * scale,
+      descent: metrics.actualBoundingBoxDescent || fallbackMetrics.descent * scale,
     };
+    this.contentSize = this.dimensions
+      ? { ...this.dimensions }
+      : {
+        width: this.textMetrics.width,
+        height: this.textMetrics.ascent + this.textMetrics.descent,
+      };
   }
 
   draw(context) {
@@ -318,10 +353,19 @@ export class CCLabelTTF extends CCNode {
     context.translate(0, this.contentSize.height);
     context.scale(1, -1);
     context.fillStyle = this.color;
-    context.font = `${this.fontSize}px "${this.fontName}"`;
-    context.textAlign = "left";
-    context.textBaseline = "top";
-    context.fillText(this.text, 0, 0);
+    context.font = `${this.renderFontSize}px "${this.fontName}"`;
+    context.textAlign = this.horizontalAlignment;
+    context.textBaseline = "alphabetic";
+    const x = this.horizontalAlignment === "left"
+      ? 0
+      : this.horizontalAlignment === "right" ? this.contentSize.width : this.contentSize.width / 2;
+    const textHeight = this.textMetrics.ascent + this.textMetrics.descent;
+    const top = this.verticalAlignment === "top"
+      ? 0
+      : this.verticalAlignment === "bottom"
+        ? this.contentSize.height - textHeight
+        : (this.contentSize.height - textHeight) / 2;
+    context.fillText(this.text, x, top + this.textMetrics.ascent);
     context.restore();
   }
 }
