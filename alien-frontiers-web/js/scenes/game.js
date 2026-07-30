@@ -320,17 +320,18 @@ class RegionLayer extends CCNode {
 class TechCardView extends CCNode {
   constructor(scene, card, layout, onActivate = null) {
     super();
+    this.scene = scene;
     this.card = card;
     this.layout = layout;
     const isTall = layout === "tall";
     const isTransparent = layout === "transparent";
 
     if (!isTransparent) {
-      const background = new CCSprite(scene.assets.image(
+      this.background = new CCSprite(scene.assets.image(
         isTall ? "tech_layer_bg.png" : "tech_layer_bg_mini_horiz.png",
       ));
-      background.setPosition(isTall ? ccp(0, 0) : ccp(58, 0));
-      this.addChild(background, 0);
+      this.background.setPosition(isTall ? ccp(0, 0) : ccp(58, 0));
+      this.addChild(this.background, 0);
     }
 
     this.cardImage = new CCSprite(scene.assets.image(card.imageFilename));
@@ -344,8 +345,12 @@ class TechCardView extends CCNode {
     this.title2 = this.addTitle(card.title2, isTall ? ccp(0, -27) : ccp(38, -9), isTall);
     if (onActivate) {
       const hitArea = new CCNode();
-      hitArea.contentSize = { width: 130, height: 40 };
-      hitArea.setPosition(ccp(-22, -20));
+      hitArea.contentSize = isTall
+        ? { width: 89, height: 92 }
+        : isTransparent ? { width: 130, height: 40 } : { width: 182, height: 56 };
+      hitArea.setPosition(
+        isTall ? ccp(-44.5, -46) : isTransparent ? ccp(-22, -20) : ccp(-33, -28),
+      );
       hitArea.interactive = true;
       hitArea.enabled = true;
       hitArea.touchPriority = -10;
@@ -373,6 +378,13 @@ class TechCardView extends CCNode {
     this.cardImage.opacity = opacity;
     this.title1.opacity = opacity;
     this.title2.opacity = opacity;
+    if (this.background) {
+      const selected = this.card.owner?.selectedCard === this.card;
+      const fileName = this.layout === "tall"
+        ? selected ? "tech_layer_bg_selected.png" : "tech_layer_bg.png"
+        : selected ? "tech_layer_bg_mini_horiz_selected.png" : "tech_layer_bg_mini_horiz.png";
+      this.background.image = this.scene.assets.image(fileName);
+    }
   }
 }
 
@@ -395,7 +407,7 @@ class TechCardTray extends CCNode {
   refresh(player) {
     const signature = player.cards
       .map((card) => `${card.cardID}:${card.tapped ? 1 : 0}`)
-      .join(",");
+      .join(",") + `|${player.selectedCard?.cardID ?? -1}`;
     if (signature === this.signature) {
       return;
     }
@@ -870,9 +882,22 @@ export class GameScene extends AFLayer {
     this.diceLabel = this.hudLabel("0", 22, ccp(288, 87), "#000");
     this.hintLabel = this.hudLabel("", 17, ccp(-168, 109), "#ffc200");
 
-    this.currentTechTray = new TechCardTray(this, "tall");
+    this.currentTechTray = new TechCardTray(
+      this,
+      "tall",
+      (card) => this.state.selectTechCard(card),
+    );
     this.currentTechTray.setPosition(ccp(-166, 47));
     this.uiFrame.addChild(this.currentTechTray, 1);
+
+    this.techUseButton = this.buttonFromImage(
+      "menu_button_68.png",
+      "menu_button_68_active.png",
+      () => this.state.beginTechPower(this.state.currentPlayer.selectedCard),
+      { label: "USE", fontSize: 11, fontColor: "#000" },
+    );
+    this.techUseButton.setPosition(ccp(-84, -76));
+    this.uiFrame.addChild(this.techUseButton, 3);
   }
 
   hudLabel(text, fontSize, position, color) {
@@ -937,6 +962,10 @@ export class GameScene extends AFLayer {
   }
 
   toggleShip(ship) {
+    if (this.state.pendingTechCard) {
+      this.state.usePendingTechOnShip(ship);
+      return;
+    }
     this.state.toggleShipSelection(ship);
   }
 
@@ -986,10 +1015,16 @@ export class GameScene extends AFLayer {
     this.diceLabel.setString(player.activeShips.length);
     this.hintLabel.setString(isHumanTurn
       ? player.isRaiding ? "SELECT UP TO 4 RESOURCES OR ONE TECH"
+        : this.state.pendingTechCard ? this.techPowerHint(this.state.pendingTechCard)
         : isSelectingRegion ? "SELECT A REGION FOR YOUR COLONY"
         : player.initialRollDone ? "SELECT DICE, THEN A FACILITY" : "ROLL YOUR SHIPS"
       : "AI TURN");
     this.currentTechTray.refresh(player);
+    const selectedCard = player.selectedCard;
+    const canUseSelected = selectedCard
+      && selectedCard.canUsePower
+      && player.undockedShips.some((ship) => selectedCard.canUsePowerOnShip(ship));
+    this.techUseButton.visible = Boolean(canUseSelected) && !this.state.pendingTechCard;
     this.regionHitArea.enabled = isSelectingRegion;
     for (const regionLayer of this.regionLayers) {
       regionLayer.refresh();
@@ -1004,6 +1039,16 @@ export class GameScene extends AFLayer {
     this.updatePlayerIcon("colonyIcon", PLAYER_COLONY_IMAGES[player.colorIndex], ccp(254, 60));
     this.updatePlayerIcon("dieIcon", PLAYER_DIE_IMAGES[player.colorIndex], ccp(289, 60));
     this.scheduleAI();
+  }
+
+  techPowerHint(card) {
+    if (card.type === "booster-pod") {
+      return "SELECT AN UNDOCKED DIE TO INCREASE";
+    }
+    if (card.type === "stasis-beam") {
+      return "SELECT AN UNDOCKED DIE TO DECREASE";
+    }
+    return "SELECT AN UNDOCKED DIE TO FLIP";
   }
 
   scheduleAI() {

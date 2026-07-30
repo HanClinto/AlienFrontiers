@@ -36,12 +36,14 @@ or raiding resources and cards with Holographic Decoy protection, landing
 colonies across all eight regions, scoring majority
 victory points, and advancing a pass-and-play turn. The exact 20-card Alien Tech deck is
 shuffled and dealt into the original current/opponent trays; Alien City, Alien Monument,
-and Resource Cache passive effects are active. Original background music and core UI,
+and Resource Cache passive effects are active, along with Booster Pod, Stasis Beam, and
+Polarity Device die powers. Original background music and core UI,
 dice, docking, colony, card, ship, and turn effects play after the first interaction;
 ships and player panels use Cocos-style eased movement. AI seats automatically play through the
 ported rules using the original SimpleAI fallback priority. The remaining facilities,
-region fields and bonuses, personality-specific ExhaustiveAI strategies, active/discard
-tech abilities, full animation coverage, undo/redo, saving, and endgame are still being ported.
+region fields and bonuses, personality-specific ExhaustiveAI strategies, remaining
+active/discard tech abilities, full animation coverage, undo/redo, saving, and endgame
+are still being ported.
 
 Run the static site locally from the repository root:
 

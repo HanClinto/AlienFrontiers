@@ -12,6 +12,7 @@ export const EventName = Object.freeze({
   shipActivated: "ship-activated",
   shipDocked: "ship-docked",
   shipRolled: "ship-rolled",
+  shipChanged: "ship-changed",
   shipSelected: "ship-selected",
   shipsDocked: "ships-docked",
   shipsRolled: "ships-rolled",

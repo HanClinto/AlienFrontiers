@@ -46,6 +46,50 @@ export class TechCard {
   get hasPower() { return this.definition.hasPower ?? true; }
   get hasDiscard() { return this.definition.hasDiscard ?? true; }
 
+  get adjustedFuelCost() {
+    const discount = this.owner && this.state.pohlFoothills.playerHasBonus(this.owner) ? 1 : 0;
+    return this.baseFuelCost - discount;
+  }
+
+  get canUsePower() {
+    return this.owner === this.state.currentPlayer
+      && this.hasPower
+      && !this.tapped
+      && this.owner.fuel >= this.adjustedFuelCost;
+  }
+
+  canUsePowerOnShip(ship) {
+    if (!this.canUsePower || !ship || ship.player !== this.owner || ship.docked) {
+      return false;
+    }
+    if (this.type === TechCardType.boosterPod) {
+      return ship.value < 6;
+    }
+    if (this.type === TechCardType.stasisBeam) {
+      return ship.value > 1;
+    }
+    return this.type === TechCardType.polarityDevice;
+  }
+
+  usePowerOnShip(ship) {
+    if (!this.canUsePowerOnShip(ship)) {
+      return false;
+    }
+    this.owner.fuel -= this.adjustedFuelCost;
+    if (this.type === TechCardType.boosterPod) {
+      ship.value += 1;
+    } else if (this.type === TechCardType.stasisBeam) {
+      ship.value -= 1;
+    } else if (this.type === TechCardType.polarityDevice) {
+      ship.value = 7 - ship.value;
+    }
+    ship.rollIndex += 1;
+    this.setTapped(true);
+    this.state.postEvent("resources-changed", this.owner);
+    this.state.postEvent("ship-changed", ship);
+    return true;
+  }
+
   setTapped(tapped) {
     if (this.tapped === tapped) {
       return;

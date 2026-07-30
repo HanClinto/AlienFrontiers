@@ -400,3 +400,54 @@ test("SimpleAI uses a straight and resolves its raid", () => {
   assert.deepEqual([raider.ore, raider.fuel], [2, 2]);
   assert.deepEqual([victim.ore, victim.fuel], [0, 0]);
 });
+
+test("Booster, Stasis, and Polarity target one legal undocked ship", () => {
+  const cases = [
+    [TechCardType.boosterPod, 5, 6],
+    [TechCardType.stasisBeam, 2, 1],
+    [TechCardType.polarityDevice, 2, 5],
+  ];
+  for (const [type, startValue, expectedValue] of cases) {
+    const state = new GameState(2, [AIType.human, AIType.human]);
+    const player = state.currentPlayer;
+    const card = state.allTech.find((candidate) => candidate.type === type);
+    player.cards = [];
+    player.addCard(card);
+    player.fuel = 1;
+    player.initialRollDone = true;
+    player.activeShips[0].value = startValue;
+    assert.equal(state.selectTechCard(card), true);
+    assert.equal(state.beginTechPower(card), true);
+    assert.equal(state.canEndTurn, false);
+    assert.equal(state.usePendingTechOnShip(player.activeShips[0]), true);
+    assert.equal(player.activeShips[0].value, expectedValue);
+    assert.equal(player.fuel, 0);
+    assert.equal(card.tapped, true);
+    assert.equal(state.pendingTechCard, null);
+  }
+});
+
+test("active tech powers reject illegal ships and honor Pohl discount", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const booster = state.allTech.find((card) => card.type === TechCardType.boosterPod);
+  player.cards = [];
+  player.addCard(booster);
+  player.initialRollDone = true;
+  player.activeShips[0].value = 6;
+  player.activeShips[1].value = 4;
+  state.maintenanceBay.dockShip(player.activeShips[1]);
+  player.fuel = 0;
+  assert.equal(state.beginTechPower(booster), false);
+
+  state.pohlFoothills.addColony(0);
+  player.activeShips[1].undock();
+  assert.equal(booster.adjustedFuelCost, 0);
+  assert.equal(state.beginTechPower(booster), true);
+  assert.equal(state.usePendingTechOnShip(player.activeShips[0]), false);
+  assert.equal(state.usePendingTechOnShip(player.activeShips[1]), true);
+  assert.equal(player.activeShips[1].value, 5);
+  player.endTurnCleanup();
+  assert.equal(booster.tapped, false);
+  assert.equal(player.selectedCard, null);
+});

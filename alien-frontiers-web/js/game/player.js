@@ -316,6 +316,7 @@ export class Player {
     this.techsDiscarded = 0;
     this.artifactCreditAvailable = 0;
     this.artifactShufflesAvailable = 0;
+    this.selectedCard = null;
     for (const card of this.cards) {
       card.setTapped(false);
     }

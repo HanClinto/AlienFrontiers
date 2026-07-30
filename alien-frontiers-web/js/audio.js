@@ -59,6 +59,7 @@ export class GameAudioManager {
       [EventName.shipActivated, "ship"],
       [EventName.launchColony, "colony"],
       [EventName.techCardsChanged, "card"],
+      [EventName.cardTapped, "card"],
     ]);
     for (const [eventName, sound] of sounds) {
       this.unsubscribers.push(state.events.on(eventName, () => this.play(sound)));

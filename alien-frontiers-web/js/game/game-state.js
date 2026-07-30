@@ -16,6 +16,7 @@ export class GameState {
     this.events = new EventBus();
     this.currentPlayerIndex = 0;
     this.numTurns = 0;
+    this.pendingTechCard = null;
     this.gameLog = [`Began new ${numPlayers} player game`];
 
     this.players = Array.from(
@@ -57,7 +58,8 @@ export class GameState {
     return this.currentPlayer.initialRollDone
       && this.currentPlayer.numUndockedShips === 0
       && this.currentPlayer.coloniesToLaunch === 0
-      && !this.currentPlayer.isRaiding;
+      && !this.currentPlayer.isRaiding
+      && !this.pendingTechCard;
   }
 
   postEvent(name, object) {
@@ -117,6 +119,38 @@ export class GameState {
     return orbital.commitShipsFromPlayer(this.currentPlayer, this.currentPlayer.selectedShips);
   }
 
+  selectTechCard(card) {
+    if (!this.currentPlayer.cards.includes(card)) {
+      return false;
+    }
+    this.currentPlayer.selectedCard = card;
+    this.postEvent(EventName.techCardsChanged, card);
+    return true;
+  }
+
+  beginTechPower(card) {
+    const hasTarget = this.currentPlayer.undockedShips.some((ship) => card.canUsePowerOnShip(ship));
+    if (!this.currentPlayer.cards.includes(card) || !card.canUsePower || !hasTarget) {
+      return false;
+    }
+    this.pendingTechCard = card;
+    this.postEvent(EventName.techCardsChanged, card);
+    return true;
+  }
+
+  usePendingTechOnShip(ship) {
+    if (!this.pendingTechCard) {
+      return false;
+    }
+    const card = this.pendingTechCard;
+    if (!card.usePowerOnShip(ship)) {
+      return false;
+    }
+    this.pendingTechCard = null;
+    this.postEvent(EventName.techCardsChanged, card);
+    return true;
+  }
+
   selectRegion(region) {
     if (
       !this.regions.includes(region)
@@ -133,6 +167,7 @@ export class GameState {
       return false;
     }
     this.currentPlayer.endTurnCleanup();
+    this.pendingTechCard = null;
     const nextPlayerIndex = (this.currentPlayerIndex + 1) % this.numPlayers;
     if (nextPlayerIndex < this.currentPlayerIndex) {
       this.numTurns += 1;
