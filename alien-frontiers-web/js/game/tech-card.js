@@ -242,7 +242,7 @@ export class TechCard {
       && ship
       && ship.player !== this.owner
       && ship.docked
-      && ship.player.activeShips.length > 3;
+      && (ship.isArtifactShip || ship.player.activeNativeShips.length > 3);
   }
 
   useDiscardOnShip(ship) {
@@ -259,6 +259,7 @@ export class TechCard {
 
   consumeDiscard() {
     const owner = this.owner;
+    this.state.checkArtifactShipControl();
     owner.techsDiscarded += 1;
     owner.removeCard(this);
     this.state.discardTechCard(this);
@@ -277,6 +278,7 @@ export class TechCard {
     }
     selection.region.colonyCounts[selection.player.playerIndex] -= 1;
     destination.colonyCounts[selection.player.playerIndex] += 1;
+    this.state.checkArtifactShipControl();
     this.consumeDiscard();
     this.state.postEvent("colonies-changed", destination);
     return true;
@@ -298,6 +300,7 @@ export class TechCard {
     first.region.colonyCounts[second.player.playerIndex] += 1;
     second.region.colonyCounts[second.player.playerIndex] -= 1;
     second.region.colonyCounts[first.player.playerIndex] += 1;
+    this.state.checkArtifactShipControl();
     this.consumeDiscard();
     this.state.postEvent("colonies-changed", first.region);
     return true;

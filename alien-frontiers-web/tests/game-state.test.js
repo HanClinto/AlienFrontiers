@@ -757,3 +757,33 @@ test("Polarity discard swaps two selected colonies between regions", () => {
   ], [0, 1, 1, 0]);
   assert.equal(state.techDiscardDeck.includes(polarity), true);
 });
+
+test("Burroughs owner purchases the shared artifact ship without changing native costs", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  state.burroughsDesert.addColony(0);
+  player.ore = 1;
+  player.fuel = 1;
+  assert.equal(state.canPurchaseArtifactShip(player), true);
+  assert.equal(state.purchaseArtifactShip(player), true);
+  assert.equal(state.artifactShip.player, player);
+  assert.equal(state.artifactShip.active, true);
+  assert.equal(state.artifactShip.dock.orbital, state.maintenanceBay);
+  assert.equal(player.activeShips.length, 4);
+  assert.equal(player.activeNativeShips.length, 3);
+  assert.equal(player.resourcesNeededForNextShip, 1);
+  assert.deepEqual([player.ore, player.fuel], [0, 0]);
+});
+
+test("artifact ship is lost immediately when Burroughs control is lost", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const [owner] = state.players;
+  state.burroughsDesert.addColony(0);
+  owner.ore = 1;
+  owner.fuel = 1;
+  state.purchaseArtifactShip(owner);
+  state.burroughsDesert.addColony(1);
+  assert.equal(state.artifactShip.active, false);
+  assert.equal(state.artifactShip.player, null);
+  assert.equal(owner.activeShips.includes(state.artifactShip), false);
+});

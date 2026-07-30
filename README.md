@@ -45,7 +45,8 @@ Teleporter can reuse a docked die at a different facility, while Plasma Cannon r
 or destroys eligible enemy ships. Teleporter and Polarity discards can move or swap
 placed colonies. Heinlein, Van Vogt, Herbert,
 Lem, Bradbury, Asimov, and Pohl
-majority bonuses affect their connected systems. Original background music and core UI,
+majority bonuses affect their connected systems; Burroughs enables the shared artifact
+ship while control is maintained. Original background music and core UI,
 dice, docking, colony, card, ship, and turn effects play after the first interaction;
 ships and player panels use Cocos-style eased movement, tech cards slide elastically into
 their trays, and dice scale/rotate when rolled with rotating selection rings. AI seats automatically play through the

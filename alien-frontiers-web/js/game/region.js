@@ -51,6 +51,7 @@ export class Region {
   addColony(playerIndex) {
     this.colonyCounts[playerIndex] += 1;
     this.state.postEvent(EventName.coloniesChanged, this);
+    this.state.checkArtifactShipControl();
   }
 
   launchColony(playerIndex) {
@@ -63,6 +64,7 @@ export class Region {
     player.coloniesLeft -= 1;
     this.state.logMove(`${player.playerName}: Landed colony at ${this.title}`);
     this.state.postEvent(EventName.coloniesChanged, this);
+    this.state.checkArtifactShipControl();
     return true;
   }
 }

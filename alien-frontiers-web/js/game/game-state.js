@@ -4,6 +4,7 @@ import { AlienArtifact, ColonyConstructor, ColonistHub, LunarMine, MaintenanceBa
 import { Player } from "./player.js";
 import { Region, REGION_DEFINITIONS } from "./region.js";
 import { buildTechDeck, shuffleTechCards } from "./tech-card.js";
+import { Ship } from "./ship.js";
 
 export class GameState {
   constructor(numPlayers, playerPersonalities, random = Math.random, cardRandom = () => 0.5) {
@@ -41,6 +42,7 @@ export class GameState {
     this.raidersOutpost = new RaidersOutpost(this);
     this.colonistHub = new ColonistHub(this);
     this.terraformingStation = new TerraformingStation(this);
+    this.artifactShip = new Ship(null, 6, this);
 
     this.allTech = buildTechDeck(this);
     this.techDrawDeck = shuffleTechCards(this.allTech, this.cardRandom);
@@ -101,6 +103,40 @@ export class GameState {
       this.techDiscardDeck.push(card);
     }
     this.postEvent(EventName.techCardsChanged, card);
+  }
+
+  canPurchaseArtifactShip(player) {
+    return this.burroughsDesert.playerHasBonus(player)
+      && !this.artifactShip.active
+      && player.ore >= 1
+      && player.fuel >= 1;
+  }
+
+  purchaseArtifactShip(player) {
+    if (!this.canPurchaseArtifactShip(player)) {
+      return false;
+    }
+    player.ore -= 1;
+    player.fuel -= 1;
+    this.artifactShip.player = player;
+    this.artifactShip.active = true;
+    player.activeShips.push(this.artifactShip);
+    player.allShips.push(this.artifactShip);
+    this.maintenanceBay.dockShip(this.artifactShip);
+    this.postEvent(EventName.shipActivated, this.artifactShip);
+    this.postEvent(EventName.resourcesChanged, player);
+    return true;
+  }
+
+  checkArtifactShipControl() {
+    const ship = this.artifactShip;
+    if (
+      ship?.active
+      && ship.player
+      && !this.burroughsDesert.playerHasBonus(ship.player)
+    ) {
+      ship.player.deactivateShip(ship);
+    }
   }
 
   rollCurrentPlayerShips() {

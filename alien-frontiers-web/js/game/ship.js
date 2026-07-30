@@ -1,9 +1,9 @@
 import { EventName } from "./constants.js";
 
 export class Ship {
-  constructor(player, shipIndex) {
+  constructor(player, shipIndex, state = player?.state) {
     this.player = player;
-    this.state = player.state;
+    this.state = state;
     this.shipIndex = shipIndex;
     this.value = 0;
     this.rollIndex = 0;
@@ -15,6 +15,10 @@ export class Ship {
 
   get docked() {
     return this.dock !== null;
+  }
+
+  get isArtifactShip() {
+    return this.shipIndex === 6;
   }
 
   roll(random = Math.random) {

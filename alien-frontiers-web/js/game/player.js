@@ -47,7 +47,11 @@ export class Player {
 
   get resourcesNeededForNextShip() {
     const discount = this.state.herbertValley.playerHasBonus(this) ? 1 : 0;
-    return this.activeShips.length - 2 - discount;
+    return this.activeNativeShips.length - 2 - discount;
+  }
+
+  get activeNativeShips() {
+    return this.activeShips.filter((ship) => !ship.isArtifactShip);
   }
 
   get ableToMarketTrade() {
@@ -309,12 +313,20 @@ export class Player {
   }
 
   deactivateShip(ship) {
-    if (!this.activeShips.includes(ship) || this.activeShips.length <= 3) {
+    if (
+      !this.activeShips.includes(ship)
+      || (!ship.isArtifactShip && this.activeNativeShips.length <= 3)
+    ) {
       return false;
     }
     ship.undock();
     this.activeShips.splice(this.activeShips.indexOf(ship), 1);
-    this.inactiveShips.push(ship);
+    if (ship.isArtifactShip) {
+      this.allShips.splice(this.allShips.indexOf(ship), 1);
+      ship.player = null;
+    } else {
+      this.inactiveShips.push(ship);
+    }
     ship.active = false;
     this.state.postEvent(EventName.shipActivated, ship);
     return true;

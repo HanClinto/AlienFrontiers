@@ -37,6 +37,8 @@ const MENU_IMAGES = [
   "button_roll_up.png",
   "button_medium_down.png",
   "button_medium_up.png",
+  "button_long_up.png",
+  "button_long_down.png",
   "die_select.png",
   "dock_blank.png",
   "dock_mb.png",

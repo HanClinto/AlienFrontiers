@@ -29,6 +29,10 @@ export class SimpleAI {
       matchingShips.push(ship);
       shipsByValue.set(ship.value, matchingShips);
     }
+    if (state.canPurchaseArtifactShip(player)) {
+      state.purchaseArtifactShip(player);
+      return true;
+    }
     const constructorTriplet = [...shipsByValue.values()].find((ships) =>
       ships.length >= 3
       && state.colonyConstructor.isValidMoveFromPlayer(player, ships.slice(0, 3)));

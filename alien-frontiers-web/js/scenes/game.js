@@ -376,6 +376,7 @@ class RegionLayer extends CCNode {
     super();
     this.scene = scene;
     this.region = scene.state[layout.property];
+    this.property = layout.property;
     this.colonyNodes = [];
     this.fieldNodes = [];
     this.setPosition(ccp(...layout.position));
@@ -386,6 +387,20 @@ class RegionLayer extends CCNode {
     const bonus = new CCSprite(scene.assets.image(layout.bonus));
     bonus.setPosition(ccp(8, -19));
     this.addChild(bonus, 1);
+    if (this.property === "burroughsDesert") {
+      const dock = new CCSprite(scene.assets.image("dock_normal.png"));
+      dock.setAnchorPoint(ccp(0, 0));
+      dock.setPosition(ccp(-5, 12));
+      this.addChild(dock, 2);
+      this.purchaseButton = scene.buttonFromImage(
+        "button_long_up.png",
+        "button_long_down.png",
+        () => scene.state.purchaseArtifactShip(scene.state.currentPlayer),
+        { label: "PURCHASE", fontSize: 12 },
+      );
+      this.purchaseButton.setPosition(ccp(7, 58));
+      this.addChild(this.purchaseButton, 5);
+    }
     this.refresh();
   }
 
@@ -405,6 +420,10 @@ class RegionLayer extends CCNode {
       this.removeChild(node);
     }
     this.fieldNodes.length = 0;
+    if (this.purchaseButton) {
+      this.purchaseButton.visible = this.scene.state.currentPlayer.aiType === AIType.human
+        && this.scene.state.canPurchaseArtifactShip(this.scene.state.currentPlayer);
+    }
     if (this.region.hasPositronField) {
       this.addField("field_positron_medium.png", ccp(3, 2), 0);
     }
@@ -961,7 +980,8 @@ class ShipSprite extends CCNode {
   }
 
   refresh() {
-    this.visible = this.ship.active;
+    this.visible = this.ship.active || this.ship.isArtifactShip;
+    this.enabled = this.ship.active;
     this.selectionSprite.visible = this.ship.isSelected;
     if (this.ship.isSelected && !this.selectionAnimating) {
       this.selectionAnimating = true;
@@ -971,9 +991,11 @@ class ShipSprite extends CCNode {
       this.selectionSprite.stopAllActions();
       this.selectionSprite.rotation = 0;
     }
-    this.opacity = !this.ship.docked && !this.ship.player.initialRollDone ? 128 : 255;
+    this.opacity = !this.ship.docked && this.ship.player && !this.ship.player.initialRollDone ? 128 : 255;
 
-    const prefix = PLAYER_DIE_PREFIXES[this.ship.player.colorIndex];
+    const prefix = this.ship.isArtifactShip
+      ? "wh"
+      : PLAYER_DIE_PREFIXES[this.ship.player.colorIndex];
     const frameIndex = this.ship.value >= 1 && this.ship.value <= 6 ? this.ship.value - 1 : 0;
     const nextFrame = this.scene.director.frameCache.spriteFrameByName(`${prefix}-${frameIndex}.png`);
     if (!this.frameSprite) {
@@ -1164,6 +1186,9 @@ export class GameScene extends AFLayer {
   }
 
   shipPosition(ship) {
+    if (ship.isArtifactShip && (!ship.active || !ship.player)) {
+      return ccp(382, 629);
+    }
     if (!ship.docked) {
       return rollingTrayPosition(ship.shipIndex);
     }
@@ -1196,6 +1221,11 @@ export class GameScene extends AFLayer {
           this.addChild(shipSprite, 8);
         }
       }
+    }
+    if (!this.shipSprites.has(this.state.artifactShip)) {
+      const artifactSprite = new ShipSprite(this, this.state.artifactShip);
+      this.shipSprites.set(this.state.artifactShip, artifactSprite);
+      this.addChild(artifactSprite, 8);
     }
   }
 

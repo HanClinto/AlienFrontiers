@@ -217,7 +217,7 @@ export class Shipyard extends Orbital {
       && selectedShips[0].value === selectedShips[1].value
       && player.fuel >= needed
       && player.ore >= needed
-      && player.activeShips.length < 6;
+      && player.activeNativeShips.length < 6;
   }
 
   commitShipsFromPlayer(player, selectedShips) {
@@ -417,7 +417,7 @@ export class TerraformingStation extends Orbital {
     return this.numEmptyGroups > 0
       && selectedShips.length === 1
       && selectedShips[0].value === 6
-      && player.activeShips.length > 3
+      && (player.activeNativeShips.length > 3 || selectedShips[0].isArtifactShip)
       && player.ore >= 1
       && player.fuel >= 1;
   }
