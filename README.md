@@ -37,7 +37,8 @@ colonies across all eight regions, scoring majority
 victory points, and advancing a pass-and-play turn. The exact 20-card Alien Tech deck is
 shuffled and dealt into the original current/opponent trays; Alien City, Alien Monument,
 and Resource Cache passive effects are active, along with Booster Pod, Stasis Beam, and
-Polarity Device die powers. Original background music and core UI,
+Polarity Device die powers, Gravity Manipulator transfers, and Booster/Stasis/Gravity
+region-field discards. Original background music and core UI,
 dice, docking, colony, card, ship, and turn effects play after the first interaction;
 ships and player panels use Cocos-style eased movement. AI seats automatically play through the
 ported rules using the original SimpleAI fallback priority. The remaining facilities,

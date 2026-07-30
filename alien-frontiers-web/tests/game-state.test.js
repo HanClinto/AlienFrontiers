@@ -473,3 +473,42 @@ test("Gravity Manipulator raises then lowers two different legal ships", () => {
   assert.equal(gravity.tapped, true);
   assert.equal(state.pendingTechCard, null);
 });
+
+test("Booster removes fields while Stasis and Gravity move their fields", () => {
+  const cases = [
+    [TechCardType.stasisBeam, "hasIsolationField"],
+    [TechCardType.gravityManipulator, "hasRepulsorField"],
+  ];
+  for (const [type, field] of cases) {
+    const state = new GameState(2, [AIType.human, AIType.human]);
+    const player = state.currentPlayer;
+    const card = state.allTech.find((candidate) => candidate.type === type);
+    player.cards = [];
+    player.addCard(card);
+    state.heinleinPlains[field] = true;
+    assert.equal(state.beginTechDiscard(card), true);
+    assert.equal(state.selectRegion(state.pohlFoothills), true);
+    assert.equal(state.heinleinPlains[field], false);
+    assert.equal(state.pohlFoothills[field], true);
+    assert.equal(player.cards.includes(card), false);
+    assert.equal(state.techDiscardDeck.includes(card), true);
+    assert.equal(player.techsDiscarded, 1);
+  }
+
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const booster = state.allTech.find((card) => card.type === TechCardType.boosterPod);
+  player.cards = [];
+  player.addCard(booster);
+  state.asimovCrater.hasPositronField = true;
+  state.asimovCrater.hasRepulsorField = true;
+  state.asimovCrater.hasIsolationField = true;
+  state.beginTechDiscard(booster);
+  state.selectRegion(state.asimovCrater);
+  assert.deepEqual([
+    state.asimovCrater.hasPositronField,
+    state.asimovCrater.hasRepulsorField,
+    state.asimovCrater.hasIsolationField,
+  ], [false, false, false]);
+  assert.equal(state.beginTechDiscard(state.allTech.find((card) => card.type === TechCardType.stasisBeam)), false);
+});

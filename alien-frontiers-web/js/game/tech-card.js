@@ -58,6 +58,21 @@ export class TechCard {
       && this.owner.fuel >= this.adjustedFuelCost;
   }
 
+  get canUseDiscard() {
+    return this.owner === this.state.currentPlayer
+      && this.hasDiscard
+      && !this.tapped
+      && this.owner.techsDiscarded === 0;
+  }
+
+  get hasImplementedRegionDiscard() {
+    return [
+      TechCardType.boosterPod,
+      TechCardType.stasisBeam,
+      TechCardType.gravityManipulator,
+    ].includes(this.type);
+  }
+
   canUsePowerOnShip(ship) {
     if (!this.canUsePower || !ship || ship.player !== this.owner || ship.docked) {
       return false;
@@ -119,6 +134,33 @@ export class TechCard {
     this.state.postEvent("resources-changed", this.owner);
     this.state.postEvent("ship-changed", shipToRaise);
     this.state.postEvent("ship-changed", shipToLower);
+    return true;
+  }
+
+  useDiscardOnRegion(region) {
+    if (!this.canUseDiscard || !this.hasImplementedRegionDiscard || !region) {
+      return false;
+    }
+    if (this.type === TechCardType.boosterPod) {
+      region.hasPositronField = false;
+      region.hasRepulsorField = false;
+      region.hasIsolationField = false;
+    } else if (this.type === TechCardType.stasisBeam) {
+      for (const candidate of this.state.regions) {
+        candidate.hasIsolationField = false;
+      }
+      region.hasIsolationField = true;
+    } else if (this.type === TechCardType.gravityManipulator) {
+      for (const candidate of this.state.regions) {
+        candidate.hasRepulsorField = false;
+      }
+      region.hasRepulsorField = true;
+    }
+    const owner = this.owner;
+    owner.techsDiscarded += 1;
+    owner.removeCard(this);
+    this.state.discardTechCard(this);
+    this.state.postEvent("tech-cards-changed", region);
     return true;
   }
 

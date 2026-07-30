@@ -18,6 +18,7 @@ export class GameState {
     this.numTurns = 0;
     this.pendingTechCard = null;
     this.pendingTechTargets = [];
+    this.pendingTechAction = null;
     this.gameLog = [`Began new ${numPlayers} player game`];
 
     this.players = Array.from(
@@ -141,6 +142,7 @@ export class GameState {
     }
     this.pendingTechCard = card;
     this.pendingTechTargets = [];
+    this.pendingTechAction = "power";
     this.postEvent(EventName.techCardsChanged, card);
     return true;
   }
@@ -164,6 +166,7 @@ export class GameState {
       }
       this.pendingTechCard = null;
       this.pendingTechTargets = [];
+      this.pendingTechAction = null;
       this.postEvent(EventName.techCardsChanged, card);
       return true;
     }
@@ -172,11 +175,23 @@ export class GameState {
     }
     this.pendingTechCard = null;
     this.pendingTechTargets = [];
+    this.pendingTechAction = null;
     this.postEvent(EventName.techCardsChanged, card);
     return true;
   }
 
   selectRegion(region) {
+    if (this.pendingTechCard && this.pendingTechAction === "discard") {
+      const card = this.pendingTechCard;
+      if (!card.useDiscardOnRegion(region)) {
+        return false;
+      }
+      this.pendingTechCard = null;
+      this.pendingTechTargets = [];
+      this.pendingTechAction = null;
+      this.postEvent(EventName.techCardsChanged, region);
+      return true;
+    }
     if (
       !this.regions.includes(region)
       || region.hasRepulsorField
@@ -187,6 +202,21 @@ export class GameState {
     return region.launchColony(this.currentPlayerIndex);
   }
 
+  beginTechDiscard(card) {
+    if (
+      !this.currentPlayer.cards.includes(card)
+      || !card.canUseDiscard
+      || !card.hasImplementedRegionDiscard
+    ) {
+      return false;
+    }
+    this.pendingTechCard = card;
+    this.pendingTechTargets = [];
+    this.pendingTechAction = "discard";
+    this.postEvent(EventName.techCardsChanged, card);
+    return true;
+  }
+
   gotoNextPlayer() {
     if (!this.canEndTurn) {
       return false;
@@ -194,6 +224,7 @@ export class GameState {
     this.currentPlayer.endTurnCleanup();
     this.pendingTechCard = null;
     this.pendingTechTargets = [];
+    this.pendingTechAction = null;
     const nextPlayerIndex = (this.currentPlayerIndex + 1) % this.numPlayers;
     if (nextPlayerIndex < this.currentPlayerIndex) {
       this.numTurns += 1;

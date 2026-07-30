@@ -274,6 +274,7 @@ class RegionLayer extends CCNode {
     this.scene = scene;
     this.region = scene.state[layout.property];
     this.colonyNodes = [];
+    this.fieldNodes = [];
     this.setPosition(ccp(...layout.position));
     if (layout.upperTitle) {
       this.addRegionLabel(layout.upperTitle, ccp(8, 15));
@@ -297,6 +298,19 @@ class RegionLayer extends CCNode {
       this.removeChild(node);
     }
     this.colonyNodes.length = 0;
+    for (const node of this.fieldNodes) {
+      this.removeChild(node);
+    }
+    this.fieldNodes.length = 0;
+    if (this.region.hasPositronField) {
+      this.addField("field_positron_medium.png", ccp(3, 2), 0);
+    }
+    if (this.region.hasIsolationField) {
+      this.addField("field_isolator_medium.png", ccp(4, -19), 0);
+    }
+    if (this.region.hasRepulsorField) {
+      this.addField("field_repulsion_onecolony.png", ccp(4.5, -44), 4);
+    }
     const playersWithColonies = this.scene.state.players.filter((player) =>
       this.region.coloniesForPlayer(player.playerIndex) > 0);
     playersWithColonies.forEach((player, activeIndex) => {
@@ -314,6 +328,13 @@ class RegionLayer extends CCNode {
       this.addChild(counter, 3);
       this.colonyNodes.push(counter);
     });
+  }
+
+  addField(fileName, position, zOrder) {
+    const field = new CCSprite(this.scene.assets.image(fileName));
+    field.setPosition(position);
+    this.addChild(field, zOrder);
+    this.fieldNodes.push(field);
   }
 }
 
@@ -898,6 +919,15 @@ export class GameScene extends AFLayer {
     );
     this.techUseButton.setPosition(ccp(-84, -76));
     this.uiFrame.addChild(this.techUseButton, 3);
+
+    this.techDiscardButton = this.buttonFromImage(
+      "menu_button_68.png",
+      "menu_button_68_active.png",
+      () => this.state.beginTechDiscard(this.state.currentPlayer.selectedCard),
+      { label: "DISCARD", fontSize: 10, fontColor: "#000" },
+    );
+    this.techDiscardButton.setPosition(ccp(80, -76));
+    this.uiFrame.addChild(this.techDiscardButton, 3);
   }
 
   hudLabel(text, fontSize, position, color) {
@@ -996,6 +1026,8 @@ export class GameScene extends AFLayer {
     }
     const isHumanTurn = player.aiType === AIType.human;
     const isSelectingRegion = isHumanTurn && player.coloniesToLaunch > 0;
+    const isSelectingFieldRegion = isHumanTurn
+      && this.state.pendingTechAction === "discard";
     if (isHumanTurn && this.aiTimer) {
       clearTimeout(this.aiTimer);
       this.aiTimer = null;
@@ -1015,6 +1047,7 @@ export class GameScene extends AFLayer {
     this.diceLabel.setString(player.activeShips.length);
     this.hintLabel.setString(isHumanTurn
       ? player.isRaiding ? "SELECT UP TO 4 RESOURCES OR ONE TECH"
+        : isSelectingFieldRegion ? "SELECT A REGION FOR THE FIELD EFFECT"
         : this.state.pendingTechCard ? this.techPowerHint(this.state.pendingTechCard)
         : isSelectingRegion ? "SELECT A REGION FOR YOUR COLONY"
         : player.initialRollDone ? "SELECT DICE, THEN A FACILITY" : "ROLL YOUR SHIPS"
@@ -1025,7 +1058,10 @@ export class GameScene extends AFLayer {
       && selectedCard.canUsePower
       && player.undockedShips.some((ship) => selectedCard.canUsePowerOnShip(ship));
     this.techUseButton.visible = Boolean(canUseSelected) && !this.state.pendingTechCard;
-    this.regionHitArea.enabled = isSelectingRegion;
+    this.techDiscardButton.visible = Boolean(
+      selectedCard?.canUseDiscard && selectedCard.hasImplementedRegionDiscard,
+    ) && !this.state.pendingTechCard;
+    this.regionHitArea.enabled = isSelectingRegion || isSelectingFieldRegion;
     for (const regionLayer of this.regionLayers) {
       regionLayer.refresh();
     }
