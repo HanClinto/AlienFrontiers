@@ -63,3 +63,17 @@ test("sine-eased movement reaches the original Cocos destination", () => {
   node.update(0.75);
   assertPoint(node.position, ccp(10, 20));
 });
+
+test("clipped descendants cannot render interactions outside their viewport", () => {
+  const root = new CCNode();
+  const viewport = new CCNode();
+  viewport.clipRect = { x: 0, y: 0, width: 100, height: 100 };
+  const child = new CCSprite(40, 40).setPosition(120, 50);
+  child.interactive = true;
+  viewport.addChild(child);
+  root.addChild(viewport);
+
+  assert.equal(root.findTopmostNodeAt(ccp(120, 50), (node) => node.interactive), null);
+  child.setPosition(80, 50);
+  assert.equal(root.findTopmostNodeAt(ccp(80, 50), (node) => node.interactive), child);
+});

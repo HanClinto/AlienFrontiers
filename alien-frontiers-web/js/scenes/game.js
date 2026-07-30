@@ -55,6 +55,15 @@ export function techCardPosition(layout, cardIndex) {
     : ccp(30, -84 + 55 * cardIndex);
 }
 
+export function techTrayScrollBounds(layout, cardCount) {
+  const cardSpan = layout === "tall" ? 89 : 56;
+  const viewportSize = layout === "tall" ? 331 : 202;
+  const play = cardCount * cardSpan - viewportSize;
+  return play > 0
+    ? { min: -play, max: 0 }
+    : { min: 0, max: -play };
+}
+
 export function colonistHubTrackPosition(numPlayers, playerIndex, step) {
   const verticalOffset = (4 - numPlayers) * 14;
   const y = -playerIndex * 28 - verticalOffset;
@@ -511,12 +520,84 @@ class TechCardTray extends CCNode {
     this.onCardActivate = onCardActivate;
     this.cardNodes = [];
     this.signature = "";
+    this.scrollOffset = 0;
+    this.dragged = false;
+    this.dragStart = null;
+    this.offsetAtStart = 0;
     const background = new CCSprite(scene.assets.image(
       layout === "tall" ? "hud_card_tray_white_horiz.png" : "hud_card_tray_mini_white_vert.png",
     ));
     background.setAnchorPoint(ccp(0, 0.5));
     background.setPosition(ccp(-3, -12));
     this.addChild(background, 0);
+
+    this.viewport = new CCNode();
+    this.viewport.clipRect = layout === "tall"
+      ? { x: -3, y: -57.5, width: 331, height: 91 }
+      : { x: -3, y: -113, width: 182, height: 202 };
+    this.addChild(this.viewport, 1);
+    this.cardContent = new CCNode();
+    this.viewport.addChild(this.cardContent);
+
+    const hitArea = new CCNode();
+    hitArea.contentSize = {
+      width: this.viewport.clipRect.width,
+      height: this.viewport.clipRect.height,
+    };
+    hitArea.setPosition(ccp(this.viewport.clipRect.x, this.viewport.clipRect.y));
+    hitArea.interactive = true;
+    hitArea.enabled = true;
+    hitArea.touchPriority = -20;
+    hitArea.onPointerDown = (point) => this.beginDrag(point);
+    hitArea.onPointerMove = (point) => this.moveDrag(point);
+    hitArea.onPointerUp = () => this.endDrag();
+    hitArea.activate = (point) => this.activateCard(point);
+    this.addChild(hitArea, 2);
+  }
+
+  beginDrag(point) {
+    this.dragStart = this.convertToNodeSpace(point);
+    this.offsetAtStart = this.scrollOffset;
+    this.dragged = false;
+  }
+
+  moveDrag(point) {
+    const localPoint = this.convertToNodeSpace(point);
+    const delta = this.layout === "tall"
+      ? localPoint.x - this.dragStart.x
+      : localPoint.y - this.dragStart.y;
+    this.dragged ||= Math.abs(delta) > 5;
+    this.setScrollOffset(this.offsetAtStart + delta);
+  }
+
+  endDrag() {
+    this.dragStart = null;
+  }
+
+  setScrollOffset(offset) {
+    const bounds = techTrayScrollBounds(this.layout, this.cardNodes.length);
+    this.scrollOffset = Math.max(bounds.min, Math.min(bounds.max, offset));
+    this.cardContent.setPosition(
+      this.layout === "tall" ? ccp(this.scrollOffset, 0) : ccp(0, this.scrollOffset),
+    );
+  }
+
+  activateCard(point) {
+    if (this.dragged || !this.onCardActivate) {
+      return;
+    }
+    const localPoint = this.convertToNodeSpace(point);
+    const cardIndex = this.cardNodes.findIndex((cardNode) => {
+      const position = cardNode.position;
+      return this.layout === "tall"
+        ? Math.abs(localPoint.x - this.scrollOffset - position.x) <= 44.5
+          && Math.abs(localPoint.y - position.y) <= 46
+        : localPoint.x >= -3 && localPoint.x <= 179
+          && Math.abs(localPoint.y - this.scrollOffset - position.y) <= 28;
+    });
+    if (cardIndex >= 0) {
+      this.onCardActivate(this.cardNodes[cardIndex].card);
+    }
   }
 
   refresh(player) {
@@ -528,20 +609,16 @@ class TechCardTray extends CCNode {
     }
     this.signature = signature;
     for (const cardNode of this.cardNodes) {
-      this.removeChild(cardNode);
+      this.cardContent.removeChild(cardNode);
     }
     this.cardNodes.length = 0;
     player.cards.forEach((card, cardIndex) => {
-      const cardNode = new TechCardView(
-        this.scene,
-        card,
-        this.layout,
-        this.onCardActivate,
-      );
+      const cardNode = new TechCardView(this.scene, card, this.layout);
       cardNode.setPosition(techCardPosition(this.layout, cardIndex));
-      this.addChild(cardNode, cardIndex + 1);
+      this.cardContent.addChild(cardNode, cardIndex + 1);
       this.cardNodes.push(cardNode);
     });
+    this.setScrollOffset(this.scrollOffset);
   }
 }
 

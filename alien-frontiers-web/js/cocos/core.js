@@ -57,6 +57,7 @@ export class CCNode {
     this._arrivalOrder = 0;
     this._nextArrivalOrder = 0;
     this._actions = [];
+    this.clipRect = null;
   }
 
   setPosition(pointOrX, y) {
@@ -168,6 +169,17 @@ export class CCNode {
   collectNodesAt(point, predicate, matches) {
     if (!this.visible) {
       return;
+    }
+    if (this.clipRect) {
+      const localPoint = this.convertToNodeSpace(point);
+      if (
+        localPoint.x < this.clipRect.x
+        || localPoint.x > this.clipRect.x + this.clipRect.width
+        || localPoint.y < this.clipRect.y
+        || localPoint.y > this.clipRect.y + this.clipRect.height
+      ) {
+        return;
+      }
     }
     if (predicate(this) && this.containsWorldPoint(point)) {
       matches.push(this);

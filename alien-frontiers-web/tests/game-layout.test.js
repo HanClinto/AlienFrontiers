@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { colonistHubTrackPosition, miniHUDPosition, regionAtBoardPoint, rollingTrayPosition, techCardPosition } from "../js/scenes/game.js";
+import { colonistHubTrackPosition, miniHUDPosition, regionAtBoardPoint, rollingTrayPosition, techCardPosition, techTrayScrollBounds } from "../js/scenes/game.js";
 
 test("all six ships wrap into the original four-column tray", () => {
   assert.deepEqual(
@@ -77,6 +77,13 @@ test("tech cards use the original current and mini tray slots", () => {
       { x: 30, y: 81 },
     ],
   );
+});
+
+test("tech tray scrolling is bounded to the original viewport play", () => {
+  assert.deepEqual(techTrayScrollBounds("tall", 4), { min: -25, max: 0 });
+  assert.deepEqual(techTrayScrollBounds("tall", 6), { min: -203, max: 0 });
+  assert.deepEqual(techTrayScrollBounds("wide", 4), { min: -22, max: 0 });
+  assert.deepEqual(techTrayScrollBounds("wide", 6), { min: -134, max: 0 });
 });
 
 test("Colonist Hub tracks retain original compressed player rows", () => {

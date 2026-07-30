@@ -41,6 +41,7 @@ export class CCDirector {
       ) ?? null;
       if (this._pressedNode) {
         this._pressedNode.selected = true;
+        this._pressedNode.onPointerDown?.(point);
         try {
           this.canvas.setPointerCapture(event.pointerId);
         } catch (error) {
@@ -49,6 +50,14 @@ export class CCDirector {
           }
         }
       }
+    });
+
+    this.canvas.addEventListener("pointermove", (event) => {
+      if (!this._pressedNode) {
+        return;
+      }
+      event.preventDefault();
+      this._pressedNode.onPointerMove?.(this.convertToGL(event.clientX, event.clientY));
     });
 
     this.canvas.addEventListener("pointerup", (event) => {
@@ -61,6 +70,7 @@ export class CCDirector {
       const pressedNode = this._pressedNode;
       if (pressedNode) {
         pressedNode.selected = false;
+        pressedNode.onPointerUp?.(point);
       }
       this._pressedNode = null;
       if (pressedNode && pressedNode === releasedNode && pressedNode.enabled) {
@@ -110,6 +120,16 @@ export class CCDirector {
     context.transform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
     const opacity = parentOpacity * node.opacity / 255;
     context.globalAlpha = opacity;
+    if (node.clipRect) {
+      context.beginPath();
+      context.rect(
+        node.clipRect.x,
+        node.clipRect.y,
+        node.clipRect.width,
+        node.clipRect.height,
+      );
+      context.clip();
+    }
     node.draw?.(context);
     for (const child of node.children) {
       this._renderNode(child, opacity);
