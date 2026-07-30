@@ -1,5 +1,9 @@
 import { DESIGN_HEIGHT, DESIGN_WIDTH, ccp } from "./core.js";
 
+export function frameDeltaSeconds(previousTimestamp, timestamp) {
+  return previousTimestamp === 0 ? 0 : Math.max(0, (timestamp - previousTimestamp) / 1000);
+}
+
 export class CCDirector {
   constructor(canvas) {
     this.canvas = canvas;
@@ -90,9 +94,7 @@ export class CCDirector {
   }
 
   _frame(timestamp) {
-    const deltaTime = this._lastTimestamp === 0
-      ? 0
-      : Math.min((timestamp - this._lastTimestamp) / 1000, 0.1);
+    const deltaTime = frameDeltaSeconds(this._lastTimestamp, timestamp);
     this._lastTimestamp = timestamp;
     this.scene?.update(deltaTime);
     this._render();

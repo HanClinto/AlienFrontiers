@@ -26,6 +26,7 @@ const PLAYER_COLONY_IMAGES_FULL = [
 ];
 const PLAYER_COLORS = ["#ff343e", "#40ff60", "#45caff", "#ffff60"];
 export const SHIP_SPRITE_SCALE = 0.8;
+export const SHIP_SPRITE_SIZE = Object.freeze({ width: 32, height: 40 });
 const REGION_LAYOUTS = Object.freeze([
   { property: "herbertValley", position: [232, 635], title: "Herbert Valley", bonus: "bonus_herbert.png" },
   { property: "lemBadlands", position: [311, 738], title: "Lem Badlands", bonus: "bonus_lem.png" },
@@ -39,8 +40,8 @@ const REGION_LAYOUTS = Object.freeze([
 
 export function rollingTrayPosition(shipIndex) {
   return ccp(
-    600 + (shipIndex % 4) * 38,
-    77 - Math.floor(shipIndex / 4) * 40,
+    587 + (shipIndex % 4) * 38,
+    90 - Math.floor(shipIndex / 4) * 40,
   );
 }
 
@@ -1253,7 +1254,7 @@ class ShipSprite extends CCNode {
     this.targetPosition = null;
     this.lastRollIndex = ship.rollIndex;
     this.selectionAnimating = false;
-    this.contentSize = { width: 43, height: 43 };
+    this.contentSize = { ...SHIP_SPRITE_SIZE };
     this.setAnchorPoint(ccp(0.5, 0.5));
     this.setScale(SHIP_SPRITE_SCALE);
     this.interactive = true;
@@ -1261,7 +1262,10 @@ class ShipSprite extends CCNode {
     this.activate = () => this.scene.toggleShip(this.ship);
 
     this.selectionSprite = new CCSprite(scene.assets.image("die_select.png"));
-    this.selectionSprite.setPosition(ccp(21.5, 21.5));
+    this.selectionSprite.setPosition(ccp(
+      this.contentSize.width / 2,
+      this.contentSize.height / 2,
+    ));
     this.addChild(this.selectionSprite, 0);
     this.frameSprite = null;
     this.refresh();
@@ -1288,7 +1292,10 @@ class ShipSprite extends CCNode {
     const nextFrame = this.scene.director.frameCache.spriteFrameByName(`${prefix}-${frameIndex}.png`);
     if (!this.frameSprite) {
       this.frameSprite = nextFrame;
-      this.frameSprite.setPosition(ccp(21.5, 21.5));
+      this.frameSprite.setPosition(ccp(
+        this.contentSize.width / 2,
+        this.contentSize.height / 2,
+      ));
       this.addChild(this.frameSprite, 1);
     } else {
       this.frameSprite.image = nextFrame.image;
@@ -1297,6 +1304,7 @@ class ShipSprite extends CCNode {
     if (this.ship.rollIndex !== this.lastRollIndex) {
       this.lastRollIndex = this.ship.rollIndex;
       this.frameSprite.stopAllActions();
+      this.frameSprite.opacity = 255;
       this.frameSprite.setScale(1.5);
       this.frameSprite.rotation = 0;
       this.frameSprite.runAction(new CCScaleTo(0.5, 1));
@@ -1311,6 +1319,9 @@ class ShipSprite extends CCNode {
     ) {
       this.stopAllActions();
       this.frameSprite.stopAllActions();
+      this.frameSprite.opacity = 255;
+      this.frameSprite.rotation = 0;
+      this.frameSprite.setScale(1);
       const deltaX = destination.x - this.position.x;
       const deltaY = destination.y - this.position.y;
       const firstMove = ccp(

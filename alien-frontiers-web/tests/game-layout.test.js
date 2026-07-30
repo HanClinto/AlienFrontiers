@@ -1,19 +1,20 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { colonistHubTrackPosition, gameLogPosition, miniHUDPosition, regionAtBoardPoint, rollingTrayPosition, SHIP_SPRITE_SCALE, techCardPosition, techDescriptionLayout, techTrayScrollBounds, techTrayVisibleRange } from "../js/scenes/game.js";
+import { colonistHubTrackPosition, gameLogPosition, miniHUDPosition, regionAtBoardPoint, rollingTrayPosition, SHIP_SPRITE_SCALE, SHIP_SPRITE_SIZE, techCardPosition, techDescriptionLayout, techTrayScrollBounds, techTrayVisibleRange } from "../js/scenes/game.js";
 
 test("all six ships wrap into the original four-column tray", () => {
   assert.equal(SHIP_SPRITE_SCALE, 0.8);
+  assert.deepEqual(SHIP_SPRITE_SIZE, { width: 32, height: 40 });
   assert.deepEqual(
     Array.from({ length: 6 }, (_, shipIndex) => rollingTrayPosition(shipIndex)),
     [
-      { x: 600, y: 77 },
-      { x: 638, y: 77 },
-      { x: 676, y: 77 },
-      { x: 714, y: 77 },
-      { x: 600, y: 37 },
-      { x: 638, y: 37 },
+      { x: 587, y: 90 },
+      { x: 625, y: 90 },
+      { x: 663, y: 90 },
+      { x: 701, y: 90 },
+      { x: 587, y: 50 },
+      { x: 625, y: 50 },
     ],
   );
 });

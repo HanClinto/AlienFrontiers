@@ -167,9 +167,6 @@ export class CCSequence {
         this.done = true;
       } else {
         this.actions[this.index].start(this.target);
-        if (remaining <= 0) {
-          break;
-        }
       }
     }
     return remaining;
@@ -191,10 +188,15 @@ export class CCRepeatForever {
 
   step(deltaTime) {
     let remaining = this.action.step(deltaTime);
-    if (this.action.done) {
+    while (this.action.done) {
       this.action.start(this.target);
-      if (remaining > 0) {
-        remaining = this.action.step(remaining);
+      if (remaining <= 0) {
+        break;
+      }
+      const previousRemaining = remaining;
+      remaining = this.action.step(remaining);
+      if (remaining === previousRemaining) {
+        break;
       }
     }
     return remaining;

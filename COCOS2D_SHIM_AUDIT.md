@@ -35,8 +35,8 @@ The counts are useful for prioritization, but they are not percentages of render
 | Measure | Count | Percent |
 |---|---:|---:|
 | Distinct Cocos class/action symbols | 38 | 100% |
-| Equivalent or equivalent substitute | 23 | 60.5% |
-| Implemented with semantic differences | 9 | 23.7% |
+| Equivalent or equivalent substitute | 26 | 68.4% |
+| Implemented with semantic differences | 6 | 15.8% |
 | Missing and currently relevant | 1 | 2.6% |
 | Deferred/platform-only | 5 | 13.2% |
 | At least represented (`EQ` + `PARTIAL`) | 32 | 84.2% |
@@ -50,9 +50,9 @@ The gameplay model is substantially further along than the rendering-equivalence
 | Checklist | Cocos symbol | References | Web equivalent | Status | Notes |
 |---|---|---:|---|---|---|
 | [x] | `CCSprite` | 240 | `CCSprite` | `[PARTIAL]` | Image, anchor, frame, opacity and grayscale tint work. General RGB tint and Cocos blend state are missing. |
-| [ ] | `CCLabelTTF` | 124 | `CCLabelTTF` | `[PARTIAL]` | Intrinsic browser metrics only. Missing fixed dimensions, Cocos vertical alignment and CoreGraphics baseline equivalence. |
+| [x] | `CCLabelTTF` | 124 | `CCLabelTTF` | `[EQ]` | Supports measured ascent/descent, fixed dimensions, horizontal/vertical alignment, centered baselines, and fitted captions. |
 | [ ] | `CCNode` | 123 | `CCNode` | `[PARTIAL]` | Transform/tree/tag/action basics work. Negative-z visitation, lifecycle recursion and child-derived bounds differ. |
-| [ ] | `CCSequence` | 46 | `CCSequence` | `[PARTIAL]` | Ordering works; exact zero-duration boundary timing can wait until the next update. |
+| [x] | `CCSequence` | 46 | `CCSequence` | `[EQ]` | Consumes oversized frame deltas across every stage and completes zero-duration callbacks at exact boundaries. |
 | [ ] | `CCDirector` | 41 | `CCDirector` | `[PARTIAL]` | RAF, scene replacement, render and input conversion work. Scene stack/scheduling are direct substitutes. |
 | [x] | `CCMoveTo` | 29 | `CCMoveTo` | `[EQ]` | Includes nested transforms and easing wrappers. |
 | [x] | `CCLayerColor` | 18 | `CCLayerColor` | `[EQ]` | Solid color and opacity are supported. |
@@ -62,7 +62,7 @@ The gameplay model is substantially further along than the rendering-equivalence
 | [x] | `CCFadeIn` | 11 | `CCFadeTo(..., 255)` | `[EQ]` | Equivalent behavior through the generic fade action. |
 | [ ] | `CCUIViewWrapper` | 11 | Canvas text / browser PDF | `[PARTIAL]` | Native text scrolling/clipping semantics are not reproduced. |
 | [x] | `CCDelayTime` | 10 | `CCDelayTime` | `[EQ]` | Used by menus, cards and warp effects. |
-| [ ] | `CCRepeatForever` | 10 | `CCRepeatForever` | `[PARTIAL]` | Repeats work; only one restart is consumed per large frame delta. |
+| [x] | `CCRepeatForever` | 10 | `CCRepeatForever` | `[EQ]` | Consumes every complete repeat cycle represented by a large frame delta. |
 | [x] | `CCScaleTo` | 10 | `CCScaleTo` | `[EQ]` | Supports independent X/Y targets. |
 | [x] | `CCTextureCache` | 10 | `AssetCache` | `[EQ]` | Asynchronous preload and named lookup substitute active usage. |
 | [x] | `CCFadeOut` | 9 | `CCFadeTo(..., 0)` | `[EQ]` | Equivalent behavior through the generic fade action. |
@@ -152,7 +152,7 @@ These rows capture high-volume APIs that class counts alone hide.
 | [ ] | Log clips oddly near menu | The original `172x142` aperture at `(40,36)` is restored and no longer overlaps the hint/header. | Add drag/wheel scrolling while keeping bottom-follow mode. |
 | [ ] | Tech descriptions are misaligned | Wrapped descriptions now use the original `160px` columns, centers, and vertically centered anchor behavior. | BMFont symbol glyphs and exact line metrics remain the full-fidelity follow-up. |
 | [x] | Tech tray border/shadow cues clip | Fixed by whole-card culling plus original frame-over-tray z-order in current and mini HUDs. | Browser crops confirm the foreground lip and shadow overlay the card bottoms. |
-| [x] | Dice overlap Undo/Redo | Restored original `SpriteShip.scale = 0.8` while retaining the original rolling centers. | Browser validation confirms dice remain inside the authored rolling tray above Undo/Redo. |
+| [x] | Dice overlap Undo/Redo | Restored `SpriteShip.scale = 0.8`, original portrait rolling centers after legacy node compensation, and atlas-sized hit bounds. | A six-die browser crop confirms both rows remain inside the recessed tray above Undo/Redo. |
 | [ ] | Territory ownership tint absent | Region border/overlay assets and blend modes are not used. | Add sprite blend modes, then port `LayerRegion.updateLabels` border and ownership overlay behavior. |
 
 ## Major Functional Gaps

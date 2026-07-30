@@ -3,6 +3,7 @@ import test from "node:test";
 
 import { CCLayer, CCLabelTTF, CCNode, CCSprite, ccp } from "../js/cocos/core.js";
 import { CCCallFunc, CCDelayTime, CCEaseElasticOut, CCEaseSineIn, CCEaseSineInOut, CCEaseSineOut, CCFadeTo, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo, CCSequence, CCTintTo } from "../js/cocos/actions.js";
+import { frameDeltaSeconds } from "../js/cocos/director.js";
 
 function assertPoint(actual, expected) {
   assert.ok(Math.abs(actual.x - expected.x) < 0.000001, `${actual.x} != ${expected.x}`);
@@ -161,10 +162,46 @@ test("staged callbacks bridge sine-in and sine-out moves", () => {
     new CCEaseSineOut(new CCMoveTo(0.4, ccp(10, 0))),
   ));
   node.update(0.5);
-  assertPoint(node.position, ccp(2, 0));
-  node.update(0.001);
+  assertPoint(node.position, ccp(8, 0));
   assert.equal(callbackCount, 1);
+  node.update(0.001);
   assert.ok(node.position.x >= 8);
   node.update(0.399);
   assertPoint(node.position, ccp(10, 0));
+});
+
+test("large frame deltas complete chained visual actions exactly", () => {
+  const node = new CCNode();
+  node.opacity = 255;
+  let callbackCount = 0;
+  node.runAction(new CCSequence(
+    new CCMoveTo(0.4, ccp(10, 20)),
+    new CCScaleTo(0.3, 1.5),
+    new CCRotateBy(0.2, 180),
+    new CCFadeTo(0.3, 64),
+    new CCCallFunc(() => { callbackCount += 1; }),
+  ));
+
+  node.update(2);
+  assertPoint(node.position, ccp(10, 20));
+  assert.equal(node.scaleX, 1.5);
+  assert.equal(node.scaleY, 1.5);
+  assert.equal(node.rotation, 180);
+  assert.equal(node.opacity, 64);
+  assert.equal(callbackCount, 1);
+  assert.equal(node._actions.length, 0);
+});
+
+test("director preserves elapsed time from low-framerate updates", () => {
+  assert.equal(frameDeltaSeconds(1000, 1500), 0.5);
+  assert.equal(frameDeltaSeconds(1000, 3500), 2.5);
+  assert.equal(frameDeltaSeconds(3500, 3000), 0);
+});
+
+test("repeat-forever consumes every complete cycle in a large frame delta", () => {
+  const node = new CCNode();
+  node.runAction(new CCRepeatForever(new CCRotateBy(0.5, 90)));
+
+  node.update(2.25);
+  assert.equal(node.rotation, 405);
 });
