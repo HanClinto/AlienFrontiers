@@ -31,7 +31,8 @@ The main menu and game setup screens are functional, including two-to-four-playe
 configuration and multiple local human players. The first rules-driven gameplay slice
 supports rolling and selecting ships, using the Solar Converter, Maintenance Bay,
 Lunar Mine, and Shipyard, purchasing additional ships, and advancing a pass-and-play
-turn. The remaining facilities, original AI strategies,
+turn. AI seats automatically play through the ported rules using the original SimpleAI
+fallback priority. The remaining facilities, personality-specific ExhaustiveAI strategies,
 territories, alien tech cards, undo/redo, saving, audio, and endgame are still being ported.
 
 Run the static site locally from the repository root:

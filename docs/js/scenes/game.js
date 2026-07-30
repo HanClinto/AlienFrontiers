@@ -1,6 +1,7 @@
 import { AFLayer } from "../af-layer.js";
 import { CCLayerColor, CCLabelTTF, CCNode, CCSprite, ccp } from "../cocos/core.js";
-import { EventName } from "../game/constants.js";
+import { AIType, EventName } from "../game/constants.js";
+import { SimpleAI } from "../game/simple-ai.js";
 
 const PLAYER_DIE_PREFIXES = ["rd", "gn", "bl", "yl"];
 const PLAYER_COLONY_IMAGES = [
@@ -161,6 +162,7 @@ export class GameScene extends AFLayer {
     this.state = state;
     this.shipSprites = new Map();
     this.unsubscribe = [];
+    this.aiTimer = null;
     this.buildScene();
     this.refresh();
   }
@@ -228,9 +230,12 @@ export class GameScene extends AFLayer {
 
   onEnter() {
     this.unsubscribe.push(this.state.events.on(EventName.stateChanged, () => this.refresh()));
+    this.scheduleAI();
   }
 
   onExit() {
+    clearTimeout(this.aiTimer);
+    this.aiTimer = null;
     for (const unsubscribe of this.unsubscribe) {
       unsubscribe();
     }
@@ -289,17 +294,47 @@ export class GameScene extends AFLayer {
     for (const shipSprite of this.shipSprites.values()) {
       shipSprite.refresh();
     }
+    const isHumanTurn = player.aiType === AIType.human;
+    if (isHumanTurn && this.aiTimer) {
+      clearTimeout(this.aiTimer);
+      this.aiTimer = null;
+    }
     this.rollButton.visible = !player.initialRollDone;
-    this.setButtonIsEnabled(this.doneButton, this.state.canEndTurn);
+    this.setButtonIsEnabled(this.rollButton, isHumanTurn);
+    this.setButtonIsEnabled(this.doneButton, isHumanTurn && this.state.canEndTurn);
     this.playerLabel.setString("0");
     this.oreLabel.setString(player.ore);
     this.fuelLabel.setString(player.fuel);
     this.colonyLabel.setString(player.coloniesLeft);
     this.diceLabel.setString(player.activeShips.length);
-    this.hintLabel.setString(player.initialRollDone ? "SELECT DICE, THEN A FACILITY" : "ROLL YOUR SHIPS");
+    this.hintLabel.setString(isHumanTurn
+      ? player.initialRollDone ? "SELECT DICE, THEN A FACILITY" : "ROLL YOUR SHIPS"
+      : "AI TURN");
 
     this.updatePlayerIcon("colonyIcon", PLAYER_COLONY_IMAGES[player.colorIndex], ccp(254, 60));
     this.updatePlayerIcon("dieIcon", PLAYER_DIE_IMAGES[player.colorIndex], ccp(289, 60));
+    this.scheduleAI();
+  }
+
+  scheduleAI() {
+    if (
+      this.aiTimer
+      || this.state.currentPlayer.aiType === AIType.human
+      || this.director.scene !== this
+    ) {
+      return;
+    }
+    this.aiTimer = setTimeout(() => {
+      this.aiTimer = null;
+      if (
+        this.director.scene !== this
+        || this.state.currentPlayer.aiType === AIType.human
+      ) {
+        return;
+      }
+      SimpleAI.step(this.state);
+      this.scheduleAI();
+    }, 650);
   }
 
   updatePlayerIcon(propertyName, imageName, position) {

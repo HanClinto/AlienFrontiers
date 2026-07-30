@@ -1,4 +1,4 @@
-import { EventName } from "./constants.js";
+import { AIType, EventName } from "./constants.js";
 
 export class DockingBay {
   constructor(orbital, index) {
@@ -167,7 +167,7 @@ export class LunarMine extends Orbital {
   }
 
   isValidMoveFromPlayer(player, selectedShips) {
-    const comparisonPlayer = player.aiType === 0 ? player : null;
+    const comparisonPlayer = player.aiType === AIType.human ? player : null;
     const minimumValue = this.maxValueNotFromPlayer(comparisonPlayer);
     return selectedShips.length > 0
       && selectedShips.length <= this.numEmptyGroups

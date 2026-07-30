@@ -1,4 +1,4 @@
-import { EventName } from "./constants.js";
+import { AIType, EventName } from "./constants.js";
 import { EventBus } from "./event-bus.js";
 import { LunarMine, MaintenanceBay, Shipyard, SolarConverter } from "./orbital.js";
 import { Player } from "./player.js";
@@ -56,6 +56,7 @@ export class GameState {
       ship.player !== this.currentPlayer
       || ship.docked
       || !this.currentPlayer.initialRollDone
+      || this.currentPlayer.aiType !== AIType.human
     ) {
       return false;
     }

@@ -3,6 +3,7 @@ import test from "node:test";
 
 import { AIType } from "../js/game/constants.js";
 import { GameState } from "../js/game/game-state.js";
+import { SimpleAI } from "../js/game/simple-ai.js";
 
 function sequenceRandom(values) {
   let index = 0;
@@ -87,4 +88,31 @@ test("Shipyard requires a payable pair and activates the next ship", () => {
   assert.equal(player.activeShips[3].docked, true);
   assert.equal(player.activeShips[3].dock.orbital, state.maintenanceBay);
   assert.deepEqual(state.shipyard.docks.map((dock) => dock.dockedShip?.value), [3, 3]);
+});
+
+test("original SimpleAI fallback completes a turn with available facilities", () => {
+  const state = new GameState(
+    2,
+    [AIType.easy, AIType.human],
+    sequenceRandom([0, 0.2, 0.99]),
+  );
+
+  for (let step = 0; step < 8 && state.currentPlayerIndex === 0; step += 1) {
+    SimpleAI.step(state);
+  }
+
+  assert.equal(state.currentPlayerIndex, 1);
+  assert.equal(state.players[0].ore, 2);
+  assert.equal(state.players[0].fuel, 3);
+  assert.equal(state.players[0].numUndockedShips, 0);
+  assert.equal(state.currentPlayer.numUndockedShips, 3);
+});
+
+test("local input cannot select ships during an AI turn", () => {
+  const state = new GameState(2, [AIType.easy, AIType.human]);
+  const ship = state.currentPlayer.activeShips[0];
+  state.currentPlayer.initialRollDone = true;
+
+  assert.equal(state.toggleShipSelection(ship), false);
+  assert.equal(ship.isSelected, false);
 });
