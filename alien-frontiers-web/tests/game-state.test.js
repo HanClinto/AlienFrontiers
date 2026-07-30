@@ -611,3 +611,28 @@ test("existing facilities honor Heinlein, Van Vogt, Herbert, and Lem bonuses", (
   solarState.commitSelectedShips(solarState.solarConverter);
   assert.equal(solarPlayer.fuel, 2);
 });
+
+test("Data Crystal borrows a legal occupied bonus and moves Positron on discard", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const crystal = state.allTech.find((card) => card.type === TechCardType.dataCrystal);
+  player.cards = [];
+  player.addCard(crystal);
+  state.lemBadlands.addColony(1);
+  player.fuel = 1;
+  assert.equal(state.beginTechPower(crystal), true);
+  assert.equal(state.selectRegion(state.lemBadlands), true);
+  assert.equal(player.borrowingRegion, state.lemBadlands);
+  assert.equal(state.lemBadlands.playerHasBonus(player), true);
+  assert.equal(player.fuel, 0);
+  player.endTurnCleanup();
+  assert.equal(player.borrowingRegion, null);
+
+  crystal.tapped = false;
+  player.techsDiscarded = 0;
+  state.heinleinPlains.hasPositronField = true;
+  assert.equal(state.beginTechDiscard(crystal), true);
+  assert.equal(state.selectRegion(state.asimovCrater), true);
+  assert.equal(state.heinleinPlains.hasPositronField, false);
+  assert.equal(state.asimovCrater.hasPositronField, true);
+});

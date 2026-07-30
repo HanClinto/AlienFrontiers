@@ -70,6 +70,7 @@ export class TechCard {
       TechCardType.boosterPod,
       TechCardType.stasisBeam,
       TechCardType.gravityManipulator,
+      TechCardType.dataCrystal,
     ].includes(this.type);
   }
 
@@ -137,6 +138,34 @@ export class TechCard {
     return true;
   }
 
+  dataCrystalCost(region) {
+    return region.numColonies
+      - (this.state.pohlFoothills.playerHasBonus(this.owner) ? 1 : 0);
+  }
+
+  canUsePowerOnRegion(region) {
+    return this.type === TechCardType.dataCrystal
+      && this.owner === this.state.currentPlayer
+      && !this.tapped
+      && region
+      && region !== this.state.burroughsDesert
+      && !region.hasIsolationField
+      && region.numColonies > 0
+      && !region.playerHasBonus(this.owner)
+      && this.owner.fuel >= this.dataCrystalCost(region);
+  }
+
+  usePowerOnRegion(region) {
+    if (!this.canUsePowerOnRegion(region)) {
+      return false;
+    }
+    this.owner.fuel -= this.dataCrystalCost(region);
+    this.owner.borrowingRegion = region;
+    this.setTapped(true);
+    this.state.postEvent("resources-changed", this.owner);
+    return true;
+  }
+
   useDiscardOnRegion(region) {
     if (!this.canUseDiscard || !this.hasImplementedRegionDiscard || !region) {
       return false;
@@ -155,6 +184,11 @@ export class TechCard {
         candidate.hasRepulsorField = false;
       }
       region.hasRepulsorField = true;
+    } else if (this.type === TechCardType.dataCrystal) {
+      for (const candidate of this.state.regions) {
+        candidate.hasPositronField = false;
+      }
+      region.hasPositronField = true;
     }
     const owner = this.owner;
     owner.techsDiscarded += 1;

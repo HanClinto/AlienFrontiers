@@ -34,7 +34,10 @@ export class Region {
   }
 
   playerHasBonus(player) {
-    return !this.hasIsolationField && this.playerWithMajority === player.playerIndex;
+    return !this.hasIsolationField && (
+      this.playerWithMajority === player.playerIndex
+      || player.borrowingRegion === this
+    );
   }
 
   coloniesNeededForMajority(player) {

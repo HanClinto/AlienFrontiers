@@ -22,6 +22,7 @@ export class Player {
     this.oreToRaid = 0;
     this.fuelToRaid = 0;
     this.cardToRaid = null;
+    this.borrowingRegion = null;
     this.initialRollDone = false;
     this.allShips = Array.from({ length: 6 }, (_, index) => new Ship(this, index));
     this.activeShips = [];
@@ -349,6 +350,7 @@ export class Player {
     this.artifactCreditAvailable = 0;
     this.artifactShufflesAvailable = 0;
     this.selectedCard = null;
+    this.borrowingRegion = null;
     for (const card of this.cards) {
       card.setTapped(false);
     }

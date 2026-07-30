@@ -1128,6 +1128,8 @@ export class GameScene extends AFLayer {
     const isSelectingRegion = isHumanTurn && player.coloniesToLaunch > 0;
     const isSelectingFieldRegion = isHumanTurn
       && this.state.pendingTechAction === "discard";
+    const isSelectingPowerRegion = isHumanTurn
+      && this.state.pendingTechAction === "power-region";
     if (isHumanTurn && this.aiTimer) {
       clearTimeout(this.aiTimer);
       this.aiTimer = null;
@@ -1148,20 +1150,26 @@ export class GameScene extends AFLayer {
     this.hintLabel.setString(isHumanTurn
       ? player.isRaiding ? "SELECT UP TO 4 RESOURCES OR ONE TECH"
         : isSelectingFieldRegion ? "SELECT A REGION FOR THE FIELD EFFECT"
+        : isSelectingPowerRegion ? "SELECT AN OCCUPIED REGION BONUS TO BORROW"
         : this.state.pendingTechCard ? this.techPowerHint(this.state.pendingTechCard)
         : isSelectingRegion ? "SELECT A REGION FOR YOUR COLONY"
         : player.initialRollDone ? "SELECT DICE, THEN A FACILITY" : "ROLL YOUR SHIPS"
       : "AI TURN");
     this.currentTechTray.refresh(player);
     const selectedCard = player.selectedCard;
-    const canUseSelected = selectedCard
-      && selectedCard.canUsePower
-      && player.undockedShips.some((ship) => selectedCard.canUsePowerOnShip(ship));
+    const canUseSelected = selectedCard && (
+      selectedCard.type === "data-crystal"
+        ? this.state.regions.some((region) => selectedCard.canUsePowerOnRegion(region))
+        : selectedCard.canUsePower
+          && player.undockedShips.some((ship) => selectedCard.canUsePowerOnShip(ship))
+    );
     this.techUseButton.visible = Boolean(canUseSelected) && !this.state.pendingTechCard;
     this.techDiscardButton.visible = Boolean(
       selectedCard?.canUseDiscard && selectedCard.hasImplementedRegionDiscard,
     ) && !this.state.pendingTechCard;
-    this.regionHitArea.enabled = isSelectingRegion || isSelectingFieldRegion;
+    this.regionHitArea.enabled = isSelectingRegion
+      || isSelectingFieldRegion
+      || isSelectingPowerRegion;
     for (const regionLayer of this.regionLayers) {
       regionLayer.refresh();
     }

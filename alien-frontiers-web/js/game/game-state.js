@@ -133,18 +133,23 @@ export class GameState {
   }
 
   beginTechPower(card) {
-    const hasTarget = card.type === "gravity-manipulator"
+    const hasTarget = card.type === "data-crystal"
+      ? this.regions.some((region) => card.canUsePowerOnRegion(region))
+      : card.type === "gravity-manipulator"
       ? this.currentPlayer.undockedShips.some((shipToRaise) =>
         card.canUsePowerOnShip(shipToRaise)
         && this.currentPlayer.undockedShips.some((shipToLower) =>
           card.canLowerGravityShip(shipToLower, shipToRaise)))
       : this.currentPlayer.undockedShips.some((ship) => card.canUsePowerOnShip(ship));
-    if (!this.currentPlayer.cards.includes(card) || !card.canUsePower || !hasTarget) {
+    const canStart = card.type === "data-crystal"
+      ? card.owner === this.currentPlayer && !card.tapped
+      : card.canUsePower;
+    if (!this.currentPlayer.cards.includes(card) || !canStart || !hasTarget) {
       return false;
     }
     this.pendingTechCard = card;
     this.pendingTechTargets = [];
-    this.pendingTechAction = "power";
+    this.pendingTechAction = card.type === "data-crystal" ? "power-region" : "power";
     this.postEvent(EventName.techCardsChanged, card);
     return true;
   }
@@ -183,6 +188,17 @@ export class GameState {
   }
 
   selectRegion(region) {
+    if (this.pendingTechCard && this.pendingTechAction === "power-region") {
+      const card = this.pendingTechCard;
+      if (!card.usePowerOnRegion(region)) {
+        return false;
+      }
+      this.pendingTechCard = null;
+      this.pendingTechTargets = [];
+      this.pendingTechAction = null;
+      this.postEvent(EventName.techCardsChanged, region);
+      return true;
+    }
     if (this.pendingTechCard && this.pendingTechAction === "discard") {
       const card = this.pendingTechCard;
       if (!card.useDiscardOnRegion(region)) {
