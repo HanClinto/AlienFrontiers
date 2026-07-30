@@ -79,7 +79,10 @@ node --test alien-frontiers-web/tests/*.test.js
 ```
 
 The complete browser project lives in `alien-frontiers-web/`. GitHub Actions publishes
-that directory directly to GitHub Pages on pushes to `main`.
+that directory to GitHub Pages on pushes to `main`. Deployment stamps HTML, CSS, every
+JavaScript module import, and runtime asset URL with the commit SHA; a no-cache version
+manifest also reloads stale open builds under the latest commit-specific URL. Local
+development remains a direct static-file workflow with no build step.
 
 # Reference implementations
 

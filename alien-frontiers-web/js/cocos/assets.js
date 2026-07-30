@@ -1,8 +1,17 @@
 export class AssetCache {
-  constructor(baseUrl) {
+  constructor(baseUrl, version = "") {
     this.baseUrl = baseUrl;
+    this.version = version;
     this.images = new Map();
     this.textFiles = new Map();
+  }
+
+  url(fileName) {
+    const url = new URL(fileName, this.baseUrl);
+    if (this.version) {
+      url.searchParams.set("v", this.version);
+    }
+    return url;
   }
 
   async preloadImages(fileNames) {
@@ -18,7 +27,7 @@ export class AssetCache {
       image.addEventListener("load", () => resolve(image), { once: true });
       image.addEventListener("error", () => reject(new Error(`Unable to load ${fileName}`)), { once: true });
     });
-    image.src = new URL(fileName, this.baseUrl).href;
+    image.src = this.url(fileName).href;
     await loaded;
     this.images.set(fileName, image);
     return image;
@@ -36,7 +45,7 @@ export class AssetCache {
     if (this.textFiles.has(fileName)) {
       return this.textFiles.get(fileName);
     }
-    const response = await fetch(new URL(fileName, this.baseUrl));
+    const response = await fetch(this.url(fileName));
     if (!response.ok) {
       throw new Error(`Unable to load ${fileName}: ${response.status}`);
     }

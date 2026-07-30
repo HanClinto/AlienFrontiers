@@ -117,10 +117,38 @@ const MENU_IMAGES = [
   "tray_btn_redo_inactive.png",
 ];
 
+async function ensureCurrentDeployment(version) {
+  if (!version) {
+    return true;
+  }
+  try {
+    const manifestUrl = new URL("../version.json", import.meta.url);
+    manifestUrl.searchParams.set("check", Date.now());
+    const response = await fetch(manifestUrl, { cache: "no-store" });
+    if (!response.ok) {
+      return true;
+    }
+    const { version: latestVersion } = await response.json();
+    if (!latestVersion || latestVersion === version) {
+      return true;
+    }
+    const pageUrl = new URL(globalThis.location.href);
+    pageUrl.searchParams.set("build", latestVersion);
+    globalThis.location.replace(pageUrl);
+    return false;
+  } catch {
+    return true;
+  }
+}
+
 async function start() {
   const canvas = document.querySelector("#game-canvas");
   const loading = document.querySelector("#loading");
-  const assets = new AssetCache(new URL("../assets/", import.meta.url));
+  const version = new URL(import.meta.url).searchParams.get("v") ?? "";
+  if (!await ensureCurrentDeployment(version)) {
+    return;
+  }
+  const assets = new AssetCache(new URL("../assets/", import.meta.url), version);
 
   await Promise.all([
     assets.preloadImages(MENU_IMAGES),
@@ -134,7 +162,12 @@ async function start() {
   loading.hidden = true;
   canvas.hidden = false;
   const director = new CCDirector(canvas);
-  director.soundManager = new GameAudioManager(new URL("../assets/audio/", import.meta.url));
+  director.soundManager = new GameAudioManager(
+    new URL("../assets/audio/", import.meta.url),
+    undefined,
+    undefined,
+    version,
+  );
   director.persistence = new GamePersistence();
   director.frameCache = frameCache;
   globalThis.AlienFrontiers = Object.freeze({ director });

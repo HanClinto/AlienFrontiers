@@ -16,22 +16,32 @@ export class GameAudioManager {
     baseUrl,
     audioFactory = (source) => new Audio(source),
     storage = typeof localStorage === "undefined" ? null : localStorage,
+    version = "",
   ) {
     this.baseUrl = baseUrl;
     this.audioFactory = audioFactory;
     this.unlocked = false;
     this.unsubscribers = [];
     this.storage = storage;
+    this.version = version;
     this.musicEnabled = storage?.getItem("alien-frontiers:music") !== "off";
     this.sfxEnabled = storage?.getItem("alien-frontiers:sfx") !== "off";
-    this.music = this.audioFactory(new URL("music-background.mp3", baseUrl).href);
+    this.music = this.audioFactory(this.url("music-background.mp3"));
     this.music.loop = true;
     this.music.volume = this.musicEnabled ? 0.25 : 0;
     this.effects = new Map(Object.entries(EFFECT_FILES).map(([name, fileName]) => {
-      const audio = this.audioFactory(new URL(fileName, baseUrl).href);
+      const audio = this.audioFactory(this.url(fileName));
       audio.preload = "auto";
       return [name, audio];
     }));
+  }
+
+  url(fileName) {
+    const url = new URL(fileName, this.baseUrl);
+    if (this.version) {
+      url.searchParams.set("v", this.version);
+    }
+    return url.href;
   }
 
   unlock() {

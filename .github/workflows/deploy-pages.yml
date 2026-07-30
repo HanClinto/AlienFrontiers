@@ -25,10 +25,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Stamp static asset version
+        run: |
+          cp -R alien-frontiers-web _site
+          node scripts/stamp-static-version.mjs _site "${GITHUB_SHA}"
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: alien-frontiers-web
+          path: _site
 
   deploy:
     environment:

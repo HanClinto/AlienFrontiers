@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { colonistHubTrackPosition, gameLogPosition, miniHUDPosition, regionAtBoardPoint, rollingTrayPosition, SHIP_SPRITE_SCALE, SHIP_SPRITE_SIZE, techCardPosition, techDescriptionLayout, techTrayScrollBounds, techTrayVisibleRange } from "../js/scenes/game.js";
+import { colonistHubTrackPosition, gameLogPosition, lunarMineHitBounds, miniHUDPosition, regionAtBoardPoint, rollingTrayPosition, SHIP_SPRITE_SCALE, SHIP_SPRITE_SIZE, techCardPosition, techDescriptionLayout, techTrayScrollBounds, techTrayVisibleRange } from "../js/scenes/game.js";
 
 test("all six ships wrap into the original four-column tray", () => {
   assert.equal(SHIP_SPRITE_SCALE, 0.8);
@@ -9,14 +9,21 @@ test("all six ships wrap into the original four-column tray", () => {
   assert.deepEqual(
     Array.from({ length: 6 }, (_, shipIndex) => rollingTrayPosition(shipIndex)),
     [
-      { x: 587, y: 90 },
-      { x: 625, y: 90 },
-      { x: 663, y: 90 },
-      { x: 701, y: 90 },
-      { x: 587, y: 50 },
-      { x: 625, y: 50 },
+      { x: 587, y: 95 },
+      { x: 625, y: 95 },
+      { x: 663, y: 95 },
+      { x: 701, y: 95 },
+      { x: 587, y: 55 },
+      { x: 625, y: 55 },
     ],
   );
+});
+
+test("Lunar Mine hit bounds cover every rendered four-player dock", () => {
+  assert.deepEqual(lunarMineHitBounds(5), { x: -8, y: -5, width: 168, height: 70 });
+  const rightmostDockRightEdge = 18 + 4 + 4 * 28 + 26;
+  const bounds = lunarMineHitBounds(5);
+  assert.ok(bounds.x + bounds.width >= rightmostDockRightEdge);
 });
 
 test("planet touches map to the original radial regions", () => {

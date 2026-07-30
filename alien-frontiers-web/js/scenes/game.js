@@ -41,8 +41,16 @@ const REGION_LAYOUTS = Object.freeze([
 export function rollingTrayPosition(shipIndex) {
   return ccp(
     587 + (shipIndex % 4) * 38,
-    90 - Math.floor(shipIndex / 4) * 40,
+    95 - Math.floor(shipIndex / 4) * 40,
   );
+}
+
+export function lunarMineHitBounds(dockCount) {
+  const iconWidth = 18;
+  const dockWidth = 26;
+  const dockSpan = 28;
+  const rightEdge = iconWidth + 4 + (dockCount - 1) * dockSpan + dockWidth;
+  return { x: -8, y: -5, width: rightEdge + 8, height: 70 };
 }
 
 export function miniHUDPosition(numPlayers, playerIndex, expanded = false, frameWidth = 182) {
@@ -304,7 +312,12 @@ class MaintenanceBayLayer extends FacilityLayer {
 
 class LunarMineLayer extends FacilityLayer {
   constructor(scene) {
-    super(scene, scene.state.lunarMine, ccp(550, 325), { x: -8, y: -5, width: 130, height: 70 });
+    super(
+      scene,
+      scene.state.lunarMine,
+      ccp(550, 325),
+      lunarMineHitBounds(scene.state.lunarMine.docks.length),
+    );
     this.label("LUNAR MINE", ccp(0, 53));
     this.iconWidth = scene.assets.image("icon_gte.png").naturalWidth;
     this.sprite(scene.assets.image("icon_gte.png"), ccp(0, 12));

@@ -66,3 +66,21 @@ test("music and SFX preferences persist and suppress playback", () => {
   assert.equal(values.get("alien-frontiers:music"), "off");
   assert.equal(values.get("alien-frontiers:sfx"), "off");
 });
+
+test("audio resources inherit the deployment cache version", () => {
+  const manager = new GameAudioManager(
+    new URL("https://example.test/assets/audio/"),
+    (source) => new FakeAudio(source),
+    null,
+    "commit123",
+  );
+
+  assert.equal(
+    manager.music.source,
+    "https://example.test/assets/audio/music-background.mp3?v=commit123",
+  );
+  assert.equal(
+    manager.effects.get("roll").source,
+    "https://example.test/assets/audio/sfx-roll.mp3?v=commit123",
+  );
+});
