@@ -54,8 +54,9 @@ placement opens the ranked, blocking game-over results overlay. The lower HUD in
 HELP and an animated blocking menu with persistent music/SFX controls, Resume, and Quit.
 AI seats automatically play through the ported rules using the original SimpleAI fallback
 priority. Stable game states autosave locally, and unfinished games can be resumed from
-the main menu after navigation or reload. Remaining tech abilities, animation coverage,
-undo/redo, and personality-specific ExhaustiveAI strategies are still being ported.
+the main menu after navigation or reload. Original one-level undo/redo controls restore
+complete model snapshots without crossing roll or turn boundaries. Remaining tech abilities,
+animation coverage, and personality-specific ExhaustiveAI strategies are still being ported.
 
 Run the static site locally from the repository root:
 

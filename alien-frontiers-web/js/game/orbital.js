@@ -398,6 +398,7 @@ export class ColonistHub extends Orbital {
     if (!this.ableToLaunch(player)) {
       return false;
     }
+    this.state.createUndoPoint();
     player.ore -= 1;
     player.fuel -= 1;
     this.colonyPositions[player.playerIndex] -= 7;

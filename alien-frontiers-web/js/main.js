@@ -108,6 +108,12 @@ const MENU_IMAGES = [
   "tray_btn_done.png",
   "tray_btn_done_active.png",
   "tray_btn_done_inactive.png",
+  "tray_btn_undo.png",
+  "tray_btn_undo_active.png",
+  "tray_btn_undo_inactive.png",
+  "tray_btn_redo.png",
+  "tray_btn_redo_active.png",
+  "tray_btn_redo_inactive.png",
 ];
 
 async function start() {

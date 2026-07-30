@@ -235,6 +235,7 @@ export class Player {
     if (!this.canPurchaseCard(card)) {
       return false;
     }
+    this.state.clearUndoRedo();
     this.state.techDisplayDeck.splice(this.state.techDisplayDeck.indexOf(card), 1);
     this.addCard(card);
     this.state.fillTechDisplayPile();
@@ -259,6 +260,7 @@ export class Player {
     if (!this.canShuffleCards) {
       return false;
     }
+    this.state.clearUndoRedo();
     for (const card of this.state.techDisplayDeck) {
       this.state.discardTechCard(card);
     }
@@ -283,6 +285,7 @@ export class Player {
     if (!this.ableToMarketTrade) {
       return false;
     }
+    this.state.createUndoPoint();
     const price = this.effectiveMarketPrice;
     this.fuel -= price;
     this.ore += 1;

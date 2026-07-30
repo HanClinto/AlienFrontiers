@@ -80,6 +80,14 @@ export class GameState {
     this.gameLog.push(message);
   }
 
+  createUndoPoint() {
+    this.history?.createUndoPoint(this);
+  }
+
+  clearUndoRedo() {
+    this.history?.clear();
+  }
+
   checkGameOver() {
     if (this.gameOver) {
       return true;
@@ -134,6 +142,7 @@ export class GameState {
     if (!this.canPurchaseArtifactShip(player)) {
       return false;
     }
+    this.createUndoPoint();
     player.ore -= 1;
     player.fuel -= 1;
     this.artifactShip.player = player;
@@ -158,6 +167,7 @@ export class GameState {
   }
 
   rollCurrentPlayerShips() {
+    this.clearUndoRedo();
     return this.currentPlayer.rollShips(this.random);
   }
 
@@ -178,6 +188,10 @@ export class GameState {
     if (this.currentPlayer.selectedShips.some((ship) => ship.teleportRestriction === orbital)) {
       return false;
     }
+    if (!orbital.isValidMoveFromPlayer(this.currentPlayer, this.currentPlayer.selectedShips)) {
+      return false;
+    }
+    this.createUndoPoint();
     return orbital.commitShipsFromPlayer(this.currentPlayer, this.currentPlayer.selectedShips);
   }
 
@@ -228,6 +242,10 @@ export class GameState {
     }
     const card = this.pendingTechCard;
     if (this.pendingTechAction === "discard-ship") {
+      if (!card.canDiscardOnShip(ship)) {
+        return false;
+      }
+      this.createUndoPoint();
       if (!card.useDiscardOnShip(ship)) {
         return false;
       }
@@ -264,6 +282,10 @@ export class GameState {
         this.postEvent(EventName.techCardsChanged, card);
         return true;
       }
+      if (!card.canLowerGravityShip(ship, this.pendingTechTargets[0])) {
+        return false;
+      }
+      this.createUndoPoint();
       if (!card.useGravityPower(this.pendingTechTargets[0], ship)) {
         return false;
       }
@@ -271,6 +293,10 @@ export class GameState {
       this.postEvent(EventName.techCardsChanged, card);
       return true;
     }
+    if (!card.canUsePowerOnShip(ship)) {
+      return false;
+    }
+    this.createUndoPoint();
     if (!card.usePowerOnShip(ship)) {
       return false;
     }
@@ -285,6 +311,18 @@ export class GameState {
       && this.pendingTechAction === "discard-colony-destination"
     ) {
       const card = this.pendingTechCard;
+      const selection = this.pendingColonyTargets[0];
+      if (
+        card.type !== "orbital-teleporter"
+        || !card.canUseDiscard
+        || !selection
+        || !region
+        || selection.region === region
+        || selection.region.coloniesForPlayer(selection.player.playerIndex) <= 0
+      ) {
+        return false;
+      }
+      this.createUndoPoint();
       if (!card.useTeleporterColonyDiscard(this.pendingColonyTargets[0], region)) {
         return false;
       }
@@ -294,6 +332,10 @@ export class GameState {
     }
     if (this.pendingTechCard && this.pendingTechAction === "power-region") {
       const card = this.pendingTechCard;
+      if (!card.canUsePowerOnRegion(region)) {
+        return false;
+      }
+      this.createUndoPoint();
       if (!card.usePowerOnRegion(region)) {
         return false;
       }
@@ -303,6 +345,10 @@ export class GameState {
     }
     if (this.pendingTechCard && this.pendingTechAction === "discard") {
       const card = this.pendingTechCard;
+      if (!card.canUseDiscard || !card.hasImplementedRegionDiscard || !region) {
+        return false;
+      }
+      this.createUndoPoint();
       if (!card.useDiscardOnRegion(region)) {
         return false;
       }
@@ -317,6 +363,7 @@ export class GameState {
     ) {
       return false;
     }
+    this.createUndoPoint();
     return region.launchColony(this.currentPlayerIndex);
   }
 
@@ -343,6 +390,16 @@ export class GameState {
   }
 
   confirmPendingTechPower() {
+    if (
+      this.pendingTechAction !== "power-multi-ship"
+      || !this.pendingTechCard
+      || this.pendingTechTargets.length === 0
+      || this.pendingTechTargets.some((ship, index) =>
+        !this.pendingTechCard.canTargetPlasmaShip(ship, this.pendingTechTargets.slice(0, index)))
+    ) {
+      return false;
+    }
+    this.createUndoPoint();
     if (
       this.pendingTechAction !== "power-multi-ship"
       || !this.pendingTechCard?.usePlasmaPower(this.pendingTechTargets)
@@ -382,6 +439,16 @@ export class GameState {
         return true;
       }
       const card = this.pendingTechCard;
+      const [first, second] = this.pendingColonyTargets;
+      if (
+        !card.canUseDiscard
+        || first.region === second.region
+        || first.region.coloniesForPlayer(first.player.playerIndex) <= 0
+        || second.region.coloniesForPlayer(second.player.playerIndex) <= 0
+      ) {
+        return false;
+      }
+      this.createUndoPoint();
       if (!card.usePolarityColonyDiscard(...this.pendingColonyTargets)) {
         return false;
       }
@@ -404,6 +471,7 @@ export class GameState {
       return false;
     }
     this.currentPlayer.endTurnCleanup();
+    this.clearUndoRedo();
     this.pendingTechCard = null;
     this.pendingTechTargets = [];
     this.pendingColonyTargets = [];

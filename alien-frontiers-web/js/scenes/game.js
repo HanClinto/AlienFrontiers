@@ -2,6 +2,7 @@ import { AFLayer } from "../af-layer.js";
 import { CCDelayTime, CCEaseElasticInOut, CCEaseElasticOut, CCEaseSineInOut, CCFadeTo, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo, CCSequence } from "../cocos/actions.js?v=4";
 import { CCLayerColor, CCLabelTTF, CCNode, CCSprite, ccp } from "../cocos/core.js";
 import { AIType, EventName } from "../game/constants.js";
+import { GameHistory } from "../game/game-history.js";
 import { SimpleAI } from "../game/simple-ai.js";
 
 const PLAYER_DIE_PREFIXES = ["rd", "gn", "bl", "yl"];
@@ -1192,6 +1193,7 @@ export class GameScene extends AFLayer {
     super(assets);
     this.director = director;
     this.state = state;
+    this.state.history ??= new GameHistory();
     this.shipSprites = new Map();
     this.unsubscribe = [];
     this.aiTimer = null;
@@ -1281,6 +1283,24 @@ export class GameScene extends AFLayer {
     );
     this.doneButton.setPosition(ccp(305, -75));
     this.uiFrame.addChild(this.doneButton, 2);
+
+    this.undoButton = this.buttonFromImage(
+      "tray_btn_undo.png",
+      "tray_btn_undo_active.png",
+      () => this.undo(),
+      { inactiveImage: "tray_btn_undo_inactive.png" },
+    );
+    this.undoButton.setPosition(ccp(199, -75));
+    this.uiFrame.addChild(this.undoButton, 2);
+
+    this.redoButton = this.buttonFromImage(
+      "tray_btn_redo.png",
+      "tray_btn_redo_active.png",
+      () => this.redo(),
+      { inactiveImage: "tray_btn_redo_inactive.png" },
+    );
+    this.redoButton.setPosition(ccp(242, -75));
+    this.uiFrame.addChild(this.redoButton, 2);
 
     this.raidConfirmButton = this.buttonFromImage(
       "ondark_button.png",
@@ -1432,6 +1452,20 @@ export class GameScene extends AFLayer {
     this.state.gotoNextPlayer();
   }
 
+  undo() {
+    const restored = this.state.history.undo(this.state);
+    if (restored) {
+      this.director.replaceScene(new GameScene(this.director, this.assets, restored));
+    }
+  }
+
+  redo() {
+    const restored = this.state.history.redo(this.state);
+    if (restored) {
+      this.director.replaceScene(new GameScene(this.director, this.assets, restored));
+    }
+  }
+
   confirmSelection() {
     if (this.state.currentPlayer.isRaiding) {
       this.state.currentPlayer.finishRaid();
@@ -1483,6 +1517,8 @@ export class GameScene extends AFLayer {
     this.rollButton.visible = !player.initialRollDone;
     this.setButtonIsEnabled(this.rollButton, isHumanTurn);
     this.setButtonIsEnabled(this.doneButton, isHumanTurn && this.state.canEndTurn);
+    this.setButtonIsEnabled(this.undoButton, isHumanTurn && this.state.history.canUndo);
+    this.setButtonIsEnabled(this.redoButton, isHumanTurn && this.state.history.canRedo);
     this.raidConfirmButton.visible = player.isRaiding || isSelectingPlasma;
     this.setButtonIsEnabled(
       this.raidConfirmButton,
