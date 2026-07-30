@@ -120,6 +120,9 @@ export class GameState {
   }
 
   commitSelectedShips(orbital) {
+    if (this.currentPlayer.selectedShips.some((ship) => ship.teleportRestriction === orbital)) {
+      return false;
+    }
     return orbital.commitShipsFromPlayer(this.currentPlayer, this.currentPlayer.selectedShips);
   }
 
@@ -133,14 +136,17 @@ export class GameState {
   }
 
   beginTechPower(card) {
+    const candidateShips = card.type === "orbital-teleporter"
+      ? this.currentPlayer.activeShips
+      : this.currentPlayer.undockedShips;
     const hasTarget = card.type === "data-crystal"
       ? this.regions.some((region) => card.canUsePowerOnRegion(region))
       : card.type === "gravity-manipulator"
-      ? this.currentPlayer.undockedShips.some((shipToRaise) =>
+      ? candidateShips.some((shipToRaise) =>
         card.canUsePowerOnShip(shipToRaise)
-        && this.currentPlayer.undockedShips.some((shipToLower) =>
+        && candidateShips.some((shipToLower) =>
           card.canLowerGravityShip(shipToLower, shipToRaise)))
-      : this.currentPlayer.undockedShips.some((ship) => card.canUsePowerOnShip(ship));
+      : candidateShips.some((ship) => card.canUsePowerOnShip(ship));
     const canStart = card.type === "data-crystal"
       ? card.owner === this.currentPlayer && !card.tapped
       : card.canUsePower;

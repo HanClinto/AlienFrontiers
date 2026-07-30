@@ -75,7 +75,15 @@ export class TechCard {
   }
 
   canUsePowerOnShip(ship) {
-    if (!this.canUsePower || !ship || ship.player !== this.owner || ship.docked) {
+    if (!this.canUsePower || !ship || ship.player !== this.owner) {
+      return false;
+    }
+    if (this.type === TechCardType.orbitalTeleporter) {
+      return ship.docked
+        && ship.dock.orbital !== this.state.maintenanceBay
+        && ship.dock.orbital !== this.state.terraformingStation;
+    }
+    if (ship.docked || ship.teleportRestriction) {
       return false;
     }
     if (this.type === TechCardType.boosterPod) {
@@ -104,14 +112,19 @@ export class TechCard {
       return false;
     }
     this.owner.fuel -= this.adjustedFuelCost;
-    if (this.type === TechCardType.boosterPod) {
+    if (this.type === TechCardType.orbitalTeleporter) {
+      ship.teleportRestriction = ship.dock.orbital;
+      ship.undock();
+    } else if (this.type === TechCardType.boosterPod) {
       ship.value += 1;
     } else if (this.type === TechCardType.stasisBeam) {
       ship.value -= 1;
     } else if (this.type === TechCardType.polarityDevice) {
       ship.value = 7 - ship.value;
     }
-    ship.rollIndex += 1;
+    if (this.type !== TechCardType.orbitalTeleporter) {
+      ship.rollIndex += 1;
+    }
     this.setTapped(true);
     this.state.postEvent("resources-changed", this.owner);
     this.state.postEvent("ship-changed", ship);

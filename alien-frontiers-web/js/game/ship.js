@@ -10,6 +10,7 @@ export class Ship {
     this.dock = null;
     this.isSelected = false;
     this.active = false;
+    this.teleportRestriction = null;
   }
 
   get docked() {

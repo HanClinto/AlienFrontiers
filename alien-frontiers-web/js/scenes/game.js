@@ -1157,11 +1157,14 @@ export class GameScene extends AFLayer {
       : "AI TURN");
     this.currentTechTray.refresh(player);
     const selectedCard = player.selectedCard;
+    const candidateShips = selectedCard?.type === "orbital-teleporter"
+      ? player.activeShips
+      : player.undockedShips;
     const canUseSelected = selectedCard && (
       selectedCard.type === "data-crystal"
         ? this.state.regions.some((region) => selectedCard.canUsePowerOnRegion(region))
         : selectedCard.canUsePower
-          && player.undockedShips.some((ship) => selectedCard.canUsePowerOnShip(ship))
+          && candidateShips.some((ship) => selectedCard.canUsePowerOnShip(ship))
     );
     this.techUseButton.visible = Boolean(canUseSelected) && !this.state.pendingTechCard;
     this.techDiscardButton.visible = Boolean(
@@ -1197,6 +1200,9 @@ export class GameScene extends AFLayer {
     }
     if (card.type === "stasis-beam") {
       return "SELECT AN UNDOCKED DIE TO DECREASE";
+    }
+    if (card.type === "orbital-teleporter") {
+      return "SELECT A DOCKED DIE TO TELEPORT";
     }
     return "SELECT AN UNDOCKED DIE TO FLIP";
   }

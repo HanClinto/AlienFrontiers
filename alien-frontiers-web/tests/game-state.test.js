@@ -636,3 +636,38 @@ test("Data Crystal borrows a legal occupied bonus and moves Positron on discard"
   assert.equal(state.heinleinPlains.hasPositronField, false);
   assert.equal(state.asimovCrater.hasPositronField, true);
 });
+
+test("Orbital Teleporter undocks a ship and forbids its origin until cleanup", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const teleporter = state.allTech.find((card) => card.type === TechCardType.orbitalTeleporter);
+  player.cards = [];
+  player.addCard(teleporter);
+  player.fuel = 2;
+  player.initialRollDone = true;
+  const ship = player.activeShips[0];
+  ship.value = 4;
+  state.solarConverter.dockShip(ship);
+
+  assert.equal(state.beginTechPower(teleporter), true);
+  assert.equal(state.usePendingTechOnShip(ship), true);
+  assert.equal(ship.docked, false);
+  assert.equal(ship.teleportRestriction, state.solarConverter);
+  assert.equal(player.fuel, 0);
+  assert.equal(teleporter.tapped, true);
+  state.toggleShipSelection(ship);
+  assert.equal(state.commitSelectedShips(state.solarConverter), false);
+  assert.equal(state.commitSelectedShips(state.maintenanceBay), true);
+  player.endTurnCleanup();
+  assert.equal(ship.teleportRestriction, null);
+});
+
+test("Orbital Teleporter cannot target Maintenance or Terraforming ships", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const teleporter = state.allTech.find((card) => card.type === TechCardType.orbitalTeleporter);
+  player.cards = [];
+  player.addCard(teleporter);
+  player.fuel = 2;
+  assert.equal(state.beginTechPower(teleporter), false);
+});

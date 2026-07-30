@@ -356,6 +356,7 @@ export class Player {
     }
     for (const ship of this.allShips) {
       ship.isSelected = false;
+      ship.teleportRestriction = null;
     }
     if (this.ore + this.fuel > 8) {
       this.ore = Math.min(this.ore, 8);
