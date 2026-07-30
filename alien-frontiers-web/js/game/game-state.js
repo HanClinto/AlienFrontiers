@@ -355,6 +355,7 @@ export class GameState {
         || !selection
         || !region
         || selection.region === region
+        || selection.region.hasRepulsorField
         || selection.region.coloniesForPlayer(selection.player.playerIndex) <= 0
       ) {
         return false;
@@ -452,6 +453,7 @@ export class GameState {
   selectPlacedColony(region, player) {
     if (
       this.pendingTechAction !== "discard-colony"
+      || region.hasRepulsorField
       || region.coloniesForPlayer(player.playerIndex) <= 0
     ) {
       return false;

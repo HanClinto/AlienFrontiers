@@ -93,7 +93,13 @@ export class TechCard {
         && ship.dock.orbital !== this.state.maintenanceBay
         && ship.dock.orbital !== this.state.terraformingStation;
     }
-    if (ship.docked || ship.teleportRestriction) {
+    if (ship.docked) {
+      return false;
+    }
+    if (
+      ship.teleportRestriction
+      && this.type !== TechCardType.polarityDevice
+    ) {
       return false;
     }
     if (this.type === TechCardType.boosterPod) {
@@ -114,6 +120,7 @@ export class TechCard {
       && ship !== shipToRaise
       && ship.player === this.owner
       && !ship.docked
+      && !ship.teleportRestriction
       && ship.value > 1;
   }
 
@@ -274,6 +281,7 @@ export class TechCard {
       || !selection
       || !destination
       || selection.region === destination
+      || selection.region.hasRepulsorField
       || selection.region.coloniesForPlayer(selection.player.playerIndex) <= 0
     ) {
       return false;
@@ -293,6 +301,8 @@ export class TechCard {
       || !first
       || !second
       || first.region === second.region
+      || first.region.hasRepulsorField
+      || second.region.hasRepulsorField
       || first.region.coloniesForPlayer(first.player.playerIndex) <= 0
       || second.region.coloniesForPlayer(second.player.playerIndex) <= 0
     ) {
@@ -310,6 +320,9 @@ export class TechCard {
 
   useDiscardOnRegion(region) {
     if (!this.canUseDiscard || !this.hasImplementedRegionDiscard || !region) {
+      return false;
+    }
+    if (this.type === TechCardType.stasisBeam && region.hasRepulsorField) {
       return false;
     }
     if (this.type === TechCardType.boosterPod) {
@@ -332,6 +345,7 @@ export class TechCard {
       }
       region.hasPositronField = true;
     }
+    this.state.checkArtifactShipControl();
     const owner = this.owner;
     owner.techsDiscarded += 1;
     owner.removeCard(this);

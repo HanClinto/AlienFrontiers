@@ -570,6 +570,26 @@ test("Gravity Manipulator raises then lowers two different legal ships", () => {
   assert.equal(state.pendingTechCard, null);
 });
 
+test("teleported dice follow original Gravity and Polarity target rules", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const gravity = state.allTech.find((card) => card.type === TechCardType.gravityManipulator);
+  const polarity = state.allTech.find((card) => card.type === TechCardType.polarityDevice);
+  const ship = player.activeShips[0];
+  player.cards = [];
+  player.addCard(gravity);
+  player.addCard(polarity);
+  player.fuel = 4;
+  ship.value = 3;
+  ship.teleportRestriction = state.solarConverter;
+
+  assert.equal(gravity.canUsePowerOnShip(ship), false);
+  assert.equal(gravity.canLowerGravityShip(ship, player.activeShips[1]), false);
+  assert.equal(polarity.canUsePowerOnShip(ship), true);
+  assert.equal(polarity.usePowerOnShip(ship), true);
+  assert.equal(ship.value, 4);
+});
+
 test("Booster removes fields while Stasis and Gravity move their fields", () => {
   const cases = [
     [TechCardType.stasisBeam, "hasIsolationField"],
@@ -733,6 +753,20 @@ test("Data Crystal borrows a legal occupied bonus and moves Positron on discard"
   assert.equal(state.asimovCrater.hasPositronField, true);
 });
 
+test("Stasis discard cannot place Isolation on the Repulsor region", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const stasis = state.allTech.find((card) => card.type === TechCardType.stasisBeam);
+  player.cards = [];
+  player.addCard(stasis);
+  state.heinleinPlains.hasRepulsorField = true;
+
+  assert.equal(state.beginTechDiscard(stasis), true);
+  assert.equal(state.selectRegion(state.heinleinPlains), false);
+  assert.equal(state.heinleinPlains.hasIsolationField, false);
+  assert.equal(player.cards.includes(stasis), true);
+});
+
 test("Orbital Teleporter undocks a ship and forbids its origin until cleanup", () => {
   const state = new GameState(2, [AIType.human, AIType.human]);
   const player = state.currentPlayer;
@@ -852,6 +886,30 @@ test("Orbital Teleporter discard moves a selected colony to another region", () 
   assert.equal(state.techDiscardDeck.includes(teleporter), true);
 });
 
+test("colony-moving discards cannot select a Repulsor source region", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const teleporter = state.allTech.find((card) => card.type === TechCardType.orbitalTeleporter);
+  const polarity = state.allTech.find((card) => card.type === TechCardType.polarityDevice);
+  player.cards = [];
+  player.addCard(teleporter);
+  player.addCard(polarity);
+  state.heinleinPlains.addColony(1);
+  state.lemBadlands.addColony(0);
+  state.heinleinPlains.hasRepulsorField = true;
+
+  assert.equal(state.beginTechDiscard(teleporter), true);
+  assert.equal(state.selectPlacedColony(state.heinleinPlains, state.players[1]), false);
+  assert.equal(teleporter.useTeleporterColonyDiscard(
+    { region: state.heinleinPlains, player: state.players[1] },
+    state.lemBadlands,
+  ), false);
+  assert.equal(polarity.usePolarityColonyDiscard(
+    { region: state.heinleinPlains, player: state.players[1] },
+    { region: state.lemBadlands, player },
+  ), false);
+});
+
 test("Polarity discard swaps two selected colonies between regions", () => {
   const state = new GameState(2, [AIType.human, AIType.human]);
   const player = state.currentPlayer;
@@ -902,6 +960,23 @@ test("artifact ship is lost immediately when Burroughs control is lost", () => {
   assert.equal(state.artifactShip.active, false);
   assert.equal(state.artifactShip.player, null);
   assert.equal(owner.activeShips.includes(state.artifactShip), false);
+});
+
+test("artifact ship is lost immediately when Burroughs is isolated", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const owner = state.currentPlayer;
+  const stasis = state.allTech.find((card) => card.type === TechCardType.stasisBeam);
+  state.burroughsDesert.addColony(0);
+  owner.ore = 1;
+  owner.fuel = 1;
+  state.purchaseArtifactShip(owner);
+  owner.cards = [];
+  owner.addCard(stasis);
+
+  assert.equal(stasis.useDiscardOnRegion(state.burroughsDesert), true);
+  assert.equal(state.burroughsDesert.hasIsolationField, true);
+  assert.equal(state.artifactShip.active, false);
+  assert.equal(state.artifactShip.player, null);
 });
 
 test("game ends when a player's final pending colony lands", () => {
