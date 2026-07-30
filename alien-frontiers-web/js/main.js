@@ -41,6 +41,8 @@ const MENU_IMAGES = [
   "hud_die_red.png",
   "hud_die_yellow.png",
   "hud_port_player_tab_large.png",
+  "hud_port_player_tab_full.png",
+  "hud_port_corner_tint_mini.png",
   "icon_gte.png",
   "icons_lm.png",
   "icons_om.png",

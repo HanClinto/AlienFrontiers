@@ -22,6 +22,7 @@ const PLAYER_COLONY_IMAGES_FULL = [
   "colony_blue.png",
   "colony_yellow.png",
 ];
+const PLAYER_COLORS = ["#ff343e", "#40ff60", "#45caff", "#ffff60"];
 const REGION_LAYOUTS = Object.freeze([
   { property: "herbertValley", position: [232, 635], title: "Herbert Valley", bonus: "bonus_herbert.png" },
   { property: "lemBadlands", position: [311, 738], title: "Lem Badlands", bonus: "bonus_lem.png" },
@@ -38,6 +39,25 @@ export function rollingTrayPosition(shipIndex) {
     600 + (shipIndex % 4) * 38,
     77 - Math.floor(shipIndex / 4) * 40,
   );
+}
+
+export function miniHUDPosition(numPlayers, playerIndex, expanded = false, frameWidth = 182) {
+  return ccp(
+    384 - (numPlayers * 0.5 - playerIndex - 0.5) * (frameWidth + 5),
+    1024 + (expanded ? 0 : 380),
+  );
+}
+
+function tintedImage(image, color) {
+  const canvas = document.createElement("canvas");
+  canvas.width = image.naturalWidth;
+  canvas.height = image.naturalHeight;
+  const context = canvas.getContext("2d");
+  context.drawImage(image, 0, 0);
+  context.globalCompositeOperation = "source-in";
+  context.fillStyle = color;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  return canvas;
 }
 
 export function regionAtBoardPoint(state, point) {
@@ -275,6 +295,80 @@ class RegionLayer extends CCNode {
   }
 }
 
+class PlayerMiniHUD extends CCNode {
+  constructor(scene, player) {
+    super();
+    this.scene = scene;
+    this.player = player;
+    this.expanded = false;
+
+    this.frame = new CCSprite(scene.assets.image("hud_port_player_tab_full.png"));
+    this.frame.setAnchorPoint(ccp(0.5, 1));
+    this.addChild(this.frame, 0);
+
+    const cornerImage = tintedImage(
+      scene.assets.image("hud_port_corner_tint_mini.png"),
+      PLAYER_COLORS[player.colorIndex],
+    );
+    this.corner = new CCSprite(cornerImage);
+    this.corner.setPosition(ccp(66, -413));
+    this.addChild(this.corner, 1);
+
+    this.scoreLabel = this.label("0", 42, ccp(64, -409), "#fff");
+    this.oreLabel = this.label("0", 22, ccp(-75, -430), "#000");
+    this.fuelLabel = this.label("0", 22, ccp(-40, -430), "#000");
+    this.colonyLabel = this.label("0", 22, ccp(-5, -430), "#000");
+    this.diceLabel = this.label("0", 22, ccp(30, -430), "#000");
+
+    this.colonyIcon = new CCSprite(scene.assets.image(PLAYER_COLONY_IMAGES[player.colorIndex]));
+    this.colonyIcon.setPosition(ccp(-5, -406));
+    this.addChild(this.colonyIcon, 2);
+    this.dieIcon = new CCSprite(scene.assets.image(PLAYER_DIE_IMAGES[player.colorIndex]));
+    this.dieIcon.setPosition(ccp(30, -406));
+    this.addChild(this.dieIcon, 2);
+
+    this.tabHitArea = new CCNode();
+    this.tabHitArea.contentSize = { width: 182, height: 65 };
+    this.tabHitArea.setPosition(ccp(-91, -443));
+    this.tabHitArea.interactive = true;
+    this.tabHitArea.enabled = true;
+    this.tabHitArea.touchPriority = -64;
+    this.tabHitArea.activate = () => this.toggleExpanded();
+    this.addChild(this.tabHitArea, 3);
+    this.refresh();
+  }
+
+  label(text, fontSize, position, color) {
+    const label = new CCLabelTTF(text, "DIN-Black", fontSize, color);
+    label.setPosition(position);
+    this.addChild(label, 2);
+    return label;
+  }
+
+  toggleExpanded() {
+    this.expanded = !this.expanded;
+    this.updatePosition();
+  }
+
+  updatePosition() {
+    this.setPosition(miniHUDPosition(
+      this.scene.state.numPlayers,
+      this.player.playerIndex,
+      this.expanded,
+      this.frame.contentSize.width,
+    ));
+  }
+
+  refresh() {
+    this.scoreLabel.setString(this.player.vps);
+    this.oreLabel.setString(this.player.ore);
+    this.fuelLabel.setString(this.player.fuel);
+    this.colonyLabel.setString(this.player.coloniesLeft);
+    this.diceLabel.setString(this.player.activeShips.length);
+    this.updatePosition();
+  }
+}
+
 class ShipSprite extends CCNode {
   constructor(scene, ship) {
     super();
@@ -357,6 +451,11 @@ export class GameScene extends AFLayer {
     this.addChild(this.regionHitArea, 3);
 
     this.buildHUD();
+    this.playerMiniHUDs = this.state.players.map((player) => {
+      const miniHUD = new PlayerMiniHUD(this, player);
+      this.addChild(miniHUD, 9);
+      return miniHUD;
+    });
     this.ensureShipSprites();
   }
 
@@ -497,6 +596,9 @@ export class GameScene extends AFLayer {
     this.regionHitArea.enabled = isSelectingRegion;
     for (const regionLayer of this.regionLayers) {
       regionLayer.refresh();
+    }
+    for (const miniHUD of this.playerMiniHUDs) {
+      miniHUD.refresh();
     }
     this.marketLayer.refresh();
 
