@@ -1,0 +1,1 @@
+A reference implementation of Alien Frontiers for iPad, written in Objective-C and Cocos2D
