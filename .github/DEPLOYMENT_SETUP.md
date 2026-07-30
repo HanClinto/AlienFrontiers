@@ -25,7 +25,7 @@ As the repository administrator, you need to complete the following one-time set
 The deployment workflow (`.github/workflows/deploy-pages.yml`) will:
 
 1. Trigger automatically on every push to the `main` branch
-2. Upload the static `docs/` directory without a build step
+2. Upload the static `alien-frontiers-web/` directory without a build step
 3. Deploy that artifact to GitHub Pages
 
 ## After Setup

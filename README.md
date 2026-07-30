@@ -38,16 +38,17 @@ territories, alien tech cards, undo/redo, saving, audio, and endgame are still b
 Run the static site locally from the repository root:
 
 ```sh
-python3 -m http.server 4173 --directory docs
+python3 -m http.server 4173 --directory alien-frontiers-web
 ```
 
 Then open `http://localhost:4173/`. Run the dependency-free tests with:
 
 ```sh
-node --test docs/tests/*.test.js
+node --test alien-frontiers-web/tests/*.test.js
 ```
 
-GitHub Actions publishes `docs/` directly to GitHub Pages on pushes to `main`.
+The complete browser project lives in `alien-frontiers-web/`. GitHub Actions publishes
+that directory directly to GitHub Pages on pushes to `main`.
 
 # Reference implementations
 
