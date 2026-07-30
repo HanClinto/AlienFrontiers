@@ -62,8 +62,9 @@ AI seats automatically play through the ported rules using a reliable heuristic 
 driver. Cadet, Spacer, Admiral, and Pirate apply the original aggression, decision-noise,
 and human-prejudice profiles to raid and colony choices; they also use earned Artifact
 credit and favorable Market trades. Stable game states autosave locally, and unfinished
-games can be resumed from the main menu after navigation or reload. Original one-level undo/redo controls restore
-complete model snapshots without crossing roll or turn boundaries. Exhaustive state search,
+games can be resumed from the main menu after navigation or reload. Original recursive
+undo/redo controls restore complete model snapshots without crossing roll or turn boundaries,
+and their history survives Resume. Exhaustive state search,
 full AI tech planning, and additional animation coverage are still being ported.
 
 Run the static site locally from the repository root:

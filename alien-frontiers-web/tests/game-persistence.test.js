@@ -7,6 +7,7 @@ import {
   GamePersistence,
   restoreGameSnapshot,
 } from "../js/game/game-persistence.js";
+import { GameHistory } from "../js/game/game-history.js";
 import { GameState } from "../js/game/game-state.js";
 
 function memoryStorage() {
@@ -64,4 +65,68 @@ test("autosaves state changes and clears completed games", async () => {
   state.postEvent(EventName.gameOver, state);
   await Promise.resolve();
   assert.equal(persistence.load(), null);
+});
+
+test("save and resume preserve recursive undo and redo history", () => {
+  const storage = memoryStorage();
+  const persistence = new GamePersistence(storage);
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  state.history = new GameHistory();
+  const player = state.currentPlayer;
+  player.initialRollDone = true;
+  player.marketPrice = 1;
+  player.fuel = 3;
+  assert.equal(player.doMarketTrade(), true);
+  assert.equal(player.doMarketTrade(), true);
+  assert.equal(player.doMarketTrade(), true);
+  assert.equal(state.history.canUndo, true);
+
+  assert.equal(persistence.save(state), true);
+  const resumed = persistence.load();
+  resumed.history = new GameHistory(resumed.savedHistory);
+  assert.equal(resumed.history.canUndo, true);
+  assert.equal(resumed.history.canRedo, false);
+
+  const undoneOnce = resumed.history.undo(resumed);
+  const undoneTwice = resumed.history.undo(undoneOnce);
+  assert.deepEqual([undoneTwice.currentPlayer.fuel, undoneTwice.currentPlayer.ore], [2, 1]);
+  assert.equal(undoneTwice.history.canUndo, true);
+  assert.equal(undoneTwice.history.canRedo, true);
+  assert.equal(persistence.save(undoneTwice), true);
+
+  const resumedUndone = persistence.load();
+  resumedUndone.history = new GameHistory(resumedUndone.savedHistory);
+  assert.equal(resumedUndone.history.canUndo, true);
+  assert.equal(resumedUndone.history.canRedo, true);
+  const redoneOnce = resumedUndone.history.redo(resumedUndone);
+  const redoneTwice = resumedUndone.history.redo(redoneOnce);
+  assert.deepEqual([redoneTwice.currentPlayer.fuel, redoneTwice.currentPlayer.ore], [0, 3]);
+});
+
+test("loads legacy raw version-one snapshots without history", () => {
+  const storage = memoryStorage();
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  storage.setItem("alien-frontiers:saved-game", JSON.stringify(createGameSnapshot(state)));
+
+  const restored = new GamePersistence(storage).load();
+  assert.equal(restored.numPlayers, 2);
+  assert.equal(restored.savedHistory, undefined);
+});
+
+test("upgrades scalar history from the first version-two save envelope", () => {
+  const storage = memoryStorage();
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const undoState = createGameSnapshot(state);
+  state.currentPlayer.fuel = 2;
+  storage.setItem("alien-frontiers:saved-game", JSON.stringify({
+    version: 2,
+    state: createGameSnapshot(state),
+    history: { undoSnapshot: undoState, redoSnapshot: null },
+  }));
+
+  const restored = new GamePersistence(storage).load();
+  restored.history = new GameHistory(restored.savedHistory);
+  assert.equal(restored.history.canUndo, true);
+  const undone = restored.history.undo(restored);
+  assert.equal(undone.currentPlayer.fuel, 0);
 });

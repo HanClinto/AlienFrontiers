@@ -1386,7 +1386,8 @@ export class GameScene extends AFLayer {
     super(assets);
     this.director = director;
     this.state = state;
-    this.state.history ??= new GameHistory();
+    this.state.history ??= new GameHistory(this.state.savedHistory);
+    delete this.state.savedHistory;
     this.shipSprites = new Map();
     this.unsubscribe = [];
     this.aiTimer = null;

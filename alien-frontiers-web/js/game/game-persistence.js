@@ -3,6 +3,7 @@ import { GameState } from "./game-state.js";
 import { REGION_DEFINITIONS } from "./region.js";
 
 const SNAPSHOT_VERSION = 1;
+const SAVE_ENVELOPE_VERSION = 2;
 const STORAGE_KEY = "alien-frontiers:saved-game";
 const ORBITAL_KEYS = [
   "solarConverter",
@@ -210,6 +211,29 @@ export function restoreGameSnapshot(snapshot, random = Math.random, cardRandom =
   return state;
 }
 
+function createSaveEnvelope(state) {
+  return {
+    version: SAVE_ENVELOPE_VERSION,
+    state: createGameSnapshot(state),
+    history: {
+      undoSnapshot: state.history?.undoSnapshot ?? null,
+      redoSnapshot: state.history?.redoSnapshot ?? null,
+    },
+  };
+}
+
+function restoreSaveEnvelope(saved) {
+  if (saved?.version !== SAVE_ENVELOPE_VERSION || !saved.state) {
+    return restoreGameSnapshot(saved);
+  }
+  const state = restoreGameSnapshot(saved.state);
+  state.savedHistory = {
+    undoSnapshot: saved.history?.undoSnapshot ?? null,
+    redoSnapshot: saved.history?.redoSnapshot ?? null,
+  };
+  return state;
+}
+
 export class GamePersistence {
   constructor(storage = typeof localStorage === "undefined" ? null : localStorage) {
     this.storage = storage;
@@ -221,13 +245,13 @@ export class GamePersistence {
     if (!this.storage || state.gameOver || state.pendingTechCard || state.currentPlayer.isRaiding) {
       return false;
     }
-    this.storage.setItem(STORAGE_KEY, JSON.stringify(createGameSnapshot(state)));
+    this.storage.setItem(STORAGE_KEY, JSON.stringify(createSaveEnvelope(state)));
     return true;
   }
 
   load() {
     const serialized = this.storage?.getItem(STORAGE_KEY);
-    return serialized ? restoreGameSnapshot(JSON.parse(serialized)) : null;
+    return serialized ? restoreSaveEnvelope(JSON.parse(serialized)) : null;
   }
 
   clear() {
