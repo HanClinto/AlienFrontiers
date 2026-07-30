@@ -50,3 +50,41 @@ test("plays a deterministic turn through original Solar and Maintenance rules", 
   assert.equal(state.currentPlayer.initialRollDone, false);
   assert.equal(playerOne.initialRollDone, false);
 });
+
+test("Lunar Mine enforces opponents' high die and awards one ore per ship", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const [playerOne, playerTwo] = state.players;
+  const opponentShip = playerTwo.activeShips[0];
+  opponentShip.value = 5;
+  state.lunarMine.dockShip(opponentShip);
+
+  playerOne.initialRollDone = true;
+  playerOne.activeShips[0].value = 4;
+  playerOne.activeShips[1].value = 5;
+  state.toggleShipSelection(playerOne.activeShips[0]);
+  assert.equal(state.commitSelectedShips(state.lunarMine), false);
+  playerOne.activeShips[0].toggleSelect();
+  state.toggleShipSelection(playerOne.activeShips[1]);
+  assert.equal(state.commitSelectedShips(state.lunarMine), true);
+  assert.equal(playerOne.ore, 1);
+});
+
+test("Shipyard requires a payable pair and activates the next ship", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  player.fuel = 1;
+  player.ore = 1;
+  player.initialRollDone = true;
+  player.activeShips[0].value = 3;
+  player.activeShips[1].value = 3;
+  state.toggleShipSelection(player.activeShips[0]);
+  state.toggleShipSelection(player.activeShips[1]);
+
+  assert.equal(state.commitSelectedShips(state.shipyard), true);
+  assert.equal(player.fuel, 0);
+  assert.equal(player.ore, 0);
+  assert.equal(player.activeShips.length, 4);
+  assert.equal(player.activeShips[3].docked, true);
+  assert.equal(player.activeShips[3].dock.orbital, state.maintenanceBay);
+  assert.deepEqual(state.shipyard.docks.map((dock) => dock.dockedShip?.value), [3, 3]);
+});

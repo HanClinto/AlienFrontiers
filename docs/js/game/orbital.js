@@ -32,25 +32,54 @@ export class DockingBay {
   }
 }
 
-export class Orbital {
-  constructor(state, numDockGroups) {
-    this.state = state;
+export class DockGroup {
+  constructor(orbital, numDocks, groupIndex) {
+    this.orbital = orbital;
     this.docks = Array.from(
-      { length: numDockGroups },
-      (_, index) => new DockingBay(this, index),
+      { length: numDocks },
+      (_, index) => new DockingBay(orbital, numDocks * groupIndex + index),
     );
   }
 
-  get firstEmptyDock() {
+  get empty() {
+    return this.docks.every((dock) => !dock.occupied);
+  }
+
+  get nextOpenDock() {
     return this.docks.find((dock) => !dock.occupied) ?? null;
   }
 
+  dockShips(ships) {
+    for (const ship of [...ships].sort((left, right) => left.value - right.value)) {
+      const dock = this.nextOpenDock;
+      if (!dock) {
+        throw new Error("Not enough open docks in group");
+      }
+      dock.dockShip(ship);
+    }
+  }
+}
+
+export class Orbital {
+  constructor(state, numDockGroups, numDocksPerGroup = 1) {
+    this.state = state;
+    this.dockGroups = Array.from(
+      { length: numDockGroups },
+      (_, index) => new DockGroup(this, numDocksPerGroup, index),
+    );
+    this.docks = this.dockGroups.flatMap((group) => group.docks);
+  }
+
+  get firstEmptyGroup() {
+    return this.dockGroups.find((group) => group.empty) ?? null;
+  }
+
   get numEmptyGroups() {
-    return this.docks.filter((dock) => !dock.occupied).length;
+    return this.dockGroups.filter((group) => group.empty).length;
   }
 
   dockShip(ship) {
-    const dock = this.firstEmptyDock;
+    const dock = this.firstEmptyGroup?.nextOpenDock;
     if (!dock) {
       throw new Error(`No empty dock at ${this.title}`);
     }
@@ -115,6 +144,78 @@ export class MaintenanceBay extends Orbital {
     for (const ship of [...selectedShips].sort((left, right) => left.value - right.value)) {
       this.dockShip(ship);
     }
+    this.finishCommit(selectedShips);
+    return true;
+  }
+}
+
+export class LunarMine extends Orbital {
+  constructor(state) {
+    const numGroups = state.numPlayers <= 2 ? 3 : state.numPlayers <= 3 ? 4 : 5;
+    super(state, numGroups);
+    this.title = "Lunar Mine";
+  }
+
+  maxValueNotFromPlayer(player) {
+    let maxValue = 1;
+    for (const dock of this.docks) {
+      if (dock.occupied && dock.dockedShip.player !== player) {
+        maxValue = Math.max(maxValue, dock.dockedShip.value);
+      }
+    }
+    return maxValue;
+  }
+
+  isValidMoveFromPlayer(player, selectedShips) {
+    const comparisonPlayer = player.aiType === 0 ? player : null;
+    const minimumValue = this.maxValueNotFromPlayer(comparisonPlayer);
+    return selectedShips.length > 0
+      && selectedShips.length <= this.numEmptyGroups
+      && selectedShips.every((ship) => ship.value >= minimumValue);
+  }
+
+  commitShipsFromPlayer(player, selectedShips) {
+    if (!this.isValidMoveFromPlayer(player, selectedShips)) {
+      return false;
+    }
+    for (const ship of [...selectedShips].sort((left, right) => left.value - right.value)) {
+      player.ore += 1;
+      this.dockShip(ship);
+    }
+    this.state.postEvent(EventName.resourcesChanged, player);
+    this.finishCommit(selectedShips);
+    this.state.logMove(`${player.playerName}: Harvested ${selectedShips.length} ore`);
+    return true;
+  }
+}
+
+export class Shipyard extends Orbital {
+  constructor(state) {
+    const numGroups = state.numPlayers <= 2 ? 1 : state.numPlayers <= 3 ? 2 : 3;
+    super(state, numGroups, 2);
+    this.title = "Shipyard";
+  }
+
+  isValidMoveFromPlayer(player, selectedShips) {
+    const needed = player.resourcesNeededForNextShip;
+    return this.numEmptyGroups > 0
+      && selectedShips.length === 2
+      && selectedShips[0].value === selectedShips[1].value
+      && player.fuel >= needed
+      && player.ore >= needed
+      && player.activeShips.length < 6;
+  }
+
+  commitShipsFromPlayer(player, selectedShips) {
+    if (!this.isValidMoveFromPlayer(player, selectedShips)) {
+      return false;
+    }
+    const needed = player.resourcesNeededForNextShip;
+    player.fuel -= needed;
+    player.ore -= needed;
+    player.activateShip();
+    this.firstEmptyGroup.dockShips(selectedShips);
+    this.state.postEvent(EventName.resourcesChanged, player);
     this.finishCommit(selectedShips);
     return true;
   }

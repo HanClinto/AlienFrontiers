@@ -82,6 +82,43 @@ class MaintenanceBayLayer extends FacilityLayer {
   }
 }
 
+class LunarMineLayer extends FacilityLayer {
+  constructor(scene) {
+    super(scene, scene.state.lunarMine, ccp(550, 325), { x: -8, y: -5, width: 130, height: 70 });
+    this.label("LUNAR MINE", ccp(0, 53));
+    this.iconWidth = scene.assets.image("icon_gte.png").naturalWidth;
+    this.sprite(scene.assets.image("icon_gte.png"), ccp(0, 12));
+    const dockImage = scene.assets.image("dock_normal.png");
+    for (const dock of this.orbital.docks) {
+      this.sprite(dockImage, this.dockPosition(dock.index));
+    }
+    this.sprite(scene.assets.image("icons_lm.png"), ccp(0, 7), ccp(0, 1));
+  }
+
+  dockPosition(index) {
+    return ccp(this.iconWidth + 4 + index * 28, 8);
+  }
+}
+
+class ShipyardLayer extends FacilityLayer {
+  constructor(scene) {
+    super(scene, scene.state.shipyard, ccp(24, 435), { x: -8, y: -5, width: 170, height: 70 });
+    this.label("SHIPYARD", ccp(0, 53));
+    this.dockPairWidth = scene.assets.image("dock_pair.png").naturalWidth;
+    const dockImage = scene.assets.image("dock_pair.png");
+    for (let groupIndex = 0; groupIndex < this.orbital.dockGroups.length; groupIndex += 1) {
+      this.sprite(dockImage, ccp(groupIndex * (this.dockPairWidth + 2), 8));
+    }
+    this.sprite(scene.assets.image("icons_sy.png"), ccp(0, 7), ccp(0, 1));
+  }
+
+  dockPosition(index) {
+    const groupIndex = Math.floor(index / 2);
+    const groupX = groupIndex * (this.dockPairWidth + 2);
+    return ccp(groupX + (index % 2 === 0 ? -1 : 25), 8);
+  }
+}
+
 class ShipSprite extends CCNode {
   constructor(scene, ship) {
     super();
@@ -139,15 +176,13 @@ export class GameScene extends AFLayer {
     this.addChild(this.solarLayer, 4);
     this.maintenanceLayer = new MaintenanceBayLayer(this);
     this.addChild(this.maintenanceLayer, 4);
+    this.lunarLayer = new LunarMineLayer(this);
+    this.addChild(this.lunarLayer, 4);
+    this.shipyardLayer = new ShipyardLayer(this);
+    this.addChild(this.shipyardLayer, 4);
 
     this.buildHUD();
-    for (const player of this.state.players) {
-      for (const ship of player.activeShips) {
-        const shipSprite = new ShipSprite(this, ship);
-        this.shipSprites.set(ship, shipSprite);
-        this.addChild(shipSprite, 8);
-      }
-    }
+    this.ensureShipSprites();
   }
 
   buildHUD() {
@@ -207,9 +242,29 @@ export class GameScene extends AFLayer {
       return ccp(600 + ship.shipIndex * 38, 77);
     }
     const orbital = ship.dock.orbital;
-    const layer = orbital === this.state.solarConverter ? this.solarLayer : this.maintenanceLayer;
+    const layer = new Map([
+      [this.state.solarConverter, this.solarLayer],
+      [this.state.maintenanceBay, this.maintenanceLayer],
+      [this.state.lunarMine, this.lunarLayer],
+      [this.state.shipyard, this.shipyardLayer],
+    ]).get(orbital);
+    if (!layer) {
+      throw new Error(`No layer for docked orbital: ${orbital.title}`);
+    }
     const localPosition = layer.dockPosition(ship.dock.index);
     return layer.convertToWorldSpace(ccp(localPosition.x + 13, localPosition.y + 13));
+  }
+
+  ensureShipSprites() {
+    for (const player of this.state.players) {
+      for (const ship of player.activeShips) {
+        if (!this.shipSprites.has(ship)) {
+          const shipSprite = new ShipSprite(this, ship);
+          this.shipSprites.set(ship, shipSprite);
+          this.addChild(shipSprite, 8);
+        }
+      }
+    }
   }
 
   rollShips() {
@@ -230,6 +285,7 @@ export class GameScene extends AFLayer {
 
   refresh() {
     const player = this.state.currentPlayer;
+    this.ensureShipSprites();
     for (const shipSprite of this.shipSprites.values()) {
       shipSprite.refresh();
     }

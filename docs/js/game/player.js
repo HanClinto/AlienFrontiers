@@ -32,6 +32,10 @@ export class Player {
     return this.undockedShips.length;
   }
 
+  get resourcesNeededForNextShip() {
+    return this.activeShips.length - 2;
+  }
+
   activateStartingShips() {
     for (let count = 0; count < 3; count += 1) {
       this.activateShip();
