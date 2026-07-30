@@ -71,6 +71,9 @@ ExhaustiveAI successor uses rule-aware fungible-die keys, transposition pruning,
 anytime beam search, and hard time/node/child budgets. On timeout it executes the best
 fully evaluated move; SimpleAI is reserved for the zero-successor case. A deterministic
 late-game stress fixture gates six-die, dense-dock, field, tech, Data, Plasma, and raid states.
+Search runs in a Web Worker so the source-derived budgets (4.4 seconds for Cadet/Spacer and
+7.4 seconds for Admiral/Pirate) do not block rendering or input, with a hard watchdog beyond
+each internal deadline.
 
 Run the static site locally from the repository root:
 

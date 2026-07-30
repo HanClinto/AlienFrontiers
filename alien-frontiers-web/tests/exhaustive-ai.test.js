@@ -2,10 +2,110 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { AIType } from "../js/game/constants.js";
-import { ExhaustiveAI, evaluateExhaustiveState, exhaustiveStateKey } from "../js/game/exhaustive-ai.js";
+import { AI_SEARCH_BUDGETS_MS, ExhaustiveAI, evaluateExhaustiveState, exhaustiveStateKey } from "../js/game/exhaustive-ai.js";
 import { GameState } from "../js/game/game-state.js";
 import { TechCardType } from "../js/game/tech-card.js";
 import { createLateGameStressState } from "./fixtures/late-game-state.js";
+
+class FakeWorker {
+  constructor(response = null) {
+    this.response = response;
+    this.listeners = new Map();
+    this.terminated = false;
+    this.message = null;
+  }
+
+  addEventListener(type, callback) {
+    this.listeners.set(type, callback);
+  }
+
+  postMessage(message) {
+    this.message = message;
+    if (this.response) {
+      queueMicrotask(() => this.listeners.get("message")?.({ data: this.response }));
+    }
+  }
+
+  terminate() {
+    this.terminated = true;
+  }
+}
+
+test("worker search budgets match the original personality timing", () => {
+  assert.deepEqual(AI_SEARCH_BUDGETS_MS, {
+    [AIType.easy]: 4_400,
+    [AIType.medium]: 4_400,
+    [AIType.hard]: 7_400,
+    [AIType.pirate]: 7_400,
+  });
+});
+
+test("worker thinking returns a principal variation and terminates cleanly", async () => {
+  const state = new GameState(2, [AIType.hard, AIType.human]);
+  const move = { orbitalName: "solarConverter", shipIndexes: [0] };
+  const worker = new FakeWorker({
+    result: { move, principalVariation: [move], fallbackRequired: false },
+  });
+  let clearedTimer = null;
+  const result = await ExhaustiveAI.think(state, {
+    workerFactory: () => worker,
+    setTimer: () => 42,
+    clearTimer: (timer) => { clearedTimer = timer; },
+  });
+
+  assert.deepEqual(result.principalVariation, [move]);
+  assert.equal(worker.message.options.timeBudgetMs, 7_400);
+  assert.equal(worker.terminated, true);
+  assert.equal(clearedTimer, 42);
+});
+
+test("worker watchdog and abort terminate safely for fallback", async () => {
+  const state = new GameState(2, [AIType.hard, AIType.human]);
+  const watchdogWorker = new FakeWorker();
+  let watchdogCallback;
+  const watchdogResultPromise = ExhaustiveAI.think(state, {
+    workerFactory: () => watchdogWorker,
+    setTimer: (callback) => { watchdogCallback = callback; return 1; },
+    clearTimer: () => {},
+  });
+  watchdogCallback();
+  const watchdogResult = await watchdogResultPromise;
+  assert.equal(watchdogResult.watchdog, true);
+  assert.equal(watchdogResult.fallbackRequired, true);
+  assert.equal(watchdogWorker.terminated, true);
+
+  const abortWorker = new FakeWorker();
+  const controller = new AbortController();
+  const abortResultPromise = ExhaustiveAI.think(state, {
+    workerFactory: () => abortWorker,
+    signal: controller.signal,
+    setTimer: () => 2,
+    clearTimer: () => {},
+  });
+  controller.abort();
+  const abortResult = await abortResultPromise;
+  assert.equal(abortResult.aborted, true);
+  assert.equal(abortWorker.terminated, true);
+
+  const alreadyAbortedWorker = new FakeWorker();
+  const alreadyAborted = new AbortController();
+  alreadyAborted.abort();
+  const alreadyAbortedResult = await ExhaustiveAI.think(state, {
+    workerFactory: () => alreadyAbortedWorker,
+    signal: alreadyAborted.signal,
+    setTimer: () => 3,
+    clearTimer: () => {},
+  });
+  assert.equal(alreadyAbortedResult.aborted, true);
+  assert.equal(alreadyAbortedWorker.message, null);
+  assert.equal(alreadyAbortedWorker.terminated, true);
+
+  const creationFailure = await ExhaustiveAI.think(state, {
+    workerFactory: () => { throw new Error("worker unavailable"); },
+  });
+  assert.equal(creationFailure.fallbackRequired, true);
+  assert.equal(creationFailure.error, "worker unavailable");
+});
 
 test("state keys ignore logs and history but retain gameplay state", () => {
   const left = new GameState(2, [AIType.hard, AIType.human]);

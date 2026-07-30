@@ -9,6 +9,13 @@ const PERSONALITIES = Object.freeze({
   [AIType.pirate]: Object.freeze({ aggression: 0.9, humanPrejudice: 1.5, randomRange: 0 }),
 });
 
+export const AI_SEARCH_BUDGETS_MS = Object.freeze({
+  [AIType.easy]: 4_400,
+  [AIType.medium]: 4_400,
+  [AIType.hard]: 7_400,
+  [AIType.pirate]: 7_400,
+});
+
 const TECH_VALUES = Object.freeze({
   [TechCardType.alienCity]: -1,
   [TechCardType.alienMonument]: -1,
@@ -120,6 +127,86 @@ export function evaluateExhaustiveState(state, playerIndex, random = () => 0.5) 
 }
 
 export class ExhaustiveAI {
+  static searchOptionsFor(state) {
+    return {
+      timeBudgetMs: AI_SEARCH_BUDGETS_MS[state.currentPlayer.aiType]
+        ?? AI_SEARCH_BUDGETS_MS[AIType.easy],
+      maxNodes: 100_000,
+      maxDepth: 10,
+      beamWidth: 80,
+      maxChildren: 256,
+    };
+  }
+
+  static think(state, options = {}) {
+    const searchOptions = { ...this.searchOptionsFor(state), ...options };
+    const workerFactory = options.workerFactory
+      ?? (() => {
+        const moduleUrl = new URL(import.meta.url);
+        const workerUrl = new URL("./exhaustive-ai-worker.js", moduleUrl);
+        const version = moduleUrl.searchParams.get("v");
+        if (version) {
+          workerUrl.searchParams.set("v", version);
+        }
+        return new Worker(workerUrl, { type: "module" });
+      });
+    const setTimer = options.setTimer ?? setTimeout;
+    const clearTimer = options.clearTimer ?? clearTimeout;
+    const watchdogMs = options.watchdogMs ?? searchOptions.timeBudgetMs + 1_000;
+    return new Promise((resolve) => {
+      let worker;
+      try {
+        worker = workerFactory();
+      } catch (error) {
+        resolve({
+          move: null,
+          fallbackRequired: true,
+          error: error instanceof Error ? error.message : String(error),
+        });
+        return;
+      }
+      let settled = false;
+      let watchdog = null;
+      const finish = (result) => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        if (watchdog !== null) {
+          clearTimer(watchdog);
+        }
+        worker.terminate();
+        resolve(result);
+      };
+      watchdog = setTimer(() => finish({ move: null, fallbackRequired: true, watchdog: true }), watchdogMs);
+      options.signal?.addEventListener("abort", () => {
+        finish({ move: null, fallbackRequired: true, aborted: true });
+      }, { once: true });
+      if (options.signal?.aborted) {
+        finish({ move: null, fallbackRequired: true, aborted: true });
+        return;
+      }
+      worker.addEventListener("message", (event) => {
+        finish(event.data.error
+          ? { move: null, fallbackRequired: true, error: event.data.error }
+          : event.data.result);
+      }, { once: true });
+      worker.addEventListener("error", (event) => {
+        finish({ move: null, fallbackRequired: true, error: event.message });
+      }, { once: true });
+      worker.postMessage({
+        snapshot: createGameSnapshot(state),
+        options: {
+          timeBudgetMs: searchOptions.timeBudgetMs,
+          maxNodes: searchOptions.maxNodes,
+          maxDepth: searchOptions.maxDepth,
+          beamWidth: searchOptions.beamWidth,
+          maxChildren: searchOptions.maxChildren,
+        },
+      });
+    });
+  }
+
   static orbitalMoves(state, options = {}) {
     const maxChildren = options.maxChildren ?? 96;
     const shouldContinue = options.shouldContinue ?? (() => true);
@@ -218,7 +305,7 @@ export class ExhaustiveAI {
     const beamWidth = options.beamWidth ?? 24;
     const seen = new Set([exhaustiveStateKey(state)]);
     const rootScore = evaluate(state);
-    let frontier = [{ state, firstMove: null, score: rootScore }];
+    let frontier = [{ state, moves: [], score: rootScore }];
     let bestMove = null;
     let expandedNodes = 0;
     let timedOut = false;
@@ -247,7 +334,7 @@ export class ExhaustiveAI {
           seen.add(key);
           const candidate = {
             state: child.state,
-            firstMove: node.firstMove ?? child.move,
+            moves: [...node.moves, child.move],
             score: evaluate(child.state),
           };
           next.push(candidate);
@@ -267,7 +354,8 @@ export class ExhaustiveAI {
     }
 
     return {
-      move: bestMove?.firstMove ?? null,
+      move: bestMove?.moves[0] ?? null,
+      principalVariation: bestMove?.moves ?? [],
       score: bestMove?.score ?? rootScore,
       expandedNodes,
       uniqueStates: seen.size,
