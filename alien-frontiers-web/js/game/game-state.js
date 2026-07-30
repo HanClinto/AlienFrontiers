@@ -503,6 +503,26 @@ export class GameState {
     this.pendingTechAction = null;
   }
 
+  cancelPendingSelection() {
+    if (this.currentPlayer.isRaiding) {
+      return this.currentPlayer.cancelRaid();
+    }
+    if (!this.pendingTechCard) {
+      return false;
+    }
+    if (this.pendingTechAction === "power-multi-ship") {
+      for (const ship of this.pendingTechTargets) {
+        if (ship.isSelected) {
+          ship.toggleSelect();
+        }
+      }
+    }
+    const card = this.pendingTechCard;
+    this.clearPendingTech();
+    this.postEvent(EventName.techCardsChanged, card);
+    return true;
+  }
+
   gotoNextPlayer() {
     if (!this.canEndTurn) {
       return false;

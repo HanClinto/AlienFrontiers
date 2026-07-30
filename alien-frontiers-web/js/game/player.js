@@ -158,6 +158,20 @@ export class Player {
     return true;
   }
 
+  cancelRaid() {
+    if (!this.isRaiding) {
+      return false;
+    }
+    for (const player of this.state.players) {
+      player.oreToRaid = 0;
+      player.fuelToRaid = 0;
+    }
+    this.cardToRaid = null;
+    this.isRaiding = false;
+    this.state.postEvent(EventName.finishRaid, this);
+    return true;
+  }
+
   finishRaid() {
     if (!this.isRaiding || !this.raidSelectionComplete) {
       return false;

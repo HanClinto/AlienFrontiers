@@ -465,6 +465,20 @@ test("Holographic Decoy blocks resources and is the only raidable card", () => {
   assert.equal(victim.cards.includes(decoy), false);
 });
 
+test("canceling a raid clears provisional resources without transferring them", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const [raider, victim] = state.players;
+  victim.ore = 2;
+  victim.fuel = 1;
+
+  raider.startRaid();
+  assert.equal(raider.adjustRaidResource(victim, "ore", 1), true);
+  assert.equal(state.cancelPendingSelection(), true);
+  assert.equal(raider.isRaiding, false);
+  assert.deepEqual([victim.oreToRaid, victim.fuelToRaid], [0, 0]);
+  assert.deepEqual([raider.ore, raider.fuel, victim.ore, victim.fuel], [0, 0, 2, 1]);
+});
+
 test("SimpleAI uses a straight and resolves its raid", () => {
   const state = new GameState(2, [AIType.easy, AIType.human], () => 0.2);
   const [raider, victim] = state.players;
@@ -773,6 +787,26 @@ test("Plasma Cannon removes payable enemy ships from one orbital", () => {
   assert.equal(victim.activeShips.slice(0, 2).every((ship) => ship.dock.orbital === state.maintenanceBay), true);
   assert.equal(player.fuel, 0);
   assert.equal(plasma.tapped, true);
+});
+
+test("canceling a pending Plasma power clears targets and selection rings", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const [player, victim] = state.players;
+  const plasma = state.allTech.find((card) => card.type === TechCardType.plasmaCannon);
+  player.cards = [];
+  player.addCard(plasma);
+  player.fuel = 2;
+  state.solarConverter.dockShip(victim.activeShips[0]);
+
+  assert.equal(state.beginTechPower(plasma), true);
+  assert.equal(state.usePendingTechOnShip(victim.activeShips[0]), true);
+  assert.equal(victim.activeShips[0].isSelected, true);
+  assert.equal(state.cancelPendingSelection(), true);
+  assert.equal(state.pendingTechCard, null);
+  assert.deepEqual(state.pendingTechTargets, []);
+  assert.equal(victim.activeShips[0].isSelected, false);
+  assert.equal(plasma.tapped, false);
+  assert.equal(player.fuel, 2);
 });
 
 test("Plasma Cannon enforces one orbital and discard destroys only surplus ships", () => {

@@ -1620,6 +1620,9 @@ export class GameScene extends AFLayer {
   }
 
   undo() {
+    if (this.state.cancelPendingSelection()) {
+      return;
+    }
     const restored = this.state.history.undo(this.state);
     if (restored) {
       this.director.replaceScene(new GameScene(this.director, this.assets, restored));
@@ -1684,8 +1687,15 @@ export class GameScene extends AFLayer {
     this.rollButton.visible = !player.initialRollDone;
     this.setButtonIsEnabled(this.rollButton, isHumanTurn);
     this.setButtonIsEnabled(this.doneButton, isHumanTurn && this.state.canEndTurn);
-    this.setButtonIsEnabled(this.undoButton, isHumanTurn && this.state.history.canUndo);
-    this.setButtonIsEnabled(this.redoButton, isHumanTurn && this.state.history.canRedo);
+    const hasPendingSelection = player.isRaiding || Boolean(this.state.pendingTechCard);
+    this.setButtonIsEnabled(
+      this.undoButton,
+      isHumanTurn && (hasPendingSelection || this.state.history.canUndo),
+    );
+    this.setButtonIsEnabled(
+      this.redoButton,
+      isHumanTurn && !hasPendingSelection && this.state.history.canRedo,
+    );
     this.raidConfirmButton.visible = player.isRaiding || isSelectingPlasma;
     this.setButtonIsEnabled(
       this.raidConfirmButton,
