@@ -17,6 +17,13 @@ const PLAYER_DIE_IMAGES = [
   "hud_die_yellow.png",
 ];
 
+export function rollingTrayPosition(shipIndex) {
+  return ccp(
+    600 + (shipIndex % 4) * 38,
+    77 - Math.floor(shipIndex / 4) * 40,
+  );
+}
+
 class FacilityLayer extends CCNode {
   constructor(scene, orbital, position, hitBounds) {
     super();
@@ -284,7 +291,7 @@ export class GameScene extends AFLayer {
 
   shipPosition(ship) {
     if (!ship.docked) {
-      return ccp(600 + ship.shipIndex * 38, 77);
+      return rollingTrayPosition(ship.shipIndex);
     }
     const orbital = ship.dock.orbital;
     const layer = new Map([
