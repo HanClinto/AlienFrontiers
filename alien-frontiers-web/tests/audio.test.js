@@ -45,3 +45,24 @@ test("audio unlock starts music and game events route to original effects", () =
   assert.equal(manager.effects.get("dock").playCount, 1);
   assert.equal(manager.effects.get("turn").playCount, 1);
 });
+
+test("music and SFX preferences persist and suppress playback", () => {
+  const values = new Map();
+  const storage = {
+    getItem: (key) => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, value),
+  };
+  const manager = new GameAudioManager(
+    new URL("file:///audio/"),
+    (source) => new FakeAudio(source),
+    storage,
+  );
+  manager.unlock();
+  manager.setMusicEnabled(false);
+  manager.setSfxEnabled(false);
+  manager.play("roll");
+  assert.equal(manager.music.volume, 0);
+  assert.equal(manager.effects.get("roll").playCount, 0);
+  assert.equal(values.get("alien-frontiers:music"), "off");
+  assert.equal(values.get("alien-frontiers:sfx"), "off");
+});

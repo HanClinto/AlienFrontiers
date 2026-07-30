@@ -50,7 +50,9 @@ ship while control is maintained. Original background music and core UI,
 dice, docking, colony, card, ship, and turn effects play after the first interaction;
 ships and player panels use Cocos-style eased movement, tech cards slide elastically into
 their trays, and dice scale/rotate when rolled with rotating selection rings. Final colony
-placement opens the ranked, blocking game-over results overlay. AI seats automatically play through the
+placement opens the ranked, blocking game-over results overlay. The lower HUD includes
+HELP and an animated blocking menu with persistent music/SFX controls, Resume, and Quit.
+AI seats automatically play through the
 ported rules using the original SimpleAI fallback priority. The remaining facilities,
 remaining region fields/bonuses, personality-specific ExhaustiveAI strategies, remaining
 active/discard tech abilities, full animation coverage, undo/redo, and saving

@@ -813,6 +813,93 @@ class ArtifactCardDetail extends CCNode {
   }
 }
 
+class GameMenuOverlay extends CCNode {
+  constructor(scene) {
+    super();
+    this.scene = scene;
+    this.visible = false;
+    this.shade = new CCLayerColor("#000");
+    this.shade.opacity = 0;
+    this.shade.interactive = true;
+    this.shade.enabled = true;
+    this.shade.touchPriority = -200;
+    this.shade.activate = () => {};
+    this.addChild(this.shade, 0);
+
+    this.resumeButton = this.addMenuButton("RESUME", 0, () => this.close());
+    this.sfxButton = this.addMenuButton("", 1, () => this.toggleSfx());
+    this.musicButton = this.addMenuButton("", 2, () => this.toggleMusic());
+    this.quitButton = this.addMenuButton("QUIT", 4, () => this.scene.returnToMainMenu());
+  }
+
+  addMenuButton(label, index, callback) {
+    const button = this.scene.buttonFromImage(
+      "menu_button_blank.png",
+      "menu_button_blank_pushed.png",
+      callback,
+      { label, fontSize: 12 },
+    );
+    button.menuIndex = index;
+    const menuItem = button.getChildByTag(0)?.children[0];
+    if (menuItem) {
+      menuItem.touchPriority = -256;
+    }
+    this.addChild(button, 1);
+    return button;
+  }
+
+  open() {
+    if (this.visible) {
+      return;
+    }
+    this.visible = true;
+    this.shade.opacity = 0;
+    this.shade.runAction(new CCFadeTo(0.5, 192));
+    this.updateLabels();
+    for (const button of [
+      this.resumeButton,
+      this.sfxButton,
+      this.musicButton,
+      this.quitButton,
+    ]) {
+      const destination = ccp(384, 712 - 100 * button.menuIndex);
+      button.setPosition(ccp(-500, destination.y));
+      button.runAction(new CCSequence(
+        new CCDelayTime(0.1 * button.menuIndex),
+        new CCEaseElasticInOut(new CCMoveTo(0.8, destination), 0.8),
+      ));
+    }
+  }
+
+  close() {
+    this.visible = false;
+  }
+
+  toggleSfx() {
+    const audio = this.scene.director.soundManager;
+    audio?.setSfxEnabled(!audio.sfxEnabled);
+    this.updateLabels();
+  }
+
+  toggleMusic() {
+    const audio = this.scene.director.soundManager;
+    audio?.setMusicEnabled(!audio.musicEnabled);
+    this.updateLabels();
+  }
+
+  updateLabels() {
+    const audio = this.scene.director.soundManager;
+    this.scene.setButtonLabel(
+      this.sfxButton,
+      `SOUND FX: ${audio?.sfxEnabled === false ? "OFF" : "ON"}`,
+    );
+    this.scene.setButtonLabel(
+      this.musicButton,
+      `MUSIC: ${audio?.musicEnabled === false ? "OFF" : "ON"}`,
+    );
+  }
+}
+
 class GameOverOverlay extends CCNode {
   constructor(scene) {
     super();
@@ -1161,6 +1248,8 @@ export class GameScene extends AFLayer {
       return miniHUD;
     });
     this.ensureShipSprites();
+    this.gameMenuOverlay = new GameMenuOverlay(this);
+    this.addChild(this.gameMenuOverlay, 11);
     this.artifactDetail = new ArtifactCardDetail(this);
     this.addChild(this.artifactDetail, 12);
     this.gameOverOverlay = new GameOverOverlay(this);
@@ -1234,6 +1323,24 @@ export class GameScene extends AFLayer {
     );
     this.techDiscardButton.setPosition(ccp(80, -76));
     this.uiFrame.addChild(this.techDiscardButton, 3);
+
+    this.menuButton = this.buttonFromImage(
+      "menu_button_68.png",
+      "menu_button_68_active.png",
+      () => this.gameMenuOverlay.open(),
+      { label: "MENU", fontSize: 11, fontColor: "#000" },
+    );
+    this.menuButton.setPosition(ccp(-300, -75));
+    this.uiFrame.addChild(this.menuButton, 3);
+
+    this.helpButton = this.buttonFromImage(
+      "menu_button_68.png",
+      "menu_button_68_active.png",
+      () => globalThis.open?.("./AlienFrontiersRules-Final-Trimmed.pdf", "_blank", "noopener"),
+      { label: "HELP", fontSize: 11, fontColor: "#000" },
+    );
+    this.helpButton.setPosition(ccp(-220, -75));
+    this.uiFrame.addChild(this.helpButton, 3);
   }
 
   hudLabel(text, fontSize, position, color) {

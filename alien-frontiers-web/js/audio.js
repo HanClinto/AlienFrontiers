@@ -12,14 +12,21 @@ const EFFECT_FILES = Object.freeze({
 });
 
 export class GameAudioManager {
-  constructor(baseUrl, audioFactory = (source) => new Audio(source)) {
+  constructor(
+    baseUrl,
+    audioFactory = (source) => new Audio(source),
+    storage = typeof localStorage === "undefined" ? null : localStorage,
+  ) {
     this.baseUrl = baseUrl;
     this.audioFactory = audioFactory;
     this.unlocked = false;
     this.unsubscribers = [];
+    this.storage = storage;
+    this.musicEnabled = storage?.getItem("alien-frontiers:music") !== "off";
+    this.sfxEnabled = storage?.getItem("alien-frontiers:sfx") !== "off";
     this.music = this.audioFactory(new URL("music-background.mp3", baseUrl).href);
     this.music.loop = true;
-    this.music.volume = 0.25;
+    this.music.volume = this.musicEnabled ? 0.25 : 0;
     this.effects = new Map(Object.entries(EFFECT_FILES).map(([name, fileName]) => {
       const audio = this.audioFactory(new URL(fileName, baseUrl).href);
       audio.preload = "auto";
@@ -32,13 +39,16 @@ export class GameAudioManager {
       return;
     }
     this.unlocked = true;
+    if (!this.musicEnabled) {
+      return;
+    }
     this.music.play()?.catch?.(() => {
       this.unlocked = false;
     });
   }
 
   play(name) {
-    if (!this.unlocked) {
+    if (!this.unlocked || !this.sfxEnabled) {
       return;
     }
     const template = this.effects.get(name);
@@ -48,6 +58,26 @@ export class GameAudioManager {
     const effect = template.cloneNode ? template.cloneNode() : template;
     effect.volume = 1;
     effect.play()?.catch?.(() => {});
+  }
+
+  setMusicEnabled(enabled) {
+    this.musicEnabled = enabled;
+    this.music.volume = enabled ? 0.25 : 0;
+    this.storage?.setItem("alien-frontiers:music", enabled ? "on" : "off");
+    if (enabled) {
+      if (!this.unlocked) {
+        this.unlock();
+      } else {
+        this.music.play()?.catch?.(() => {
+          this.unlocked = false;
+        });
+      }
+    }
+  }
+
+  setSfxEnabled(enabled) {
+    this.sfxEnabled = enabled;
+    this.storage?.setItem("alien-frontiers:sfx", enabled ? "on" : "off");
   }
 
   bindState(state) {
