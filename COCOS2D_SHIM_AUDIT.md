@@ -1,0 +1,231 @@
+# Cocos2D Web Shim Parity Audit
+
+Updated: 2026-07-30  
+Baseline: `d4454fc`  
+Target: iPad portrait game in `alien-frontiers-ios/AlienFrontiers`  
+Web port: `alien-frontiers-web`
+
+## Status Legend
+
+- `[EQ]` - behavior is implemented and equivalent for active callers.
+- `[PARTIAL]` - represented, but one or more Cocos semantics differ.
+- `[MISSING]` - currently relevant behavior is absent.
+- `[DEFERRED]` - platform setup, legacy layout, or inactive functionality that the web target does not currently need.
+
+## Method
+
+Counts are static source-reference counts, not runtime invocation counts. They include type references, constructors, property access, and message sends after stripping block and line comments.
+
+Included: active Objective-C `.m` files under `alien-frontiers-ios/AlienFrontiers`, including portrait scenes, facilities, HUDs, cards, regions, model code, and active menus.
+
+Excluded from counts:
+
+- `AppDelegateOld.m`
+- `AlienFrontiersAppDelegate_.m`
+- `GCTurnBasedMatchHelper.m`
+- `HelloWorldLayer.m`
+- `iPadGameSceneOld.m`
+- `iPhoneGameScene.m`
+- comments and `CCLOG`
+
+The counts are useful for prioritization, but they are not percentages of rendered pixels or gameplay completeness. A frequently referenced primitive such as `position` is less risky than one missing blend mode that controls every ownership overlay.
+
+## Summary
+
+| Measure | Count | Percent |
+|---|---:|---:|
+| Distinct Cocos class/action symbols | 38 | 100% |
+| Equivalent or equivalent substitute | 23 | 60.5% |
+| Implemented with semantic differences | 9 | 23.7% |
+| Missing and currently relevant | 1 | 2.6% |
+| Deferred/platform-only | 5 | 13.2% |
+| At least represented (`EQ` + `PARTIAL`) | 32 | 84.2% |
+
+The gameplay model is substantially further along than the rendering-equivalence percentage suggests. Most remaining fidelity problems cluster around text metrics, blend modes, clipping/bounds, and generalized touch delivery.
+
+## Cocos Class And Action Inventory
+
+`References` counts uncommented occurrences in the audited Objective-C source set.
+
+| Checklist | Cocos symbol | References | Web equivalent | Status | Notes |
+|---|---|---:|---|---|---|
+| [x] | `CCSprite` | 240 | `CCSprite` | `[PARTIAL]` | Image, anchor, frame, opacity and grayscale tint work. General RGB tint and Cocos blend state are missing. |
+| [ ] | `CCLabelTTF` | 124 | `CCLabelTTF` | `[PARTIAL]` | Intrinsic browser metrics only. Missing fixed dimensions, Cocos vertical alignment and CoreGraphics baseline equivalence. |
+| [ ] | `CCNode` | 123 | `CCNode` | `[PARTIAL]` | Transform/tree/tag/action basics work. Negative-z visitation, lifecycle recursion and child-derived bounds differ. |
+| [ ] | `CCSequence` | 46 | `CCSequence` | `[PARTIAL]` | Ordering works; exact zero-duration boundary timing can wait until the next update. |
+| [ ] | `CCDirector` | 41 | `CCDirector` | `[PARTIAL]` | RAF, scene replacement, render and input conversion work. Scene stack/scheduling are direct substitutes. |
+| [x] | `CCMoveTo` | 29 | `CCMoveTo` | `[EQ]` | Includes nested transforms and easing wrappers. |
+| [x] | `CCLayerColor` | 18 | `CCLayerColor` | `[EQ]` | Solid color and opacity are supported. |
+| [x] | `CCFadeTo` | 17 | `CCFadeTo` | `[EQ]` | Concurrent fade tracks work. |
+| [x] | `CCScene` | 14 | `CCScene` | `[EQ]` | Active port uses replacement rather than a full scene stack. |
+| [ ] | `CCLabelBMFont` | 12 | `WrappedTextBox` | `[MISSING]` | Readable prose substitute exists, but glyph metrics, symbol font, centered wrapping and line-height are not equivalent. |
+| [x] | `CCFadeIn` | 11 | `CCFadeTo(..., 255)` | `[EQ]` | Equivalent behavior through the generic fade action. |
+| [ ] | `CCUIViewWrapper` | 11 | Canvas text / browser PDF | `[PARTIAL]` | Native text scrolling/clipping semantics are not reproduced. |
+| [x] | `CCDelayTime` | 10 | `CCDelayTime` | `[EQ]` | Used by menus, cards and warp effects. |
+| [ ] | `CCRepeatForever` | 10 | `CCRepeatForever` | `[PARTIAL]` | Repeats work; only one restart is consumed per large frame delta. |
+| [x] | `CCScaleTo` | 10 | `CCScaleTo` | `[EQ]` | Supports independent X/Y targets. |
+| [x] | `CCTextureCache` | 10 | `AssetCache` | `[EQ]` | Asynchronous preload and named lookup substitute active usage. |
+| [x] | `CCFadeOut` | 9 | `CCFadeTo(..., 0)` | `[EQ]` | Equivalent behavior through the generic fade action. |
+| [ ] | `CCActionEase` | 7 | Concrete ease wrappers | `[DEFERRED]` | Base class is type plumbing; active concrete eases exist. |
+| [x] | `CCMenuItemImage` | 7 | `CCMenuItemImage` | `[EQ]` | Normal, selected, disabled, priority and press-release activation work. |
+| [x] | `CCEaseElasticInOut` | 6 | `CCEaseElasticInOut` | `[EQ]` | Menu motion uses original period values. |
+| [x] | `CCEaseSineIn` | 6 | `CCEaseSineIn` | `[EQ]` | Used by staged ship warp movement. |
+| [x] | `CCMenu` | 6 | `CCMenu` | `[EQ]` | Menu item ownership and offsets are preserved. |
+| [x] | `CCEaseSineOut` | 5 | `CCEaseSineOut` | `[EQ]` | Used by staged ship warp movement. |
+| [x] | `CCCallFuncN` | 4 | `CCCallFunc(target => ...)` | `[EQ]` | Target-node callbacks are represented by the callback argument. |
+| [x] | `CCSpriteFrameCache` | 4 | `CCSpriteFrameCache` | `[EQ]` | Equivalent for the active unrotated dice atlas. |
+| [x] | `CCCallFunc` | 3 | `CCCallFunc` | `[EQ]` | Immediate callback actions work. |
+| [x] | `CCLayer` | 3 | `CCLayer` | `[EQ]` | Active layers use `CCNode` scene graph behavior. |
+| [x] | `CCEaseElasticOut` | 2 | `CCEaseElasticOut` | `[EQ]` | Tech card tray slide-in behavior is supported. |
+| [x] | `CCEaseSineInOut` | 2 | `CCEaseSineInOut` | `[EQ]` | Used by panel and track movement. |
+| [ ] | `CCFileUtils` | 2 | Browser URL resolution | `[DEFERRED]` | iOS suffix/fallback setup is not applicable to the web target. |
+| [ ] | `CCGLView` | 2 | `<canvas>` | `[DEFERRED]` | iOS OpenGL view setup is platform-only. |
+| [x] | `CCRotateBy` | 2 | `CCRotateBy` | `[EQ]` | Roll and selection-ring animations work. |
+| [ ] | `CCTexture2D` | 2 | Browser image/canvas | `[DEFERRED]` | Pixel format and PVR configuration are platform-only. |
+| [ ] | `CCTintTo` | 2 | `CCTintTo` | `[PARTIAL]` | RGB interpolation exists; rendering currently reproduces grayscale dock tint only. |
+| [ ] | `CCDirectorIOS` | 1 | Browser director | `[DEFERRED]` | iOS-specific director subclass is not applicable. |
+| [x] | `CCMenuItem` | 1 | `CCMenuItemImage` | `[EQ]` | The active concrete item behavior is covered. |
+| [ ] | `CCRotateTo` | 1 | `CCRotateBy` substitute | `[PARTIAL]` | Current roll animation reaches the intended spin but lacks exact absolute-angle semantics. |
+| [x] | `CCSpriteFrame` | 1 | `CCSpriteFrame` | `[EQ]` | Active dice frames use source rectangles correctly. |
+
+## Core API And Property Inventory
+
+These rows capture high-volume APIs that class counts alone hide.
+
+| Checklist | API/property family | References | Status | Web notes |
+|---|---|---:|---|---|
+| [x] | Position (`position`, `setPosition:`) | 330 | `[EQ]` | Bottom-left coordinates and parent transforms are preserved. |
+| [x] | `addChild:z:tag:` family | 249 | `[PARTIAL]` | Ordering/tagging work; node-vs-negative-z visitation order differs. |
+| [x] | `getChildByTag:` | 120 | `[EQ]` | Direct child lookup is equivalent. |
+| [ ] | Anchor point | 95 | `[PARTIAL]` | Transform semantics work; text metric differences make labels appear offset despite correct anchors. |
+| [x] | Sprite file construction | 98 | `[EQ]` | Original assets are preloaded and rendered directly. |
+| [x] | Visibility | 75 | `[EQ]` | Visibility gates rendering and hit testing. |
+| [ ] | Color/tint | 69 | `[PARTIAL]` | Grayscale brightness works. Ownership tint and arbitrary RGB modulation do not. |
+| [x] | `buttonFromImage` helpers | 63 | `[EQ]` | Normal/pressed/disabled and labels are reproduced. |
+| [ ] | `contentSize` | 62 | `[PARTIAL]` | Images and labels own sizes, but constrained text dimensions and child-derived sizes differ. |
+| [x] | `runAction:` | 46 | `[EQ]` | Concurrent tracks are supported. |
+| [x] | Opacity | 45 | `[EQ]` | Cascades through descendants as expected for active UI. |
+| [ ] | Touch enabled flags | 28 | `[PARTIAL]` | Interactive/enable state exists; generalized Cocos dispatcher semantics do not. |
+| [x] | `removeChild:` | 23 | `[EQ]` | Parent clearing and cleanup are sufficient for current nodes. |
+| [x] | `stopAllActions` | 18 | `[EQ]` | Stops all tracks on the target node. |
+| [ ] | `boundingBox` | 15 | `[MISSING]` | Hand-authored hit boxes currently substitute transformed sprite bounds. |
+| [x] | Scale | 15 | `[EQ]` | Node and sprite scaling work; some original call sites are not yet mirrored. |
+| [ ] | `setBlendFunc:` | 11 | `[MISSING]` | Destination-color ownership overlays and additive glows are absent. |
+| [ ] | Targeted touch delegate | 11 | `[PARTIAL]` | Numeric priority exists; multiple delegates/pass-through are not generalized. |
+| [x] | Children enumeration | 9 | `[EQ]` | Direct child arrays preserve order. |
+| [x] | `setTexture:` | 8 | `[EQ]` | Image replacement is used by cards and mini-HUD frames. |
+| [ ] | `childBounds` | 7 | `[MISSING]` | Orbitals/cards use explicit hit rectangles instead of child unions. |
+| [x] | Rotation | 7 | `[EQ]` | Clockwise Cocos angle convention is preserved. |
+| [x] | `replaceScene:` | 6 | `[EQ]` | Main flow uses scene replacement. |
+| [x] | `convertToNodeSpace:` | 5 | `[EQ]` | Inverse nested transforms are tested. |
+| [x] | `convertToWorldSpace:` | 5 | `[EQ]` | Nested world transforms are tested. |
+| [ ] | `pushScene:` | 5 | `[DEFERRED]` | Rules/help and modals use browser/direct scene alternatives. |
+| [x] | `convertToGL:` | 4 | `[EQ]` | CSS-scaled pointer coordinates convert once at the boundary. |
+| [ ] | `popScene` | 3 | `[DEFERRED]` | Scene-stack navigation is currently unnecessary. |
+| [x] | Atlas add / frame lookup / display | 3 | `[EQ]` | Exact active dice atlas path is covered. |
+| [ ] | Scheduling (`schedule`, once, unschedule) | 3 | `[PARTIAL]` | RAF updates and `setTimeout` substitute current gameplay timers. |
+| [x] | Remove all children | 1 | `[EQ]` | Equivalent cleanup exists. |
+| [x] | `winSize` | 24 | `[EQ]` | Fixed `768x1024` design size substitutes director queries. |
+
+## Rendering And Interaction Semantics
+
+| Checklist | Semantic area | Status | Verified gap / next action |
+|---|---|---|---|
+| [ ] | Label baseline and dimensions | `[PARTIAL]` | Add fixed dimensions, horizontal/vertical alignment and actual ascent/descent to `CCLabelTTF`. This is the root fix for numeric labels appearing too high. |
+| [ ] | BMFont descriptions | `[MISSING]` | Original symbol glyphs and centered line metrics are not represented. Current readable prose is functionally complete but not pixel-equivalent. |
+| [ ] | Destination-color blending | `[MISSING]` | Needed for player-color HUD corners and region ownership overlays (`GL_DST_COLOR`, `GL_ONE_MINUS_SRC_ALPHA`). |
+| [ ] | Additive blending | `[MISSING]` | Needed for die/roll/done/region glows and several flare/resource effects (`GL_SRC_ALPHA`, `GL_ONE`). |
+| [ ] | Region border/ownership overlay | `[MISSING]` | Assets exist in the iOS project but are not rendered by the web `RegionLayer`. Tint support is not sufficient without blend modes. |
+| [ ] | Negative-z node visitation | `[PARTIAL]` | Director draws a node before all children; Cocos draws negative-z children first. |
+| [ ] | Child bounds and transformed rectangles | `[MISSING]` | Add `boundingBox`, `childBounds`, inset and union helpers; replace manual facility/card hit boxes incrementally. |
+| [ ] | General touch pass-through | `[PARTIAL]` | Docked-die forwarding fixes Lunar/Raiders. General `swallowsTouches:NO` behavior remains absent. |
+| [ ] | Tray culling and shadows | `[PARTIAL]` | Web pixel-clips the tray. Original culls whole cards and lets authored border/shadow pixels remain visible. |
+| [ ] | Scrollable game log | `[PARTIAL]` | Correct aperture and bottom-following lines now render, but direct touch scrolling is not implemented. |
+| [ ] | Resource and HUD particles | `[MISSING]` | Original `LayerHUDPort.particleWithSprite` motion/fade/scale effects are not ported. |
+| [ ] | Roll/done/region glows | `[MISSING]` | Artwork exists; requires additive blend state and repeat actions at the original call sites. |
+
+## Reported Fidelity Issues
+
+| Checklist | Reported issue | Verified cause | Root fix |
+|---|---|---|---|
+| [ ] | Numeric labels look too high | Browser `CCLabelTTF` always uses intrinsic `measureText` width and `1.2em` height with top-baseline drawing. Original mini-HUD labels use fixed `30x30` and score uses `50x60` constrained textures. | Implement label dimensions/alignment and font ascent/descent, then use original boxes in current and mini HUDs. |
+| [ ] | Log clips oddly near menu | Current `172x142` clip is literal, but Canvas text has no native `UITextView` scrolling/insets and may not match the artwork aperture. | Define the aperture from HUD artwork, add padding and drag/wheel scrolling while keeping bottom-follow mode. |
+| [ ] | Tech descriptions are misaligned | Original `CCLabelBMFont` centers wrapped lines in `160/324`-wide columns; `WrappedTextBox` is left-aligned. | Add centered wrapped-text alignment immediately; BMFont glyph metrics are the full-fidelity follow-up. |
+| [ ] | Tech tray border/shadow cues clip | Web uses a hard pixel scissor at `331x91` / `182x202`; original hides whole off-range cards rather than clipping card pixels. | Replace exact pixel clip with original index visibility culling or expand clip to preserve authored shadow extent. |
+| [ ] | Dice overlap Undo/Redo | Tray centers match original, but original `SpriteShip` is scaled to `0.8`; web ship sprites are currently full-size. | Apply original `0.8` scale to ship visuals/hit areas; keep tray coordinates and controls unchanged. |
+| [ ] | Territory ownership tint absent | Region border/overlay assets and blend modes are not used. | Add sprite blend modes, then port `LayerRegion.updateLabels` border and ownership overlay behavior. |
+
+## Major Functional Gaps
+
+The intended 20-card deck and core facilities are present. Remaining major gaps are primarily behavior depth and fidelity:
+
+| Checklist | Gap | Impact |
+|---|---|---|
+| [ ] | Personality-specific `ExhaustiveAI` | Cadet, Spacer, Admiral and Pirate currently share the SimpleAI fallback and do not evaluate all tech/facility strategies. |
+| [ ] | Cancellable/step-back selection queues | Pending multi-step tech and colony actions cannot fully reproduce original queue cancel/undo behavior. |
+| [ ] | Options scene and colorblind dice | Main-menu OPTIONS is not a complete scene; original alternate green dice and preference UI are absent. |
+| [ ] | Generalized Cocos touch dispatcher | Manual forwarding handles known overlap cases, but future overlapping targets can still diverge from targeted delegate ordering. |
+| [ ] | Full render/blend fidelity | Region ownership overlays, HUD tint blending, glows and several resource effects remain absent. |
+| [ ] | Full animation coverage | Core card, die, panel, menu and ship warp animations exist; resource particles and several glows do not. |
+
+Out of scope by project decision: Game Center, achievements, landscape layouts, expansions, and legacy iPhone scenes.
+
+## Prioritized Milestones
+
+### 1. Text And HUD Geometry
+
+- [ ] Add `CCLabelTTF` fixed dimensions and alignment.
+- [ ] Correct numeric score/resource baselines in current and mini HUDs.
+- [ ] Restore original `0.8` ship scale and verify tray/control separation.
+- [ ] Center tech-description wrapping.
+- [ ] Correct game-log aperture/insets and add scrolling.
+- [ ] Replace exact tray pixel clipping with original whole-card culling/shadow behavior.
+
+### 2. Blend Modes And Territory Overlays
+
+- [ ] Add sprite blend state for destination-color and additive rendering.
+- [ ] Port region border, majority overlay and selected border behavior.
+- [ ] Port current/mini HUD corner and edge tint blending through the shim.
+- [ ] Add roll/done/die/region glow behavior.
+
+### 3. Scene Graph And Input Parity
+
+- [ ] Implement negative-z child visitation.
+- [ ] Implement transformed `boundingBox` and `childBounds` union/inset.
+- [ ] Generalize targeted touch delivery and pass-through.
+- [ ] Make pending selection flows cancellable and step-back aware.
+
+### 4. Remaining Product Behavior
+
+- [ ] Port personality-aware AI evaluation and tech use.
+- [ ] Implement the Options scene and colorblind dice preference.
+- [ ] Add remaining resource/ship particles and minor transitions.
+
+### 5. Visual Regression Harness
+
+- [ ] Capture fixed `768x1024` reference states for 2/3/4 players.
+- [ ] Compare menu, setup, turn start, midgame, expanded panels, raids and game-over.
+- [ ] Add mobile/desktop containment and critical pixel-presence checks.
+
+## Recount Commands
+
+Class/action symbol references:
+
+```sh
+active_files=(${(f)"$(rg --files alien-frontiers-ios/AlienFrontiers -g '*.m' \
+  | rg -v '/(AppDelegateOld|AlienFrontiersAppDelegate_|GCTurnBasedMatchHelper|HelloWorldLayer|iPadGameSceneOld|iPhoneGameScene)\\.m$')"})
+
+ruby -e 'text=ARGV.map{|f| File.file?(f) ? File.read(f) : nil}.compact.join("\n"); \
+  text.gsub!(%r{/\\*.*?\\*/}m," "); text.gsub!(%r{//.*$},""); \
+  counts=Hash.new(0); text.scan(/\\b(CC[A-Z][A-Za-z0-9_]*)\\b/){|m| counts[m[0]]+=1}; \
+  counts.sort_by{|k,v|[-v,k]}.each{|k,v| puts "%4d %s"%[v,k]}' $active_files
+```
+
+Web validation:
+
+```sh
+node --test alien-frontiers-web/tests/*.test.js
+for source_file in alien-frontiers-web/js/**/*.js alien-frontiers-web/js/*.js; do
+  node --check "$source_file"
+done
+```

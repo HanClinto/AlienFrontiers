@@ -25,6 +25,10 @@ coordinate system, centered sprite anchors, parent transforms, z-order, touch pr
 and sprite-frame atlases. Ported scenes and model classes keep the Objective-C structure
 and literal iPad coordinates where practical.
 
+See the [Cocos2D Web Shim Parity Audit](COCOS2D_SHIM_AUDIT.md) for active-source usage
+counts, semantic-equivalence status, known fidelity gaps, and the prioritized porting
+checklist.
+
 # Current Web Port
 
 The main menu and game setup screens are functional, including two-to-four-player
