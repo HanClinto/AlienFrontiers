@@ -250,6 +250,16 @@ test("every enabled tech card exposes its original visible description", () => {
   }
 });
 
+test("tech cards can be selected and highlighted on their owning opponent", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const opponent = state.players[1];
+  const card = opponent.cards[0];
+
+  assert.equal(state.selectTechCard(card), true);
+  assert.equal(opponent.selectedCard, card);
+  assert.equal(state.currentPlayer.selectedCard, null);
+});
+
 test("game log entries notify the HUD immediately", () => {
   const state = new GameState(2, [AIType.human, AIType.human]);
   const entries = [];

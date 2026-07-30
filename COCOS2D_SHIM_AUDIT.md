@@ -150,7 +150,7 @@ These rows capture high-volume APIs that class counts alone hide.
 |---|---|---|---|
 | [x] | Numeric labels look too high | Fixed by measured ascent/descent, centered alphabetic baselines, and original mini-HUD `30x30` / score `50x60` text boxes. | Browser validation confirms current and mini-HUD counters are centered in their authored cells. |
 | [ ] | Log clips oddly near menu | The original `172x142` aperture at `(40,36)` is restored and no longer overlaps the hint/header. | Add drag/wheel scrolling while keeping bottom-follow mode. |
-| [ ] | Tech descriptions are misaligned | Wrapped descriptions now use the original `160px` columns, centers, and vertically centered anchor behavior. | BMFont symbol glyphs and exact line metrics remain the full-fidelity follow-up. |
+| [x] | Tech descriptions are misaligned | Current HUD, Artifact detail, and mini-HUD inspectors use original columns/centers and vertically centered anchors. | BMFont symbol glyphs and exact line metrics remain a visual-fidelity follow-up. |
 | [x] | Tech tray border/shadow cues clip | Fixed by whole-card culling plus original frame-over-tray z-order in current and mini HUDs. | Browser crops confirm the foreground lip and shadow overlay the card bottoms. |
 | [x] | Dice overlap Undo/Redo | Restored `SpriteShip.scale = 0.8`, original portrait rolling centers after legacy node compensation, and atlas-sized hit bounds. | A six-die browser crop confirms both rows remain inside the recessed tray above Undo/Redo. |
 | [ ] | Territory ownership tint absent | Region border/overlay assets and blend modes are not used. | Add sprite blend modes, then port `LayerRegion.updateLabels` border and ownership overlay behavior. |
@@ -163,6 +163,7 @@ The intended 20-card deck and core facilities are present. Remaining major gaps 
 |---|---|---|
 | [ ] | Personality-specific `ExhaustiveAI` | The heuristic AI applies original aggression/noise/human prejudice, creates and spends Artifact credit, and opens/uses favorable Market trades. Exhaustive state search and active tech/facility sequencing remain unported. |
 | [x] | Cancellable/step-back selection queues | Undo steps Gravity, Polarity, and Teleporter back one queue stage while retaining the first selection; at stage zero it safely cancels the active raid or tech queue. |
+| [x] | Card inspection and card raids | Artifact detail shows both abilities; current and opponent trays select/highlight cards; mini inspectors show abilities and an explicit `RAID CARD` action that completes theft. |
 | [ ] | Options scene and colorblind dice | Main-menu OPTIONS is not a complete scene; original alternate green dice and preference UI are absent. |
 | [ ] | Generalized Cocos touch dispatcher | Manual forwarding handles known overlap cases, but future overlapping targets can still diverge from targeted delegate ordering. |
 | [ ] | Full render/blend fidelity | Region ownership overlays, HUD tint blending, glows and several resource effects remain absent. |

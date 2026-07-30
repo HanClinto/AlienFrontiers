@@ -233,10 +233,10 @@ export class GameState {
   }
 
   selectTechCard(card) {
-    if (!this.currentPlayer.cards.includes(card)) {
+    if (!card?.owner || !card.owner.cards.includes(card)) {
       return false;
     }
-    this.currentPlayer.selectedCard = card;
+    card.owner.selectedCard = card;
     this.postEvent(EventName.techCardsChanged, card);
     return true;
   }

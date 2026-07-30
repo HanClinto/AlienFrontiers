@@ -335,10 +335,15 @@ export class CCLabelTTF extends CCNode {
     this.renderFontSize = this.fontSize * scale;
     context.font = `${this.renderFontSize}px "${this.fontName}"`;
     const metrics = context.measureText(this.text);
+    const lineMetrics = context.measureText("Mg0123456789");
     this.textMetrics = {
       width: Math.max(1, metrics.width),
-      ascent: metrics.actualBoundingBoxAscent || fallbackMetrics.ascent * scale,
-      descent: metrics.actualBoundingBoxDescent || fallbackMetrics.descent * scale,
+      ascent: lineMetrics.fontBoundingBoxAscent
+        || lineMetrics.actualBoundingBoxAscent
+        || fallbackMetrics.ascent * scale,
+      descent: lineMetrics.fontBoundingBoxDescent
+        || lineMetrics.actualBoundingBoxDescent
+        || fallbackMetrics.descent * scale,
     };
     this.contentSize = this.dimensions
       ? { ...this.dimensions }

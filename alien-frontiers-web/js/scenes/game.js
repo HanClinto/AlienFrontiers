@@ -904,6 +904,31 @@ class ArtifactCardDetail extends CCNode {
     this.title1 = this.detailLabel("", ccp(halfWidth, height - 63));
     this.title2 = this.detailLabel("", ccp(halfWidth, height - 77));
     this.creditLabel = this.detailLabel("", ccp(halfWidth, 84));
+    this.title1.setAnchorPoint(ccp(0.5, 1));
+    this.title2.setAnchorPoint(ccp(0.5, 1));
+
+    this.textTray = new CCSprite(scene.assets.image("aa_card_background.png"));
+    this.textTray.setPosition(ccp(halfWidth, 96));
+    this.background.addChild(this.textTray, 1);
+    this.powerText = new WrappedTextBox(130, 56, {
+      fontSize: 10,
+      lineHeight: 12,
+      textAlign: "center",
+      verticalAlign: "center",
+    });
+    this.powerText.setPosition(ccp(halfWidth - 65, 101));
+    this.background.addChild(this.powerText, 2);
+    this.discardText = new WrappedTextBox(130, 56, {
+      fontSize: 10,
+      lineHeight: 12,
+      textAlign: "center",
+      verticalAlign: "center",
+    });
+    this.discardText.setPosition(ccp(halfWidth - 65, 31));
+    this.background.addChild(this.discardText, 2);
+    this.orDivider = new CCSprite(scene.assets.image("aa_OR_bar.png"));
+    this.orDivider.setPosition(ccp(halfWidth, 96));
+    this.background.addChild(this.orDivider, 2);
     this.cardImage = null;
   }
 
@@ -927,6 +952,13 @@ class ArtifactCardDetail extends CCNode {
     this.background.addChild(this.cardImage, 2);
     this.title1.setString(card.title1);
     this.title2.setString(card.title2);
+    this.powerText.setText(card.powerText);
+    this.discardText.setText(card.discardText);
+    this.orDivider.visible = Boolean(card.discardText);
+    this.powerText.setPosition(ccp(
+      this.background.contentSize.width * 0.5 - 65,
+      card.discardText ? 101 : 68,
+    ));
     this.refresh();
     this.visible = true;
   }
@@ -952,6 +984,60 @@ class ArtifactCardDetail extends CCNode {
   close() {
     this.visible = false;
     this.card = null;
+  }
+}
+
+class MiniTechCardInspector extends CCNode {
+  constructor(scene, player) {
+    super();
+    this.scene = scene;
+    this.player = player;
+
+    this.powerText = new WrappedTextBox(170, 62, {
+      fontSize: 10,
+      lineHeight: 12,
+      textAlign: "center",
+      verticalAlign: "center",
+    });
+    this.powerText.setPosition(ccp(80, 28));
+    this.addChild(this.powerText, 1);
+    this.discardText = new WrappedTextBox(170, 62, {
+      fontSize: 10,
+      lineHeight: 12,
+      textAlign: "center",
+      verticalAlign: "center",
+    });
+    this.discardText.setPosition(ccp(80, -42));
+    this.addChild(this.discardText, 1);
+    this.divider = new CCSprite(scene.assets.image("hud_port_or_bar.png"));
+    this.divider.setPosition(ccp(165, 26));
+    this.addChild(this.divider, 1);
+    this.raidButton = scene.buttonFromImage(
+      "menu_button_104.png",
+      "menu_button_104_active.png",
+      () => this.raidSelectedCard(),
+      { label: "RAID CARD", fontSize: 11, fontColor: "#000" },
+    );
+    this.raidButton.setPosition(ccp(165, -45));
+    this.addChild(this.raidButton, 2);
+  }
+
+  raidSelectedCard() {
+    const card = this.player.selectedCard;
+    const currentPlayer = this.scene.state.currentPlayer;
+    if (card && currentPlayer.selectRaidCard(card)) {
+      currentPlayer.finishRaid();
+    }
+  }
+
+  refresh() {
+    const card = this.player.selectedCard;
+    this.powerText.setText(card?.powerText ?? "");
+    this.discardText.setText(card?.discardText ?? "");
+    this.divider.visible = Boolean(card?.powerText && card?.discardText);
+    const canRaid = Boolean(card && this.scene.state.currentPlayer.canRaidCard(card));
+    this.raidButton.visible = canRaid;
+    this.scene.setButtonIsEnabled(this.raidButton, canRaid);
   }
 }
 
@@ -1148,9 +1234,13 @@ class PlayerMiniHUD extends CCNode {
     this.dieIcon.setPosition(ccp(30, -406));
     this.addChild(this.dieIcon, 2);
 
-    this.techTray = new TechCardTray(scene, "wide", (card) => this.selectRaidCard(card));
+    this.techTray = new TechCardTray(scene, "wide", (card) => this.selectCard(card));
     this.techTray.setPosition(ccp(-88, -109));
     this.addChild(this.techTray, 0);
+
+    this.techInspector = new MiniTechCardInspector(scene, player);
+    this.techInspector.setPosition(ccp(-165, -319));
+    this.addChild(this.techInspector, 15);
 
     this.raidControls = [];
     this.addRaidControl("ore", 1, ccp(-76, -458), "hud_button_RO_up.png", "hud_button_ro_up_active.png", "hud_button_ro_up_inactive.png");
@@ -1190,11 +1280,8 @@ class PlayerMiniHUD extends CCNode {
     this.raidControls.push({ button, resource, delta });
   }
 
-  selectRaidCard(card) {
-    const currentPlayer = this.scene.state.currentPlayer;
-    if (currentPlayer.isRaiding && this.player !== currentPlayer) {
-      currentPlayer.selectRaidCard(card);
-    }
+  selectCard(card) {
+    this.scene.state.selectTechCard(card);
   }
 
   toggleExpanded() {
@@ -1242,6 +1329,7 @@ class PlayerMiniHUD extends CCNode {
     this.colonyLabel.setString(this.player.coloniesLeft);
     this.diceLabel.setString(this.player.activeShips.length);
     this.techTray.refresh(this.player);
+    this.techInspector.refresh();
     this.raidOreLabel.setString(this.player.oreToRaid);
     this.raidFuelLabel.setString(this.player.fuelToRaid);
     this.raidOreLabel.visible = raidVictim;

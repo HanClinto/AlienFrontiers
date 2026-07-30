@@ -32,6 +32,20 @@ test("labels preserve explicit Cocos dimensions across text changes", () => {
   assert.deepEqual(label.contentSize, { width: 30, height: 30 });
 });
 
+test("numeric labels keep stable line metrics across digit shapes", () => {
+  const label = new CCLabelTTF("1", "DIN-Black", 22, "#000", {
+    dimensions: { width: 30, height: 30 },
+  });
+  const oneMetrics = { ascent: label.textMetrics.ascent, descent: label.textMetrics.descent };
+  label.setString("7");
+  const sevenMetrics = { ascent: label.textMetrics.ascent, descent: label.textMetrics.descent };
+  label.setString("8");
+  const eightMetrics = { ascent: label.textMetrics.ascent, descent: label.textMetrics.descent };
+
+  assert.deepEqual(sevenMetrics, oneMetrics);
+  assert.deepEqual(eightMetrics, oneMetrics);
+});
+
 test("labels fit long captions inside fixed button text boxes", () => {
   const label = new CCLabelTTF("RESUME GAME", "DIN-Black", 24, "#000", {
     dimensions: { width: 130, height: 45 },
