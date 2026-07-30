@@ -66,7 +66,11 @@ game states autosave locally, and unfinished
 games can be resumed from the main menu after navigation or reload. Original recursive
 undo/redo controls restore complete model snapshots without crossing roll or turn boundaries,
 and their history survives Resume. Exhaustive state search,
-full AI tech planning, and additional animation coverage are still being ported.
+full AI tech planning, and additional animation coverage are still being ported. The
+ExhaustiveAI successor uses rule-aware fungible-die keys, transposition pruning, bounded
+anytime beam search, and hard time/node/child budgets. On timeout it executes the best
+fully evaluated move; SimpleAI is reserved for the zero-successor case. A deterministic
+late-game stress fixture gates six-die, dense-dock, field, tech, Data, Plasma, and raid states.
 
 Run the static site locally from the repository root:
 

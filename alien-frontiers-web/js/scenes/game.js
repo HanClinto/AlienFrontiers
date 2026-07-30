@@ -3,6 +3,7 @@ import { CCCallFunc, CCDelayTime, CCEaseElasticInOut, CCEaseElasticOut, CCEaseSi
 import { CCLayerColor, CCLabelTTF, CCNode, CCSprite, ccp } from "../cocos/core.js";
 import { AIType, EventName } from "../game/constants.js";
 import { GameHistory } from "../game/game-history.js";
+import { ExhaustiveAI } from "../game/exhaustive-ai.js";
 import { SimpleAI } from "../game/simple-ai.js";
 
 const PLAYER_DIE_PREFIXES = ["rd", "gn", "bl", "yl"];
@@ -1567,10 +1568,10 @@ export class GameScene extends AFLayer {
       () => this.rollShips(),
       { label: "ROLL", fontSize: 16 },
     );
-    this.rollButton.setPosition(ccp(260, -25));
+    this.rollButton.setPosition(ccp(260, -20));
     this.uiFrame.addChild(this.rollButton, 2);
     this.rollButtonGlow = new CCSprite(this.assets.image("button_roll_glow.png"));
-    this.rollButtonGlow.setPosition(ccp(260, -25));
+    this.rollButtonGlow.setPosition(ccp(260, -20));
     this.rollButtonGlow.blendMode = "lighter";
     this.rollButtonGlow.visible = false;
     this.uiFrame.addChild(this.rollButtonGlow, 2);
@@ -2019,7 +2020,15 @@ export class GameScene extends AFLayer {
       ) {
         return;
       }
-      SimpleAI.step(this.state);
+      const player = this.state.currentPlayer;
+      const shouldSearch = player.initialRollDone
+        && !player.isRaiding
+        && player.coloniesToLaunch === 0
+        && !this.state.pendingTechCard
+        && player.numUndockedShips > 0;
+      if (!shouldSearch || !ExhaustiveAI.step(this.state)) {
+        SimpleAI.step(this.state);
+      }
       this.scheduleAI();
     }, 650);
   }
