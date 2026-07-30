@@ -41,7 +41,8 @@ shuffled and dealt into the original current/opponent trays; Alien City, Alien M
 and Resource Cache passive effects are active, along with Booster Pod, Stasis Beam, and
 Polarity Device die powers, Gravity Manipulator transfers, and Booster/Stasis/Gravity
 region-field discards, plus Data Crystal bonus borrowing and Positron placement. Orbital
-Teleporter can reuse a docked die at a different facility. Heinlein, Van Vogt, Herbert,
+Teleporter can reuse a docked die at a different facility, while Plasma Cannon removes
+or destroys eligible enemy ships. Heinlein, Van Vogt, Herbert,
 Lem, Bradbury, Asimov, and Pohl
 majority bonuses affect their connected systems. Original background music and core UI,
 dice, docking, colony, card, ship, and turn effects play after the first interaction;

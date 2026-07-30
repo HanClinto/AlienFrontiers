@@ -1090,7 +1090,7 @@ export class GameScene extends AFLayer {
     this.raidConfirmButton = this.buttonFromImage(
       "ondark_button.png",
       "ondark_button_active.png",
-      () => this.state.currentPlayer.finishRaid(),
+      () => this.confirmSelection(),
       { inactiveImage: "ondark_button_inactive.png", label: "OK", fontSize: 16 },
     );
     this.raidConfirmButton.setPosition(ccp(322, 112));
@@ -1209,6 +1209,14 @@ export class GameScene extends AFLayer {
     this.state.gotoNextPlayer();
   }
 
+  confirmSelection() {
+    if (this.state.currentPlayer.isRaiding) {
+      this.state.currentPlayer.finishRaid();
+    } else {
+      this.state.confirmPendingTechPower();
+    }
+  }
+
   selectRegionAt(point) {
     const region = regionAtBoardPoint(this.state, point);
     if (region) {
@@ -1232,6 +1240,10 @@ export class GameScene extends AFLayer {
       && this.state.pendingTechAction === "discard";
     const isSelectingPowerRegion = isHumanTurn
       && this.state.pendingTechAction === "power-region";
+    const isSelectingPlasma = isHumanTurn
+      && this.state.pendingTechAction === "power-multi-ship";
+    const isSelectingDiscardShip = isHumanTurn
+      && this.state.pendingTechAction === "discard-ship";
     if (isHumanTurn && this.aiTimer) {
       clearTimeout(this.aiTimer);
       this.aiTimer = null;
@@ -1239,10 +1251,12 @@ export class GameScene extends AFLayer {
     this.rollButton.visible = !player.initialRollDone;
     this.setButtonIsEnabled(this.rollButton, isHumanTurn);
     this.setButtonIsEnabled(this.doneButton, isHumanTurn && this.state.canEndTurn);
-    this.raidConfirmButton.visible = player.isRaiding;
+    this.raidConfirmButton.visible = player.isRaiding || isSelectingPlasma;
     this.setButtonIsEnabled(
       this.raidConfirmButton,
-      isHumanTurn && player.raidSelectionComplete,
+      isHumanTurn && (
+        player.isRaiding ? player.raidSelectionComplete : this.state.pendingTechTargets.length > 0
+      ),
     );
     this.playerLabel.setString(player.vps);
     this.oreLabel.setString(player.ore);
@@ -1253,24 +1267,30 @@ export class GameScene extends AFLayer {
       ? player.isRaiding ? "SELECT UP TO 4 RESOURCES OR ONE TECH"
         : isSelectingFieldRegion ? "SELECT A REGION FOR THE FIELD EFFECT"
         : isSelectingPowerRegion ? "SELECT AN OCCUPIED REGION BONUS TO BORROW"
+        : isSelectingDiscardShip ? "SELECT ONE DOCKED ENEMY SHIP TO DESTROY"
         : this.state.pendingTechCard ? this.techPowerHint(this.state.pendingTechCard)
         : isSelectingRegion ? "SELECT A REGION FOR YOUR COLONY"
         : player.initialRollDone ? "SELECT DICE, THEN A FACILITY" : "ROLL YOUR SHIPS"
       : "AI TURN");
     this.currentTechTray.refresh(player);
     const selectedCard = player.selectedCard;
-    const candidateShips = selectedCard?.type === "orbital-teleporter"
-      ? player.activeShips
-      : player.undockedShips;
+    const candidateShips = selectedCard?.type === "plasma-cannon"
+      ? this.state.players.flatMap((candidate) => candidate.activeShips)
+      : selectedCard?.type === "orbital-teleporter"
+        ? player.activeShips
+        : player.undockedShips;
     const canUseSelected = selectedCard && (
       selectedCard.type === "data-crystal"
         ? this.state.regions.some((region) => selectedCard.canUsePowerOnRegion(region))
+        : selectedCard.type === "plasma-cannon"
+          ? candidateShips.some((ship) => selectedCard.canTargetPlasmaShip(ship))
         : selectedCard.canUsePower
           && candidateShips.some((ship) => selectedCard.canUsePowerOnShip(ship))
     );
     this.techUseButton.visible = Boolean(canUseSelected) && !this.state.pendingTechCard;
     this.techDiscardButton.visible = Boolean(
-      selectedCard?.canUseDiscard && selectedCard.hasImplementedRegionDiscard,
+      selectedCard?.canUseDiscard
+      && (selectedCard.hasImplementedRegionDiscard || selectedCard.hasImplementedShipDiscard),
     ) && !this.state.pendingTechCard;
     this.regionHitArea.enabled = isSelectingRegion
       || isSelectingFieldRegion
@@ -1292,6 +1312,9 @@ export class GameScene extends AFLayer {
   }
 
   techPowerHint(card) {
+    if (card.type === "plasma-cannon") {
+      return "SELECT DOCKED ENEMY SHIPS FROM ONE FACILITY";
+    }
     if (card.type === "gravity-manipulator") {
       return this.state.pendingTechTargets.length === 0
         ? "SELECT AN UNDOCKED DIE TO INCREASE"

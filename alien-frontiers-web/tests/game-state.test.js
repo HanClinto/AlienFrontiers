@@ -671,3 +671,49 @@ test("Orbital Teleporter cannot target Maintenance or Terraforming ships", () =>
   player.fuel = 2;
   assert.equal(state.beginTechPower(teleporter), false);
 });
+
+test("Plasma Cannon removes payable enemy ships from one orbital", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const [player, victim] = state.players;
+  const plasma = state.allTech.find((card) => card.type === TechCardType.plasmaCannon);
+  player.cards = [];
+  player.addCard(plasma);
+  player.fuel = 2;
+  victim.activeShips[0].value = 3;
+  victim.activeShips[1].value = 4;
+  state.solarConverter.dockShip(victim.activeShips[0]);
+  state.solarConverter.dockShip(victim.activeShips[1]);
+
+  assert.equal(state.beginTechPower(plasma), true);
+  assert.equal(state.usePendingTechOnShip(victim.activeShips[0]), true);
+  assert.equal(state.usePendingTechOnShip(victim.activeShips[1]), true);
+  assert.equal(state.confirmPendingTechPower(), true);
+  assert.equal(victim.activeShips.slice(0, 2).every((ship) => ship.dock.orbital === state.maintenanceBay), true);
+  assert.equal(player.fuel, 0);
+  assert.equal(plasma.tapped, true);
+});
+
+test("Plasma Cannon enforces one orbital and discard destroys only surplus ships", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const [player, victim] = state.players;
+  const plasma = state.allTech.find((card) => card.type === TechCardType.plasmaCannon);
+  player.cards = [];
+  player.addCard(plasma);
+  player.fuel = 3;
+  state.solarConverter.dockShip(victim.activeShips[0]);
+  state.lunarMine.dockShip(victim.activeShips[1]);
+  state.beginTechPower(plasma);
+  assert.equal(state.usePendingTechOnShip(victim.activeShips[0]), true);
+  assert.equal(state.usePendingTechOnShip(victim.activeShips[1]), false);
+
+  state.pendingTechCard = null;
+  state.pendingTechTargets = [];
+  state.pendingTechAction = null;
+  assert.equal(state.beginTechDiscard(plasma), true);
+  assert.equal(state.usePendingTechOnShip(victim.activeShips[0]), false);
+  victim.activateShip();
+  assert.equal(state.usePendingTechOnShip(victim.activeShips[0]), true);
+  assert.equal(victim.activeShips.length, 3);
+  assert.equal(victim.allShips[0].active, false);
+  assert.equal(state.techDiscardDeck.includes(plasma), true);
+});

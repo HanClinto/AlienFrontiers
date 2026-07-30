@@ -136,18 +136,22 @@ export class GameState {
   }
 
   beginTechPower(card) {
-    const candidateShips = card.type === "orbital-teleporter"
-      ? this.currentPlayer.activeShips
-      : this.currentPlayer.undockedShips;
+    const candidateShips = card.type === "plasma-cannon"
+      ? this.players.flatMap((player) => player.activeShips)
+      : card.type === "orbital-teleporter"
+        ? this.currentPlayer.activeShips
+        : this.currentPlayer.undockedShips;
     const hasTarget = card.type === "data-crystal"
       ? this.regions.some((region) => card.canUsePowerOnRegion(region))
+      : card.type === "plasma-cannon"
+        ? candidateShips.some((ship) => card.canTargetPlasmaShip(ship))
       : card.type === "gravity-manipulator"
       ? candidateShips.some((shipToRaise) =>
         card.canUsePowerOnShip(shipToRaise)
         && candidateShips.some((shipToLower) =>
           card.canLowerGravityShip(shipToLower, shipToRaise)))
       : candidateShips.some((ship) => card.canUsePowerOnShip(ship));
-    const canStart = card.type === "data-crystal"
+    const canStart = card.type === "data-crystal" || card.type === "plasma-cannon"
       ? card.owner === this.currentPlayer && !card.tapped
       : card.canUsePower;
     if (!this.currentPlayer.cards.includes(card) || !canStart || !hasTarget) {
@@ -155,7 +159,9 @@ export class GameState {
     }
     this.pendingTechCard = card;
     this.pendingTechTargets = [];
-    this.pendingTechAction = card.type === "data-crystal" ? "power-region" : "power";
+    this.pendingTechAction = card.type === "data-crystal"
+      ? "power-region"
+      : card.type === "plasma-cannon" ? "power-multi-ship" : "power";
     this.postEvent(EventName.techCardsChanged, card);
     return true;
   }
@@ -165,6 +171,36 @@ export class GameState {
       return false;
     }
     const card = this.pendingTechCard;
+    if (this.pendingTechAction === "discard-ship") {
+      if (!card.useDiscardOnShip(ship)) {
+        return false;
+      }
+      this.pendingTechCard = null;
+      this.pendingTechTargets = [];
+      this.pendingTechAction = null;
+      this.postEvent(EventName.techCardsChanged, card);
+      return true;
+    }
+    if (card.type === "plasma-cannon") {
+      const selectedIndex = this.pendingTechTargets.indexOf(ship);
+      if (selectedIndex >= 0) {
+        this.pendingTechTargets.splice(selectedIndex, 1);
+        if (ship.isSelected) {
+          ship.toggleSelect();
+        }
+        this.postEvent(EventName.techCardsChanged, card);
+        return true;
+      }
+      if (!card.canTargetPlasmaShip(ship, this.pendingTechTargets)) {
+        return false;
+      }
+      this.pendingTechTargets.push(ship);
+      if (!ship.isSelected) {
+        ship.toggleSelect();
+      }
+      this.postEvent(EventName.techCardsChanged, card);
+      return true;
+    }
     if (card.type === "gravity-manipulator") {
       if (this.pendingTechTargets.length === 0) {
         if (!card.canUsePowerOnShip(ship)) {
@@ -230,13 +266,28 @@ export class GameState {
     if (
       !this.currentPlayer.cards.includes(card)
       || !card.canUseDiscard
-      || !card.hasImplementedRegionDiscard
+      || (!card.hasImplementedRegionDiscard && !card.hasImplementedShipDiscard)
     ) {
       return false;
     }
     this.pendingTechCard = card;
     this.pendingTechTargets = [];
-    this.pendingTechAction = "discard";
+    this.pendingTechAction = card.hasImplementedShipDiscard ? "discard-ship" : "discard";
+    this.postEvent(EventName.techCardsChanged, card);
+    return true;
+  }
+
+  confirmPendingTechPower() {
+    if (
+      this.pendingTechAction !== "power-multi-ship"
+      || !this.pendingTechCard?.usePlasmaPower(this.pendingTechTargets)
+    ) {
+      return false;
+    }
+    const card = this.pendingTechCard;
+    this.pendingTechCard = null;
+    this.pendingTechTargets = [];
+    this.pendingTechAction = null;
     this.postEvent(EventName.techCardsChanged, card);
     return true;
   }

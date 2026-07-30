@@ -74,6 +74,10 @@ export class TechCard {
     ].includes(this.type);
   }
 
+  get hasImplementedShipDiscard() {
+    return this.type === TechCardType.plasmaCannon;
+  }
+
   canUsePowerOnShip(ship) {
     if (!this.canUsePower || !ship || ship.player !== this.owner) {
       return false;
@@ -176,6 +180,76 @@ export class TechCard {
     this.owner.borrowingRegion = region;
     this.setTapped(true);
     this.state.postEvent("resources-changed", this.owner);
+    return true;
+  }
+
+  plasmaCost(shipCount) {
+    const discount = this.state.pohlFoothills.playerHasBonus(this.owner) ? 1 : 0;
+    return shipCount - discount;
+  }
+
+  canTargetPlasmaShip(ship, selectedShips = []) {
+    if (
+      this.type !== TechCardType.plasmaCannon
+      || this.owner !== this.state.currentPlayer
+      || this.tapped
+      || !ship
+      || ship.player === this.owner
+      || !ship.docked
+      || ship.dock.orbital === this.state.maintenanceBay
+    ) {
+      return false;
+    }
+    if (
+      selectedShips.length > 0
+      && selectedShips[0].dock.orbital !== ship.dock.orbital
+    ) {
+      return false;
+    }
+    return this.owner.fuel >= this.plasmaCost(selectedShips.length + 1);
+  }
+
+  usePlasmaPower(ships) {
+    if (
+      ships.length === 0
+      || ships.some((ship, index) => !this.canTargetPlasmaShip(ship, ships.slice(0, index)))
+    ) {
+      return false;
+    }
+    this.owner.fuel -= this.plasmaCost(ships.length);
+    for (const ship of ships) {
+      if (ship.dock.orbital === this.state.terraformingStation) {
+        ship.player.deactivateShip(ship);
+      } else {
+        this.state.maintenanceBay.dockShip(ship);
+      }
+      if (ship.isSelected) {
+        ship.toggleSelect();
+      }
+    }
+    this.setTapped(true);
+    this.state.postEvent("resources-changed", this.owner);
+    return true;
+  }
+
+  canDiscardOnShip(ship) {
+    return this.type === TechCardType.plasmaCannon
+      && this.canUseDiscard
+      && ship
+      && ship.player !== this.owner
+      && ship.docked
+      && ship.player.activeShips.length > 3;
+  }
+
+  useDiscardOnShip(ship) {
+    if (!this.canDiscardOnShip(ship)) {
+      return false;
+    }
+    const owner = this.owner;
+    ship.player.deactivateShip(ship);
+    owner.techsDiscarded += 1;
+    owner.removeCard(this);
+    this.state.discardTechCard(this);
     return true;
   }
 
