@@ -271,6 +271,23 @@ the desktop baseline. It remains a promising low-memory/mobile policy: every roo
 represented, dense heap is about 30 MiB, and latency is near 27 ms per overall decision under
 eight-worker contention.
 
+### Audited Legacy Evaluator 100-Game Gate
+
+25 seeds x 4 cyclic seat rotations = 100 games, seeds 40000-40024, 8 workers:
+
+| Strategy | Games | Wins | Win rate (95% CI) | Avg VP | Search-only latency | Avg nodes/search | DNF |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| LegacyCompact-12800 | 100 | 60 | 60.0% (50.2-69.1%) | 7.45 | 163.9 ms | 3,109.5 | 0% |
+| LegacyFairProbe-4 | 100 | 31 | 31.0% (22.8-40.6%) | 6.64 | 25.7 ms | 433.5 | 0% |
+| Corsair-400 | 100 | 8 | 8.0% (4.1-15.0%) | 5.57 | 42.0 ms | 352.6 | 0% |
+| Pioneer / Simple | 100 | 1 | 1.0% (0.2-5.4%) | 4.24 | 0 ms | 0 | 0% |
+
+After restoring the complete original-used evaluator weights, LegacyCompact beat Simple by
+59.0pp (paired 95% +49.0 to +68.0pp) with zero DNF and 0.14% fallback. FairProbe beat Simple
+by 30.0pp (+23.0 to +37.0pp). This is the first benchmark snapshot for the audited evaluator;
+compare future generations against this run or against Simple rather than assuming older
+pre-audit snapshots are directly interchangeable.
+
 ### Homesteader Expansion Smoke Test
 
 Command:

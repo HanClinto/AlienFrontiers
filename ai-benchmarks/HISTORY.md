@@ -1,6 +1,6 @@
 # AI Generation History
 
-Generated from 17 benchmark snapshots.
+Generated from 18 benchmark snapshots.
 
 ## Win Rate Trend
 
@@ -8,29 +8,29 @@ Series order: Corsair-C2, Tactician-400, Corsair-400, Pioneer, Corsair-1600, Cor
 
 ```mermaid
 xychart-beta
-    x-axis [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+    x-axis [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
     y-axis "Win rate (%)" 0 --> 100
-    line [45, 32, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
-    line [24, 21, null, null, null, 26, null, null, null, 32, 25, null, 26, null, null, null, null]
-    line [19, 31.25, 26, 26.75, 36, 36.5, null, 7, null, null, 43, null, 27, null, 8, null, 7]
-    line [12, 15.75, 16, 14.25, 11, 17.5, 22, 3, 12.8, 12, 19, 15, 7, 13.75, 3, 7, 3]
-    line [null, null, 30, 31.75, null, null, null, null, null, null, null, null, null, null, null, null, null]
-    line [null, null, 28, 27.25, null, null, null, null, null, null, null, null, null, null, null, null, null]
-    line [null, null, null, null, 33, null, null, null, null, null, null, null, 40, 27.25, null, null, null]
-    line [null, null, null, null, 20, null, null, null, null, null, null, null, null, null, null, null, null]
-    line [null, null, null, null, null, 20, null, null, null, 35, 13, null, null, null, null, null, null]
-    line [null, null, null, null, null, null, 51, null, 31.5, null, null, null, null, 28.25, null, null, null]
-    line [null, null, null, null, null, null, 26, null, 19.8, null, null, null, null, null, null, null, null]
-    line [null, null, null, null, null, null, 1, null, null, null, null, null, null, null, null, null, null]
-    line [null, null, null, null, null, null, null, 75, null, null, null, null, null, null, 50, 30, 60]
-    line [null, null, null, null, null, null, null, 15, null, null, null, null, null, null, null, null, null]
-    line [null, null, null, null, null, null, null, null, 35.9, null, null, 48, null, 30.75, null, null, null]
-    line [null, null, null, null, null, null, null, null, null, 21, null, null, null, null, null, null, null]
-    line [null, null, null, null, null, null, null, null, null, null, null, 33, null, null, null, null, null]
-    line [null, null, null, null, null, null, null, null, null, null, null, 4, null, null, null, null, null]
-    line [null, null, null, null, null, null, null, null, null, null, null, null, null, null, 39, 41, null]
-    line [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 22, null]
-    line [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 30]
+    line [45, 32, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+    line [24, 21, null, null, null, 26, null, null, null, 32, 25, null, 26, null, null, null, null, null]
+    line [19, 31.25, 26, 26.75, 36, 36.5, null, 7, null, null, 43, null, 27, 8, null, 8, null, 7]
+    line [12, 15.75, 16, 14.25, 11, 17.5, 22, 3, 12.8, 12, 19, 15, 7, 1, 13.75, 3, 7, 3]
+    line [null, null, 30, 31.75, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+    line [null, null, 28, 27.25, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+    line [null, null, null, null, 33, null, null, null, null, null, null, null, 40, null, 27.25, null, null, null]
+    line [null, null, null, null, 20, null, null, null, null, null, null, null, null, null, null, null, null, null]
+    line [null, null, null, null, null, 20, null, null, null, 35, 13, null, null, null, null, null, null, null]
+    line [null, null, null, null, null, null, 51, null, 31.5, null, null, null, null, null, 28.25, null, null, null]
+    line [null, null, null, null, null, null, 26, null, 19.8, null, null, null, null, null, null, null, null, null]
+    line [null, null, null, null, null, null, 1, null, null, null, null, null, null, null, null, null, null, null]
+    line [null, null, null, null, null, null, null, 75, null, null, null, null, null, null, null, 50, 30, 60]
+    line [null, null, null, null, null, null, null, 15, null, null, null, null, null, null, null, null, null, null]
+    line [null, null, null, null, null, null, null, null, 35.9, null, null, 48, null, null, 30.75, null, null, null]
+    line [null, null, null, null, null, null, null, null, null, 21, null, null, null, null, null, null, null, null]
+    line [null, null, null, null, null, null, null, null, null, null, null, 33, null, null, null, null, null, null]
+    line [null, null, null, null, null, null, null, null, null, null, null, 4, null, null, null, null, null, null]
+    line [null, null, null, null, null, null, null, null, null, null, null, null, null, 60, null, 39, 41, null]
+    line [null, null, null, null, null, null, null, null, null, null, null, null, null, 31, null, null, 22, null]
+    line [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 30]
 ```
 
 | Run | Date | Strategy | Games | Win rate (95% CI) | DNF | Avg decision | Avg nodes/search |
@@ -87,6 +87,10 @@ xychart-beta
 | 2026-07-30-tactician-smoke-balanced-100 | 2026-07-31 | Corsair-400 | 100 | 27.0% (19.3-36.4%) | 0.0% | 12.413 ms | 366.3 |
 | 2026-07-30-tactician-smoke-balanced-100 | 2026-07-31 | Tactician-400 | 100 | 26.0% (18.4-35.4%) | 0.0% | 13.687 ms | 382.5 |
 | 2026-07-30-tactician-smoke-balanced-100 | 2026-07-31 | Pioneer | 100 | 7.0% (3.4-13.7%) | 0.0% | 0.025 ms | 0.0 |
+| 2026-07-31-audited-legacy-balanced-100 | 2026-07-31 | LegacyCompact-12800 | 100 | 60.0% (50.2-69.1%) | 0.0% | 138.953 ms | 3109.5 |
+| 2026-07-31-audited-legacy-balanced-100 | 2026-07-31 | LegacyFairProbe-4 | 100 | 31.0% (22.8-40.6%) | 0.0% | 21.605 ms | 433.5 |
+| 2026-07-31-audited-legacy-balanced-100 | 2026-07-31 | Corsair-400 | 100 | 8.0% (4.1-15.0%) | 0.0% | 9.438 ms | 352.6 |
+| 2026-07-31-audited-legacy-balanced-100 | 2026-07-31 | Pioneer | 100 | 1.0% (0.2-5.4%) | 0.0% | 0.027 ms | 0.0 |
 | 2026-07-31-homesteader-c1-balanced-400 | 2026-07-31 | Surveyor-400 | 400 | 30.8% (26.4-35.4%) | 0.0% | 26.330 ms | 281.7 |
 | 2026-07-31-homesteader-c1-balanced-400 | 2026-07-31 | Homesteader-400 | 400 | 28.2% (24.1-32.9%) | 0.0% | 28.655 ms | 308.9 |
 | 2026-07-31-homesteader-c1-balanced-400 | 2026-07-31 | Homesteader-C1 | 400 | 27.3% (23.1-31.8%) | 0.0% | 29.233 ms | 312.5 |
