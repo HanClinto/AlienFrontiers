@@ -11,7 +11,7 @@ export class AISearchPreferences {
     this.storage = storage;
     const savedID = storage?.getItem(STORAGE_KEY);
     this.preset = AI_SEARCH_PRESETS.find((candidate) => candidate.id === savedID)
-      ?? AI_SEARCH_PRESETS[1];
+      ?? AI_SEARCH_PRESETS[2];
   }
 
   setPreset(id) {

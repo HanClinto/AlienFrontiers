@@ -17,12 +17,12 @@ function memoryStorage(initial = {}) {
 test("AI search preferences persist and cycle explicit player presets", () => {
   const storage = memoryStorage();
   const preferences = new AISearchPreferences(storage);
-  assert.equal(preferences.preset.id, "standard");
+  assert.equal(preferences.preset.id, "deep");
   assert.deepEqual(AI_SEARCH_PRESETS.map((preset) => preset.id), ["quick", "standard", "deep"]);
 
-  assert.equal(preferences.cyclePreset().id, "deep");
-  assert.equal(storage.values.get("alien-frontiers:ai-search"), "deep");
-  assert.equal(new AISearchPreferences(storage).preset.id, "deep");
+  assert.equal(preferences.cyclePreset().id, "quick");
+  assert.equal(storage.values.get("alien-frontiers:ai-search"), "quick");
+  assert.equal(new AISearchPreferences(storage).preset.id, "quick");
   assert.equal(preferences.setPreset("unknown"), false);
 });
 
