@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 2,
+  "balanced": true,
+  "generatedAt": "2026-07-31T06:20:14.916Z",
+  "blocks": 25,
+  "games": 100,
+  "seed": 36000,
+  "playersPerGame": 4,
+  "workerCount": 8,
+  "generationIds": [
+    "pioneer",
+    "legacy-compact-12800",
+    "legacy-parity-12800",
+    "legacy-fair-probe-4"
+  ],
+  "runtimeMs": 465559.25579190254,
+  "standings": [
+    {
+      "strategy": "LegacyCompact-12800",
+      "games": 100,
+      "wins": 41,
+      "didNotFinish": 0,
+      "victoryPoints": 704,
+      "score": 705.7582589999996,
+      "decisions": 7866,
+      "searchedDecisions": 6616,
+      "fallbackDecisions": 14,
+      "nodes": 18477614,
+      "elapsedMs": 1117629.6569252014,
+      "moveTypes": {
+        "simple": 1250,
+        "orbital": 3325,
+        "legacy-finish": 1205,
+        "tech-region": 229,
+        "hub-launch": 310,
+        "launch-colony": 501,
+        "purchase-tech": 119,
+        "tech-ship": 495,
+        "discard-region": 30,
+        "market-trade": 54,
+        "tech-gravity": 28,
+        "purchase-artifact-ship": 94,
+        "raid": 184,
+        "tech-plasma": 28,
+        "fallback": 14
+      },
+      "winRate": 0.41,
+      "averageVictoryPoints": 7.04,
+      "averageScore": 7.057582589999996,
+      "averageDecisionMs": 142.08360754197832,
+      "averageNodesPerSearch": 2792.8678960096736,
+      "fallbackRate": 0.002116082224909311,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.3186731302113651,
+        "high": 0.5079856994658921,
+        "margin": 0.09465628462726348
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    },
+    {
+      "strategy": "LegacyParity-12800",
+      "games": 100,
+      "wins": 30,
+      "didNotFinish": 0,
+      "victoryPoints": 679,
+      "score": 680.6462599999993,
+      "decisions": 7556,
+      "searchedDecisions": 6326,
+      "fallbackDecisions": 10,
+      "nodes": 15999485,
+      "elapsedMs": 1892548.3383587599,
+      "moveTypes": {
+        "simple": 1230,
+        "orbital": 3223,
+        "legacy-finish": 1198,
+        "launch-colony": 473,
+        "purchase-artifact-ship": 91,
+        "tech-ship": 473,
+        "raid": 137,
+        "hub-launch": 286,
+        "market-trade": 51,
+        "tech-region": 188,
+        "purchase-tech": 104,
+        "tech-gravity": 21,
+        "fallback": 10,
+        "discard-region": 28,
+        "tech-plasma": 43
+      },
+      "winRate": 0.3,
+      "averageVictoryPoints": 6.79,
+      "averageScore": 6.806462599999993,
+      "averageDecisionMs": 250.46960539422443,
+      "averageNodesPerSearch": 2529.162978185267,
+      "fallbackRate": 0.0015807777426493834,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.2189488529493276,
+        "high": 0.3958485463334666,
+        "margin": 0.08844984669206953
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    },
+    {
+      "strategy": "LegacyFairProbe-4",
+      "games": 100,
+      "wins": 22,
+      "didNotFinish": 0,
+      "victoryPoints": 644,
+      "score": 645.927607,
+      "decisions": 7610,
+      "searchedDecisions": 6387,
+      "fallbackDecisions": 6,
+      "nodes": 3160428,
+      "elapsedMs": 205315.39994168282,
+      "moveTypes": {
+        "simple": 1223,
+        "orbital": 3342,
+        "legacy-finish": 1200,
+        "purchase-tech": 130,
+        "tech-ship": 419,
+        "hub-launch": 344,
+        "launch-colony": 451,
+        "market-trade": 30,
+        "purchase-artifact-ship": 46,
+        "raid": 94,
+        "tech-region": 262,
+        "tech-gravity": 6,
+        "discard-region": 22,
+        "tech-plasma": 35,
+        "fallback": 6
+      },
+      "winRate": 0.22,
+      "averageVictoryPoints": 6.44,
+      "averageScore": 6.45927607,
+      "averageDecisionMs": 26.97968461782954,
+      "averageNodesPerSearch": 494.8219821512447,
+      "fallbackRate": 0.0009394081728511038,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.150012823846054,
+        "high": 0.31070353514985793,
+        "margin": 0.08034535565190198
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    },
+    {
+      "strategy": "Pioneer",
+      "games": 100,
+      "wins": 7,
+      "didNotFinish": 0,
+      "victoryPoints": 478,
+      "score": 484.7650489999998,
+      "decisions": 6566,
+      "searchedDecisions": 0,
+      "fallbackDecisions": 0,
+      "nodes": 0,
+      "elapsedMs": 337.3503112792969,
+      "moveTypes": {
+        "simple": 6566
+      },
+      "winRate": 0.07,
+      "averageVictoryPoints": 4.78,
+      "averageScore": 4.847650489999998,
+      "averageDecisionMs": 0.05137835992678905,
+      "averageNodesPerSearch": 0,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.03431926106727268,
+        "high": 0.137495147390735,
+        "margin": 0.05158794316173117
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    }
+  ],
+  "baselineComparisons": [
+    {
+      "strategy": "LegacyCompact-12800",
+      "estimate": 0.34,
+      "low": 0.21,
+      "high": 0.46,
+      "probabilityGreaterThanZero": 1,
+      "iterations": 10000
+    },
+    {
+      "strategy": "LegacyParity-12800",
+      "estimate": 0.23,
+      "low": 0.16,
+      "high": 0.3,
+      "probabilityGreaterThanZero": 1,
+      "iterations": 10000
+    },
+    {
+      "strategy": "LegacyFairProbe-4",
+      "estimate": 0.15,
+      "low": 0.05,
+      "high": 0.26,
+      "probabilityGreaterThanZero": 0.9979,
+      "iterations": 10000
+    }
+  ],
+  "directComparison": {
+    "left": "LegacyFairProbe-4",
+    "right": "LegacyParity-12800",
+    "estimate": -0.08,
+    "low": -0.21,
+    "high": 0.05,
+    "probabilityGreaterThanZero": 0.0995,
+    "iterations": 10000
+  }
+}

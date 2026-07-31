@@ -37,6 +37,10 @@ test("round-trips a playable game through a versioned snapshot", () => {
   player.cards[0].tapped = true;
   player.borrowingRegion = state.heinleinPlains;
   assert.equal(state.purchaseArtifactShip(player), true);
+  player.activeShips.splice(player.activeShips.indexOf(state.artifactShip), 1);
+  player.activeShips.splice(1, 0, state.artifactShip);
+  player.allShips.splice(player.allShips.indexOf(state.artifactShip), 1);
+  player.allShips.splice(2, 0, state.artifactShip);
   state.currentPlayerIndex = 1;
   state.numTurns = 4;
   state.gameLog.push("Saved checkpoint");
@@ -48,6 +52,8 @@ test("round-trips a playable game through a versioned snapshot", () => {
   assert.equal(restored.solarConverter.docks[0].dockedShip.dock.orbital, restored.solarConverter);
   assert.equal(restored.artifactShip.player, restored.players[0]);
   assert.equal(restored.artifactShip.dock.orbital, restored.maintenanceBay);
+  assert.equal(restored.players[0].activeShips.indexOf(restored.artifactShip), 1);
+  assert.equal(restored.players[0].allShips.indexOf(restored.artifactShip), 2);
   assert.equal(restored.players[0].cards[0].owner, restored.players[0]);
 });
 

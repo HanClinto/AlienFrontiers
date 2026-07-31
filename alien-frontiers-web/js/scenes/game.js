@@ -2,6 +2,7 @@ import { AFLayer } from "../af-layer.js";
 import { CCCallFunc, CCDelayTime, CCEaseElasticInOut, CCEaseElasticOut, CCEaseSineIn, CCEaseSineInOut, CCEaseSineOut, CCFadeTo, CCMoveTo, CCRepeatForever, CCRotateBy, CCScaleTo, CCSequence, CCTintTo } from "../cocos/actions.js?v=6";
 import { CCLayerColor, CCLabelTTF, CCNode, CCSprite, ccp } from "../cocos/core.js";
 import { AIType, EventName } from "../game/constants.js";
+import { ExhaustiveAI, exhaustivePositionKey, exhaustivePositionKeysEqual } from "../game/exhaustive-ai.js";
 import { GameHistory } from "../game/game-history.js";
 import { SimpleAI } from "../game/simple-ai.js";
 
@@ -1051,6 +1052,7 @@ class GameMenuOverlay extends CCNode {
     this.resumeButton = this.addMenuButton("RESUME", 0, () => this.close());
     this.sfxButton = this.addMenuButton("", 1, () => this.toggleSfx());
     this.musicButton = this.addMenuButton("", 2, () => this.toggleMusic());
+    this.aiSearchButton = this.addMenuButton("", 3, () => this.cycleAISearch());
     this.quitButton = this.addMenuButton("QUIT", 4, () => this.scene.returnToMainMenu());
   }
 
@@ -1082,6 +1084,7 @@ class GameMenuOverlay extends CCNode {
       this.resumeButton,
       this.sfxButton,
       this.musicButton,
+      this.aiSearchButton,
       this.quitButton,
     ]) {
       const destination = ccp(384, 712 - 100 * button.menuIndex);
@@ -1109,6 +1112,11 @@ class GameMenuOverlay extends CCNode {
     this.updateLabels();
   }
 
+  cycleAISearch() {
+    this.scene.director.aiPreferences?.cyclePreset();
+    this.updateLabels();
+  }
+
   updateLabels() {
     const audio = this.scene.director.soundManager;
     this.scene.setButtonLabel(
@@ -1118,6 +1126,10 @@ class GameMenuOverlay extends CCNode {
     this.scene.setButtonLabel(
       this.musicButton,
       `MUSIC: ${audio?.musicEnabled === false ? "OFF" : "ON"}`,
+    );
+    this.scene.setButtonLabel(
+      this.aiSearchButton,
+      `AI SEARCH: ${this.scene.director.aiPreferences?.preset.label ?? "STANDARD"}`,
     );
   }
 }
@@ -1471,6 +1483,7 @@ export class GameScene extends AFLayer {
     this.shipSprites = new Map();
     this.unsubscribe = [];
     this.aiTimer = null;
+    this.aiAbortController = null;
     this.buildScene();
     this.refresh();
   }
@@ -1724,6 +1737,8 @@ export class GameScene extends AFLayer {
     this.director.persistence?.unbindState();
     clearTimeout(this.aiTimer);
     this.aiTimer = null;
+    this.aiAbortController?.abort();
+    this.aiAbortController = null;
     for (const unsubscribe of this.unsubscribe) {
       unsubscribe();
     }
@@ -2013,15 +2028,47 @@ export class GameScene extends AFLayer {
     }
     this.aiTimer = setTimeout(async () => {
       this.aiTimer = null;
-      if (
-        this.director.scene !== this
-        || this.state.currentPlayer.aiType === AIType.human
-      ) {
-        return;
-      }
-      SimpleAI.step(this.state);
+      await this.runScheduledAI();
       this.scheduleAI();
     }, 650);
+  }
+
+  async runScheduledAI() {
+    if (
+      this.director.scene !== this
+      || this.state.currentPlayer.aiType === AIType.human
+    ) {
+      return false;
+    }
+    if (this.state.currentPlayer.aiType === AIType.easy) {
+      return SimpleAI.step(this.state);
+    }
+
+    const playerIndex = this.state.currentPlayerIndex;
+    const positionKey = exhaustivePositionKey(this.state);
+    const controller = new AbortController();
+    this.aiAbortController?.abort();
+    this.aiAbortController = controller;
+    const result = await ExhaustiveAI.think(this.state, {
+      ...(this.director.aiPreferences?.optionsFor(this.state)
+        ?? ExhaustiveAI.legacyCompactOptionsFor(this.state, "desktop")),
+      signal: controller.signal,
+    });
+    if (this.aiAbortController === controller) {
+      this.aiAbortController = null;
+    }
+    if (
+      controller.signal.aborted
+      || this.director.scene !== this
+      || this.state.currentPlayerIndex !== playerIndex
+      || !exhaustivePositionKeysEqual(exhaustivePositionKey(this.state), positionKey)
+    ) {
+      return false;
+    }
+    if (result.move && ExhaustiveAI.executeMove(this.state, result.move)) {
+      return true;
+    }
+    return SimpleAI.step(this.state);
   }
 
   updatePlayerIcon(propertyName, imageName, position) {

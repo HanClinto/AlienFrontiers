@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-30T23:50:29.854Z",
+  "games": 1000,
+  "seed": 1000,
+  "playersPerGame": 4,
+  "workerCount": 8,
+  "generationIds": [
+    "pioneer",
+    "surveyor-400",
+    "homesteader-100",
+    "homesteader-400"
+  ],
+  "runtimeMs": 657079.9815000296,
+  "standings": [
+    {
+      "strategy": "Surveyor-400",
+      "games": 1000,
+      "wins": 359,
+      "didNotFinish": 0,
+      "victoryPoints": 7164,
+      "score": 7185.867455000025,
+      "decisions": 67840,
+      "searchedDecisions": 14233,
+      "fallbackDecisions": 0,
+      "nodes": 3988119,
+      "elapsedMs": 1945986.3873386383,
+      "winRate": 0.359,
+      "averageVictoryPoints": 7.164,
+      "averageScore": 7.185867455000025,
+      "averageDecisionMs": 28.68494085110021,
+      "averageNodesPerSearch": 280.20227639991566,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.32985959695418837,
+        "high": 0.38921954893873817,
+        "margin": 0.0296799759922749
+      },
+      "didNotFinishRate95": {
+        "low": 2.168404344971009e-19,
+        "high": 0.0038267584855551234,
+        "margin": 0.0019133792427775617
+      }
+    },
+    {
+      "strategy": "Homesteader-400",
+      "games": 1000,
+      "wins": 315,
+      "didNotFinish": 0,
+      "victoryPoints": 6943,
+      "score": 6971.21729400002,
+      "decisions": 69776,
+      "searchedDecisions": 14291,
+      "fallbackDecisions": 0,
+      "nodes": 4419853,
+      "elapsedMs": 2182795.4488487244,
+      "winRate": 0.315,
+      "averageVictoryPoints": 6.943,
+      "averageScore": 6.97121729400002,
+      "averageDecisionMs": 31.282897398084216,
+      "averageNodesPerSearch": 309.2752781470856,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.28696390735652827,
+        "high": 0.3444519932831271,
+        "margin": 0.02874404296329939
+      },
+      "didNotFinishRate95": {
+        "low": 2.168404344971009e-19,
+        "high": 0.0038267584855551234,
+        "margin": 0.0019133792427775617
+      }
+    },
+    {
+      "strategy": "Homesteader-100",
+      "games": 1000,
+      "wins": 198,
+      "didNotFinish": 0,
+      "victoryPoints": 6433,
+      "score": 6453.689227000021,
+      "decisions": 66934,
+      "searchedDecisions": 14245,
+      "fallbackDecisions": 0,
+      "nodes": 1295139,
+      "elapsedMs": 656286.3017944098,
+      "winRate": 0.198,
+      "averageVictoryPoints": 6.433,
+      "averageScore": 6.45368922700002,
+      "averageDecisionMs": 9.80497657086697,
+      "averageNodesPerSearch": 90.91884871884872,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.1744775624311303,
+        "high": 0.22383379969414505,
+        "margin": 0.024678118631507363
+      },
+      "didNotFinishRate95": {
+        "low": 2.168404344971009e-19,
+        "high": 0.0038267584855551234,
+        "margin": 0.0019133792427775617
+      }
+    },
+    {
+      "strategy": "Pioneer",
+      "games": 1000,
+      "wins": 128,
+      "didNotFinish": 0,
+      "victoryPoints": 5333,
+      "score": 5412.580489999998,
+      "decisions": 80536,
+      "searchedDecisions": 0,
+      "fallbackDecisions": 0,
+      "nodes": 0,
+      "elapsedMs": 1139.9821145534515,
+      "winRate": 0.128,
+      "averageVictoryPoints": 5.333,
+      "averageScore": 5.412580489999997,
+      "averageDecisionMs": 0.0141549383450066,
+      "averageNodesPerSearch": 0,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.10870752216300936,
+        "high": 0.15013958615024367,
+        "margin": 0.02071603199361715
+      },
+      "didNotFinishRate95": {
+        "low": 2.168404344971009e-19,
+        "high": 0.0038267584855551234,
+        "margin": 0.0019133792427775617
+      }
+    }
+  ],
+  "label": "2026-07-30-mixed-milestone-1000"
+}

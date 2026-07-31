@@ -58,24 +58,25 @@ placement opens the ranked, blocking game-over results overlay. The lower HUD in
 the live game log, selected tech power/discard descriptions, HELP, and an animated blocking
 menu with persistent music/SFX controls, Resume, and Quit. Usable facilities retain white
 docks while unavailable docks fade to the original subdued gray.
-AI seats automatically play through the ported rules using a reliable heuristic turn
-driver. Cadet, Spacer, Admiral, and Pirate apply the original aggression, decision-noise,
-and human-prejudice profiles to raid and colony choices; they also use earned Artifact
-credit, dock dice to create Artifact purchases, and open favorable Market trades. Stable
+AI seats automatically play through the ported rules. Simple uses the reliable SimpleAI
+heuristic driver; Spacer, Admiral, and Pirate use worker-backed LegacyCompact full-turn
+search with their original aggression and human-prejudice profiles. If a search fails,
+times out, becomes stale, or has no accepted move, play safely falls back to SimpleAI.
+The Options panels expose persistent Quick, Standard, and Deep AI Search limits so players
+can choose the appropriate node/time budget for their device rather than relying on automatic
+mobile detection. Stable
 game states autosave locally, and unfinished
 games can be resumed from the main menu after navigation or reload. Original recursive
 undo/redo controls restore complete model snapshots without crossing roll or turn boundaries,
-and their history survives Resume. Exhaustive state search,
-full AI tech planning, and additional animation coverage are still being ported. The
-ExhaustiveAI successor uses rule-aware fungible-die keys, transposition pruning, bounded
-anytime beam search, and hard time/node/child budgets. On timeout it executes the best
-fully evaluated move; SimpleAI is reserved for the zero-successor case. A deterministic
+and their history survives Resume. Additional animation coverage is still being ported.
+LegacyCompact search covers facilities, raids, Artifact purchases, active tech powers, and
+the original constrained field-discard policy using rule-aware fungible-die keys, compact
+transpositions, pooled state restoration, completed-depth backup, and hard time/node/child
+budgets. On timeout it executes the best fully evaluated move. A deterministic
 late-game stress fixture gates six-die, dense-dock, field, tech, Data, Plasma, and raid states.
-Search runs in a Web Worker so the source-derived budgets (4.4 seconds for Cadet/Spacer and
-7.4 seconds for Admiral/Pirate) do not block rendering or input, with a hard watchdog beyond
-each internal deadline.
-The published game intentionally continues using SimpleAI until self-play testing shows
-the ExhaustiveAI successor is reliably stronger and equally stable.
+Search runs in a Web Worker so the selected budget does not block rendering or input, with a
+hard watchdog beyond each internal deadline. The deployed GitHub Pages build remains on its
+last pushed SimpleAI version until the validated local AI changes are intentionally published.
 
 Run seeded headless AI tournaments with:
 
@@ -86,6 +87,8 @@ node scripts/run-ai-tournament.mjs --games 100 --seed 1000 --players 4
 The harness rotates strategies through seats and reports win rate, average VP, decision
 cost, searched nodes, fallback rate, and did-not-finish rate. Search variants remain
 experimental until they complete games reliably and cover active tech/follow-up decisions.
+See [AI_BENCHMARKS.md](AI_BENCHMARKS.md) for named generations, historical results,
+confidence guidance, and promotion gates.
 
 Run the static site locally from the repository root:
 

@@ -123,6 +123,6 @@ export class StartGameScene extends AFLayer {
   }
 
   getAIName(index) {
-    return ["Human", "AI: Cadet", "AI: Spacer", "AI: Admiral", "AI: Pirate"][index] ?? "None";
+    return ["Human", "AI: Simple", "AI: Spacer", "AI: Admiral", "AI: Pirate"][index] ?? "None";
   }
 }

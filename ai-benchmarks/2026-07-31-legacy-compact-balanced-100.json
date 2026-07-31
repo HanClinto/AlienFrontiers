@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 2,
+  "balanced": true,
+  "generatedAt": "2026-07-31T05:39:26.310Z",
+  "blocks": 25,
+  "games": 100,
+  "seed": 33000,
+  "playersPerGame": 4,
+  "workerCount": 8,
+  "generationIds": [
+    "pioneer",
+    "corsair-400",
+    "legacy-parity-12800",
+    "legacy-compact-12800"
+  ],
+  "runtimeMs": 453728.02604198456,
+  "standings": [
+    {
+      "strategy": "LegacyParity-12800",
+      "games": 100,
+      "wins": 50,
+      "didNotFinish": 0,
+      "victoryPoints": 722,
+      "score": 723.9374039999996,
+      "decisions": 8179,
+      "searchedDecisions": 6922,
+      "fallbackDecisions": 15,
+      "nodes": 20500932,
+      "elapsedMs": 2163172.99148798,
+      "moveTypes": {
+        "simple": 1257,
+        "orbital": 3493,
+        "legacy-finish": 1203,
+        "hub-launch": 281,
+        "launch-colony": 510,
+        "tech-gravity": 26,
+        "market-trade": 74,
+        "purchase-artifact-ship": 121,
+        "purchase-tech": 130,
+        "tech-ship": 542,
+        "raid": 205,
+        "discard-region": 28,
+        "tech-plasma": 47,
+        "fallback": 15,
+        "tech-region": 247
+      },
+      "winRate": 0.5,
+      "averageVictoryPoints": 7.22,
+      "averageScore": 7.239374039999996,
+      "averageDecisionMs": 264.4789083614109,
+      "averageNodesPerSearch": 2961.7064432245015,
+      "fallbackRate": 0.002167003756139844,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.4038315303659956,
+        "high": 0.5961684696340044,
+        "margin": 0.09616846963400436
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    },
+    {
+      "strategy": "LegacyCompact-12800",
+      "games": 100,
+      "wins": 39,
+      "didNotFinish": 0,
+      "victoryPoints": 662,
+      "score": 663.8265759999996,
+      "decisions": 7852,
+      "searchedDecisions": 6624,
+      "fallbackDecisions": 9,
+      "nodes": 19311652,
+      "elapsedMs": 954479.452960372,
+      "moveTypes": {
+        "simple": 1228,
+        "orbital": 3340,
+        "legacy-finish": 1185,
+        "hub-launch": 270,
+        "launch-colony": 489,
+        "purchase-artifact-ship": 116,
+        "raid": 215,
+        "market-trade": 59,
+        "tech-plasma": 49,
+        "tech-gravity": 29,
+        "tech-ship": 514,
+        "purchase-tech": 114,
+        "tech-region": 216,
+        "discard-region": 19,
+        "fallback": 9
+      },
+      "winRate": 0.39,
+      "averageVictoryPoints": 6.62,
+      "averageScore": 6.638265759999996,
+      "averageDecisionMs": 121.5587688436541,
+      "averageNodesPerSearch": 2915.4064009661834,
+      "fallbackRate": 0.001358695652173913,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.3001687400639441,
+        "high": 0.4879698295415926,
+        "margin": 0.09390054473882424
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    },
+    {
+      "strategy": "Corsair-400",
+      "games": 100,
+      "wins": 8,
+      "didNotFinish": 0,
+      "victoryPoints": 555,
+      "score": 557.4368809999999,
+      "decisions": 5423,
+      "searchedDecisions": 1235,
+      "fallbackDecisions": 0,
+      "nodes": 432184,
+      "elapsedMs": 48778.75995898247,
+      "moveTypes": {
+        "simple": 4188,
+        "raid": 65,
+        "orbital": 1170
+      },
+      "winRate": 0.08,
+      "averageVictoryPoints": 5.55,
+      "averageScore": 5.574368809999998,
+      "averageDecisionMs": 8.994792542685316,
+      "averageNodesPerSearch": 349.9465587044534,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.041093461484380624,
+        "high": 0.14998107700948735,
+        "margin": 0.05444380776255336
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    },
+    {
+      "strategy": "Pioneer",
+      "games": 100,
+      "wins": 3,
+      "didNotFinish": 0,
+      "victoryPoints": 415,
+      "score": 421.73564899999997,
+      "decisions": 6414,
+      "searchedDecisions": 0,
+      "fallbackDecisions": 0,
+      "nodes": 0,
+      "elapsedMs": 288.6723449230194,
+      "moveTypes": {
+        "simple": 6414
+      },
+      "winRate": 0.03,
+      "averageVictoryPoints": 4.15,
+      "averageScore": 4.217356489999999,
+      "averageDecisionMs": 0.0450066019524508,
+      "averageNodesPerSearch": 0,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.010254524024038925,
+        "high": 0.0845193642905276,
+        "margin": 0.03713242013324434
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    }
+  ],
+  "baselineComparisons": [
+    {
+      "strategy": "Corsair-400",
+      "estimate": 0.05,
+      "low": -0.02,
+      "high": 0.12,
+      "probabilityGreaterThanZero": 0.9052,
+      "iterations": 10000
+    },
+    {
+      "strategy": "LegacyParity-12800",
+      "estimate": 0.47,
+      "low": 0.38,
+      "high": 0.56,
+      "probabilityGreaterThanZero": 1,
+      "iterations": 10000
+    },
+    {
+      "strategy": "LegacyCompact-12800",
+      "estimate": 0.36,
+      "low": 0.28,
+      "high": 0.44,
+      "probabilityGreaterThanZero": 1,
+      "iterations": 10000
+    }
+  ],
+  "directComparison": {
+    "left": "LegacyCompact-12800",
+    "right": "LegacyParity-12800",
+    "estimate": -0.11,
+    "low": -0.25,
+    "high": 0.03,
+    "probabilityGreaterThanZero": 0.0616,
+    "iterations": 10000
+  }
+}

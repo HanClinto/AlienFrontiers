@@ -1,6 +1,6 @@
 import { AFLayer } from "../af-layer.js";
-import { CCDelayTime, CCEaseElasticInOut, CCMoveTo, CCSequence } from "../cocos/actions.js";
-import { CCLayerColor, CCSprite, ccp } from "../cocos/core.js";
+import { CCDelayTime, CCEaseElasticInOut, CCFadeTo, CCMoveTo, CCSequence } from "../cocos/actions.js";
+import { CCLayerColor, CCNode, CCSprite, ccp } from "../cocos/core.js";
 import { StartGameScene } from "./start-game.js";
 
 const Tags = Object.freeze({
@@ -18,6 +18,8 @@ export class MainMenuScene extends AFLayer {
     super(assets);
     this.director = director;
     this.initChildren();
+    this.optionsOverlay = new MainMenuOptionsOverlay(this);
+    this.addChild(this.optionsOverlay, 20);
   }
 
   initChildren() {
@@ -110,6 +112,107 @@ export class MainMenuScene extends AFLayer {
   }
 
   optionsButtonTapped() {
-    window.dispatchEvent(new CustomEvent("alienfrontiers:options"));
+    this.optionsOverlay.open();
+  }
+}
+
+class MainMenuOptionsOverlay extends CCNode {
+  constructor(scene) {
+    super();
+    this.scene = scene;
+    this.visible = false;
+    this.shade = new CCLayerColor("#000");
+    this.shade.opacity = 0;
+    this.shade.interactive = true;
+    this.shade.enabled = true;
+    this.shade.touchPriority = -200;
+    this.shade.activate = () => {};
+    this.addChild(this.shade, 0);
+    this.sfxButton = this.addButton("", 0, () => this.toggleSfx());
+    this.musicButton = this.addButton("", 1, () => this.toggleMusic());
+    this.aiSearchButton = this.addButton("", 2, () => this.cycleAISearch());
+    this.doneButton = this.addButton("DONE", 3, () => this.close());
+  }
+
+  addButton(label, index, callback) {
+    const button = this.scene.buttonFromImage(
+      "menu_button_blank.png",
+      "menu_button_blank_pushed.png",
+      callback,
+      { label, fontSize: 12 },
+    );
+    button.menuIndex = index;
+    const menuItem = button.getChildByTag(0)?.children[0];
+    if (menuItem) {
+      menuItem.touchPriority = -256;
+    }
+    this.addChild(button, 1);
+    return button;
+  }
+
+  open() {
+    this.visible = true;
+    for (const tag of [Tags.play, Tags.rules, Tags.resume, Tags.options]) {
+      const node = this.scene.getChildByTag(tag);
+      if (node) {
+        node.visible = false;
+      }
+    }
+    this.shade.opacity = 0;
+    this.shade.runAction(new CCFadeTo(0.35, 192));
+    this.updateLabels();
+    for (const button of [
+      this.sfxButton,
+      this.musicButton,
+      this.aiSearchButton,
+      this.doneButton,
+    ]) {
+      const destination = ccp(384, 690 - 100 * button.menuIndex);
+      button.setPosition(ccp(-500, destination.y));
+      button.runAction(new CCEaseElasticInOut(new CCMoveTo(0.65, destination), 0.8));
+    }
+  }
+
+  close() {
+    this.visible = false;
+    for (const tag of [Tags.play, Tags.rules, Tags.resume, Tags.options]) {
+      const node = this.scene.getChildByTag(tag);
+      if (node) {
+        node.visible = true;
+      }
+    }
+  }
+
+  toggleSfx() {
+    const audio = this.scene.director.soundManager;
+    audio?.setSfxEnabled(!audio.sfxEnabled);
+    this.updateLabels();
+  }
+
+  toggleMusic() {
+    const audio = this.scene.director.soundManager;
+    audio?.setMusicEnabled(!audio.musicEnabled);
+    this.updateLabels();
+  }
+
+  cycleAISearch() {
+    this.scene.director.aiPreferences?.cyclePreset();
+    this.updateLabels();
+  }
+
+  updateLabels() {
+    const audio = this.scene.director.soundManager;
+    this.scene.setButtonLabel(
+      this.sfxButton,
+      `SOUND FX: ${audio?.sfxEnabled === false ? "OFF" : "ON"}`,
+    );
+    this.scene.setButtonLabel(
+      this.musicButton,
+      `MUSIC: ${audio?.musicEnabled === false ? "OFF" : "ON"}`,
+    );
+    this.scene.setButtonLabel(
+      this.aiSearchButton,
+      `AI SEARCH: ${this.scene.director.aiPreferences?.preset.label ?? "STANDARD"}`,
+    );
   }
 }

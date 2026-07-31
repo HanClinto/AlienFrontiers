@@ -122,6 +122,32 @@ test("original SimpleAI fallback completes a turn with available facilities", ()
   assert.equal(state.currentPlayer.numUndockedShips, 3);
 });
 
+test("SimpleAI makes bounded progress when Solar is full", () => {
+  const state = new GameState(2, [AIType.easy, AIType.human]);
+  const [player, opponent] = state.players;
+  player.initialRollDone = true;
+  player.fuel = 0;
+  while (opponent.activeNativeShips.length < 6) {
+    opponent.activateShip();
+  }
+  state.burroughsDesert.colonyCounts[opponent.playerIndex] = 1;
+  opponent.ore = 1;
+  opponent.fuel = 1;
+  assert.equal(state.purchaseArtifactShip(opponent), true);
+  for (const ship of [...opponent.activeShips]) {
+    state.solarConverter.dockShip(ship);
+  }
+
+  let previousUndocked = player.numUndockedShips;
+  for (let step = 0; step < 6 && state.currentPlayerIndex === 0; step += 1) {
+    assert.equal(SimpleAI.step(state), true);
+    const currentUndocked = state.players[0].numUndockedShips;
+    assert.ok(currentUndocked < previousUndocked || state.currentPlayerIndex === 1);
+    previousUndocked = currentUndocked;
+  }
+  assert.equal(state.currentPlayerIndex, 1);
+});
+
 test("local input cannot select ships during an AI turn", () => {
   const state = new GameState(2, [AIType.easy, AIType.human]);
   const ship = state.currentPlayer.activeShips[0];

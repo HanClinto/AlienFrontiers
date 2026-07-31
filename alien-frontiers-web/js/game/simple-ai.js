@@ -124,15 +124,17 @@ export class SimpleAI {
       .sort((left, right) => left.value - right.value)
       .filter((ship) => state.lunarMine.isValidMoveFromPlayer(player, [ship]));
     if (player.ore < 3 && player.ore <= player.fuel && lunarShips.length > 0) {
-      state.lunarMine.commitShipsFromPlayer(player, [lunarShips[0]]);
-      return true;
+      if (state.lunarMine.commitShipsFromPlayer(player, [lunarShips[0]])) {
+        return true;
+      }
     }
 
     if (player.fuel < 3 && player.undockedShips.length > 0) {
       const highestShip = [...player.undockedShips]
         .sort((left, right) => right.value - left.value)[0];
-      state.solarConverter.commitShipsFromPlayer(player, [highestShip]);
-      return true;
+      if (state.solarConverter.commitShipsFromPlayer(player, [highestShip])) {
+        return true;
+      }
     }
 
     const hubGroup = state.colonistHub.dockGroups[player.playerIndex];
@@ -142,8 +144,7 @@ export class SimpleAI {
       return true;
     }
 
-    state.maintenanceBay.commitShipsFromPlayer(player, player.undockedShips);
-    return true;
+    return state.maintenanceBay.commitShipsFromPlayer(player, player.undockedShips);
   }
 
   static findArtifactPair(state, player) {

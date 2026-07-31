@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 2,
+  "balanced": true,
+  "generatedAt": "2026-07-31T02:18:25.442Z",
+  "blocks": 25,
+  "games": 100,
+  "seed": 22000,
+  "playersPerGame": 4,
+  "workerCount": 8,
+  "generationIds": [
+    "pioneer",
+    "corsair-400",
+    "corsair-800",
+    "corsair-1600"
+  ],
+  "runtimeMs": 55571.95108306408,
+  "standings": [
+    {
+      "strategy": "Corsair-1600",
+      "games": 100,
+      "wins": 30,
+      "didNotFinish": 0,
+      "victoryPoints": 687,
+      "score": 690.6759199999998,
+      "decisions": 6960,
+      "searchedDecisions": 1465,
+      "fallbackDecisions": 0,
+      "nodes": 1096769,
+      "elapsedMs": 181221.1860282421,
+      "moveTypes": {
+        "simple": 5495,
+        "orbital": 1360,
+        "raid": 105
+      },
+      "winRate": 0.3,
+      "averageVictoryPoints": 6.87,
+      "averageScore": 6.906759199999998,
+      "averageDecisionMs": 26.037526728195704,
+      "averageNodesPerSearch": 748.6477815699659,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.2189488529493276,
+        "high": 0.3958485463334666,
+        "margin": 0.08844984669206953
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    },
+    {
+      "strategy": "Corsair-800",
+      "games": 100,
+      "wins": 28,
+      "didNotFinish": 0,
+      "victoryPoints": 678,
+      "score": 681.129026,
+      "decisions": 6849,
+      "searchedDecisions": 1468,
+      "fallbackDecisions": 0,
+      "nodes": 839673,
+      "elapsedMs": 138795.48586571217,
+      "moveTypes": {
+        "simple": 5381,
+        "orbital": 1347,
+        "raid": 121
+      },
+      "winRate": 0.28,
+      "averageVictoryPoints": 6.78,
+      "averageScore": 6.81129026,
+      "averageDecisionMs": 20.265073129757944,
+      "averageNodesPerSearch": 571.9843324250681,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.20139685211186212,
+        "high": 0.3748802870992116,
+        "margin": 0.08674171749367474
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    },
+    {
+      "strategy": "Corsair-400",
+      "games": 100,
+      "wins": 26,
+      "didNotFinish": 0,
+      "victoryPoints": 690,
+      "score": 693.2804199999997,
+      "decisions": 6806,
+      "searchedDecisions": 1474,
+      "fallbackDecisions": 0,
+      "nodes": 538716,
+      "elapsedMs": 88687.51616823673,
+      "moveTypes": {
+        "simple": 5332,
+        "raid": 116,
+        "orbital": 1358
+      },
+      "winRate": 0.26,
+      "averageVictoryPoints": 6.9,
+      "averageScore": 6.932804199999997,
+      "averageDecisionMs": 13.030784038824086,
+      "averageNodesPerSearch": 365.47896879240164,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.18404698464748132,
+        "high": 0.3537098944918718,
+        "margin": 0.08483145492219524
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    },
+    {
+      "strategy": "Pioneer",
+      "games": 100,
+      "wins": 16,
+      "didNotFinish": 0,
+      "victoryPoints": 582,
+      "score": 588.8578679999999,
+      "decisions": 7901,
+      "searchedDecisions": 0,
+      "fallbackDecisions": 0,
+      "nodes": 0,
+      "elapsedMs": 287.0414867401123,
+      "moveTypes": {
+        "simple": 7901
+      },
+      "winRate": 0.16,
+      "averageVictoryPoints": 5.82,
+      "averageScore": 5.888578679999999,
+      "averageDecisionMs": 0.03632976670549453,
+      "averageNodesPerSearch": 0,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.10095288488804782,
+        "high": 0.24420269389270244,
+        "margin": 0.07162490450232731
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    }
+  ],
+  "baselineComparisons": [
+    {
+      "strategy": "Corsair-400",
+      "estimate": 0.1,
+      "low": 0.01,
+      "high": 0.18,
+      "probabilityGreaterThanZero": 0.9794,
+      "iterations": 10000
+    },
+    {
+      "strategy": "Corsair-800",
+      "estimate": 0.12,
+      "low": 0,
+      "high": 0.24,
+      "probabilityGreaterThanZero": 0.973,
+      "iterations": 10000
+    },
+    {
+      "strategy": "Corsair-1600",
+      "estimate": 0.14,
+      "low": 0.02,
+      "high": 0.26,
+      "probabilityGreaterThanZero": 0.9873,
+      "iterations": 10000
+    }
+  ],
+  "directComparison": {
+    "left": "Corsair-1600",
+    "right": "Corsair-400",
+    "estimate": 0.04,
+    "low": -0.09,
+    "high": 0.18,
+    "probabilityGreaterThanZero": 0.6925,
+    "iterations": 10000
+  }
+}

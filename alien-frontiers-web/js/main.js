@@ -4,6 +4,7 @@ import { CCSpriteFrameCache } from "./cocos/sprite-frame-cache.js";
 import { MainMenuScene } from "./scenes/main-menu.js";
 import { GameAudioManager } from "./audio.js";
 import { GamePersistence } from "./game/game-persistence.js";
+import { AISearchPreferences } from "./game/ai-prefs.js";
 
 const MENU_IMAGES = [
   "af_game_setup.png",
@@ -178,6 +179,7 @@ async function start() {
     version,
   );
   director.persistence = new GamePersistence();
+  director.aiPreferences = new AISearchPreferences();
   director.frameCache = frameCache;
   globalThis.AlienFrontiers = Object.freeze({ director });
   director.runWithScene(new MainMenuScene(director, assets));

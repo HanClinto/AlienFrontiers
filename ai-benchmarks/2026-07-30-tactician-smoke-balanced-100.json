@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 2,
+  "balanced": true,
+  "generatedAt": "2026-07-31T01:29:54.120Z",
+  "blocks": 25,
+  "games": 100,
+  "seed": 10000,
+  "playersPerGame": 4,
+  "workerCount": 8,
+  "generationIds": [
+    "pioneer",
+    "homesteader-c1",
+    "corsair-400",
+    "tactician-400"
+  ],
+  "runtimeMs": 32702.71379196644,
+  "standings": [
+    {
+      "strategy": "Homesteader-C1",
+      "games": 100,
+      "wins": 40,
+      "didNotFinish": 0,
+      "victoryPoints": 731,
+      "score": 733.5930599999999,
+      "decisions": 7004,
+      "searchedDecisions": 1428,
+      "fallbackDecisions": 0,
+      "nodes": 420350,
+      "elapsedMs": 65027.08047366142,
+      "winRate": 0.4,
+      "averageVictoryPoints": 7.31,
+      "averageScore": 7.335930599999999,
+      "averageDecisionMs": 9.284277623309741,
+      "averageNodesPerSearch": 294.3627450980392,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.3094012864324589,
+        "high": 0.4979974132089382,
+        "margin": 0.09429806338823966
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    },
+    {
+      "strategy": "Corsair-400",
+      "games": 100,
+      "wins": 27,
+      "didNotFinish": 0,
+      "victoryPoints": 672,
+      "score": 675.5974069999997,
+      "decisions": 6943,
+      "searchedDecisions": 1470,
+      "fallbackDecisions": 0,
+      "nodes": 538469,
+      "elapsedMs": 86184.45686531067,
+      "winRate": 0.27,
+      "averageVictoryPoints": 6.72,
+      "averageScore": 6.755974069999997,
+      "averageDecisionMs": 12.413143722499017,
+      "averageNodesPerSearch": 366.30544217687077,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.1926958414957634,
+        "high": 0.36432116767944994,
+        "margin": 0.08581266309184328
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    },
+    {
+      "strategy": "Tactician-400",
+      "games": 100,
+      "wins": 26,
+      "didNotFinish": 0,
+      "victoryPoints": 657,
+      "score": 660.3233329999997,
+      "decisions": 6728,
+      "searchedDecisions": 1471,
+      "fallbackDecisions": 0,
+      "nodes": 562675,
+      "elapsedMs": 92084.20361506939,
+      "winRate": 0.26,
+      "averageVictoryPoints": 6.57,
+      "averageScore": 6.6032333299999975,
+      "averageDecisionMs": 13.686712784641704,
+      "averageNodesPerSearch": 382.5118966689327,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.18404698464748132,
+        "high": 0.3537098944918718,
+        "margin": 0.08483145492219524
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    },
+    {
+      "strategy": "Pioneer",
+      "games": 100,
+      "wins": 7,
+      "didNotFinish": 0,
+      "victoryPoints": 547,
+      "score": 554.452431,
+      "decisions": 7998,
+      "searchedDecisions": 0,
+      "fallbackDecisions": 0,
+      "nodes": 0,
+      "elapsedMs": 200.53850078582764,
+      "winRate": 0.07,
+      "averageVictoryPoints": 5.47,
+      "averageScore": 5.544524310000001,
+      "averageDecisionMs": 0.025073580993476823,
+      "averageNodesPerSearch": 0,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.03431926106727268,
+        "high": 0.137495147390735,
+        "margin": 0.05158794316173117
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    }
+  ],
+  "baselineComparisons": [
+    {
+      "strategy": "Homesteader-C1",
+      "estimate": 0.33,
+      "low": 0.24,
+      "high": 0.43,
+      "probabilityGreaterThanZero": 1,
+      "iterations": 10000
+    },
+    {
+      "strategy": "Corsair-400",
+      "estimate": 0.2,
+      "low": 0.1,
+      "high": 0.29,
+      "probabilityGreaterThanZero": 0.9999,
+      "iterations": 10000
+    },
+    {
+      "strategy": "Tactician-400",
+      "estimate": 0.19,
+      "low": 0.09,
+      "high": 0.29,
+      "probabilityGreaterThanZero": 0.9997,
+      "iterations": 10000
+    }
+  ],
+  "directComparison": {
+    "left": "Tactician-400",
+    "right": "Corsair-400",
+    "estimate": -0.01,
+    "low": -0.11,
+    "high": 0.09,
+    "probabilityGreaterThanZero": 0.3822,
+    "iterations": 10000
+  }
+}

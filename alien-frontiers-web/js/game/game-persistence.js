@@ -41,6 +41,7 @@ export function createGameSnapshot(state) {
     numPlayers: state.numPlayers,
     currentPlayerIndex: state.currentPlayerIndex,
     numTurns: state.numTurns,
+    gameOver: state.gameOver,
     gameLog: [...state.gameLog],
     players: state.players.map((player) => ({
       aiType: player.aiType,
@@ -65,6 +66,8 @@ export function createGameSnapshot(state) {
     artifactShip: {
       ...shipSnapshot(state.artifactShip, orbitalNames),
       playerIndex: state.artifactShip.player?.playerIndex ?? null,
+      activeShipIndex: state.artifactShip.player?.activeShips.indexOf(state.artifactShip) ?? -1,
+      allShipIndex: state.artifactShip.player?.allShips.indexOf(state.artifactShip) ?? -1,
     },
     regions: REGION_DEFINITIONS.map(([propertyName]) => {
       const region = state[propertyName];
@@ -114,6 +117,23 @@ export function restoreGameSnapshot(snapshot, random = Math.random, cardRandom =
     random,
     cardRandom,
   );
+  return restoreGameSnapshotInto(state, snapshot, random, cardRandom);
+}
+
+export function restoreGameSnapshotInto(
+  state,
+  snapshot,
+  random = Math.random,
+  cardRandom = Math.random,
+) {
+  if (!snapshot || snapshot.version !== SNAPSHOT_VERSION) {
+    throw new Error("Unsupported Alien Frontiers save version");
+  }
+  if (state.numPlayers !== snapshot.numPlayers) {
+    throw new Error("Cannot restore a snapshot into a state with a different player count");
+  }
+  state.random = random;
+  state.cardRandom = cardRandom;
   const cardsByID = new Map(state.allTech.map((card) => [card.cardID, card]));
 
   for (const orbitalKey of ORBITAL_KEYS) {
@@ -142,6 +162,7 @@ export function restoreGameSnapshot(snapshot, random = Math.random, cardRandom =
 
   snapshot.players.forEach((playerSnapshot, playerIndex) => {
     const player = state.players[playerIndex];
+    player.aiType = playerSnapshot.aiType;
     player.fuel = playerSnapshot.fuel;
     player.ore = playerSnapshot.ore;
     player.coloniesLeft = playerSnapshot.coloniesLeft;
@@ -151,6 +172,10 @@ export function restoreGameSnapshot(snapshot, random = Math.random, cardRandom =
     player.techsDiscarded = playerSnapshot.techsDiscarded;
     player.artifactCreditAvailable = playerSnapshot.artifactCreditAvailable;
     player.artifactShufflesAvailable = playerSnapshot.artifactShufflesAvailable;
+    player.isRaiding = false;
+    player.oreToRaid = 0;
+    player.fuelToRaid = 0;
+    player.cardToRaid = null;
     player.borrowingRegion = playerSnapshot.borrowingRegion >= 0
       ? state.regions[playerSnapshot.borrowingRegion]
       : null;
@@ -177,8 +202,10 @@ export function restoreGameSnapshot(snapshot, random = Math.random, cardRandom =
     : state.players[snapshot.artifactShip.playerIndex];
   restoreShip(state.artifactShip, snapshot.artifactShip, state, artifactOwner);
   if (artifactOwner && state.artifactShip.active) {
-    artifactOwner.activeShips.push(state.artifactShip);
-    artifactOwner.allShips.push(state.artifactShip);
+    const activeShipIndex = snapshot.artifactShip.activeShipIndex ?? artifactOwner.activeShips.length;
+    const allShipIndex = snapshot.artifactShip.allShipIndex ?? artifactOwner.allShips.length;
+    artifactOwner.activeShips.splice(activeShipIndex, 0, state.artifactShip);
+    artifactOwner.allShips.splice(allShipIndex, 0, state.artifactShip);
   }
 
   const allShips = [
@@ -207,7 +234,7 @@ export function restoreGameSnapshot(snapshot, random = Math.random, cardRandom =
   state.pendingTechTargets = [];
   state.pendingColonyTargets = [];
   state.pendingTechAction = null;
-  state.gameOver = false;
+  state.gameOver = snapshot.gameOver ?? false;
   return state;
 }
 

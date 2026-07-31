@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 2,
+  "balanced": true,
+  "generatedAt": "2026-07-31T01:33:46.563Z",
+  "blocks": 25,
+  "games": 100,
+  "seed": 12000,
+  "playersPerGame": 4,
+  "workerCount": 8,
+  "generationIds": [
+    "pioneer",
+    "corsair-400",
+    "tactician-400",
+    "strategist-800"
+  ],
+  "runtimeMs": 45784.660374999046,
+  "standings": [
+    {
+      "strategy": "Corsair-400",
+      "games": 100,
+      "wins": 43,
+      "didNotFinish": 0,
+      "victoryPoints": 754,
+      "score": 757.1559109999997,
+      "decisions": 6824,
+      "searchedDecisions": 1469,
+      "fallbackDecisions": 0,
+      "nodes": 538135,
+      "elapsedMs": 78876.73752367496,
+      "winRate": 0.43,
+      "averageVictoryPoints": 7.54,
+      "averageScore": 7.571559109999997,
+      "averageDecisionMs": 11.558724725040294,
+      "averageNodesPerSearch": 366.3274336283186,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.33733298524110106,
+        "high": 0.5278461045078768,
+        "margin": 0.09525655963338787
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    },
+    {
+      "strategy": "Tactician-400",
+      "games": 100,
+      "wins": 25,
+      "didNotFinish": 0,
+      "victoryPoints": 662,
+      "score": 665.3353890000002,
+      "decisions": 6673,
+      "searchedDecisions": 1449,
+      "fallbackDecisions": 0,
+      "nodes": 555329,
+      "elapsedMs": 82526.72973442078,
+      "winRate": 0.25,
+      "averageVictoryPoints": 6.62,
+      "averageScore": 6.653353890000002,
+      "averageDecisionMs": 12.36726056262862,
+      "averageNodesPerSearch": 383.2498274672188,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.17545211362287672,
+        "high": 0.34304463548061603,
+        "margin": 0.08379626092886965
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    },
+    {
+      "strategy": "Pioneer",
+      "games": 100,
+      "wins": 19,
+      "didNotFinish": 0,
+      "victoryPoints": 617,
+      "score": 624.3928420000001,
+      "decisions": 7806,
+      "searchedDecisions": 0,
+      "fallbackDecisions": 0,
+      "nodes": 0,
+      "elapsedMs": 205.17650067806244,
+      "winRate": 0.19,
+      "averageVictoryPoints": 6.17,
+      "averageScore": 6.2439284200000005,
+      "averageDecisionMs": 0.026284460758142766,
+      "averageNodesPerSearch": 0,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.12514751509768735,
+        "high": 0.27778845379064376,
+        "margin": 0.0763204693464782
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    },
+    {
+      "strategy": "Strategist-800",
+      "games": 100,
+      "wins": 13,
+      "didNotFinish": 0,
+      "victoryPoints": 581,
+      "score": 583.6035279999996,
+      "decisions": 6352,
+      "searchedDecisions": 1445,
+      "fallbackDecisions": 0,
+      "nodes": 1075310,
+      "elapsedMs": 168224.18215358257,
+      "winRate": 0.13,
+      "averageVictoryPoints": 5.81,
+      "averageScore": 5.836035279999996,
+      "averageDecisionMs": 26.48365588060179,
+      "averageNodesPerSearch": 744.159169550173,
+      "fallbackRate": 0,
+      "didNotFinishRate": 0,
+      "winRate95": {
+        "low": 0.07757167427240512,
+        "high": 0.20980351440076428,
+        "margin": 0.06611592006417959
+      },
+      "didNotFinishRate95": {
+        "low": 3.469446951953614e-18,
+        "high": 0.03699349820698568,
+        "margin": 0.018496749103492836
+      }
+    }
+  ],
+  "baselineComparisons": [
+    {
+      "strategy": "Corsair-400",
+      "estimate": 0.24,
+      "low": 0.12,
+      "high": 0.36,
+      "probabilityGreaterThanZero": 0.9999,
+      "iterations": 10000
+    },
+    {
+      "strategy": "Tactician-400",
+      "estimate": 0.06,
+      "low": -0.06,
+      "high": 0.19,
+      "probabilityGreaterThanZero": 0.8073,
+      "iterations": 10000
+    },
+    {
+      "strategy": "Strategist-800",
+      "estimate": -0.06,
+      "low": -0.16,
+      "high": 0.04,
+      "probabilityGreaterThanZero": 0.1023,
+      "iterations": 10000
+    }
+  ],
+  "directComparison": {
+    "left": "Strategist-800",
+    "right": "Tactician-400",
+    "estimate": -0.12,
+    "low": -0.24,
+    "high": 0,
+    "probabilityGreaterThanZero": 0.0187,
+    "iterations": 10000
+  }
+}
