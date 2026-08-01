@@ -32,6 +32,21 @@ const PLAYER_TINTS = [
   { r: 69, g: 202, b: 255 },
   { r: 255, g: 255, b: 96 },
 ];
+export const MODAL_TOUCH_PRIORITIES = Object.freeze({
+  pileBlocker: -1000,
+  pileControl: -1100,
+  pileTray: -1200,
+  detailBlocker: -2000,
+  detailPanel: -2050,
+  detailControl: -2100,
+});
+export const DISCARD_PILE_LAYOUT = Object.freeze({
+  width: 182,
+  height: 286,
+  cornerRadius: 7,
+  trayWidth: 182,
+  trayHeight: 202,
+});
 export const SHIP_SPRITE_SCALE = 0.8;
 export const SHIP_SPRITE_SIZE = Object.freeze({ width: 32, height: 40 });
 const REGION_LAYOUTS = Object.freeze([
@@ -89,6 +104,14 @@ export function techTrayVisibleRange(layout, scrollOffset) {
     min: Math.max(0, Math.trunc(-scrollOffset / cardSpan)),
     max: Math.trunc((viewportSize - scrollOffset) / cardSpan),
   };
+}
+
+export function discardPileCards(cards) {
+  return [...cards];
+}
+
+export function discardPileInitialOffset(cardCount) {
+  return techTrayScrollBounds("wide", cardCount).min;
 }
 
 export function gameLogPosition(height = 142) {
@@ -185,6 +208,44 @@ class WrappedTextBox extends CCNode {
       context.fillText(line, x, startY + index * this.lineHeight);
     });
     context.restore();
+  }
+}
+
+class RoundedPanel extends CCNode {
+  constructor(width, height, radius) {
+    super();
+    this.contentSize = { width, height };
+    this.radius = radius;
+  }
+
+  roundedRect(context, inset, radius) {
+    const width = this.contentSize.width - inset * 2;
+    const height = this.contentSize.height - inset * 2;
+    context.beginPath();
+    context.moveTo(inset + radius, inset);
+    context.lineTo(inset + width - radius, inset);
+    context.quadraticCurveTo(inset + width, inset, inset + width, inset + radius);
+    context.lineTo(inset + width, inset + height - radius);
+    context.quadraticCurveTo(
+      inset + width,
+      inset + height,
+      inset + width - radius,
+      inset + height,
+    );
+    context.lineTo(inset + radius, inset + height);
+    context.quadraticCurveTo(inset, inset + height, inset, inset + height - radius);
+    context.lineTo(inset, inset + radius);
+    context.quadraticCurveTo(inset, inset, inset + radius, inset);
+    context.closePath();
+  }
+
+  draw(context) {
+    context.fillStyle = "#fff";
+    this.roundedRect(context, 0, this.radius);
+    context.fill();
+    context.fillStyle = "#080d12";
+    this.roundedRect(context, 2, this.radius - 2);
+    context.fill();
   }
 }
 
@@ -701,20 +762,21 @@ class TechCardTray extends CCNode {
     this.viewportRect = layout === "tall"
       ? { x: -3, y: -57.5, width: 331, height: 91 }
       : { x: -3, y: -113, width: 182, height: 202 };
-    const hitArea = new CCNode();
-    hitArea.contentSize = {
+    this.viewport.clipRect = { ...this.viewportRect };
+    this.hitArea = new CCNode();
+    this.hitArea.contentSize = {
       width: this.viewportRect.width,
       height: this.viewportRect.height,
     };
-    hitArea.setPosition(ccp(this.viewportRect.x, this.viewportRect.y));
-    hitArea.interactive = true;
-    hitArea.enabled = true;
-    hitArea.touchPriority = -20;
-    hitArea.onPointerDown = (point) => this.beginDrag(point);
-    hitArea.onPointerMove = (point) => this.moveDrag(point);
-    hitArea.onPointerUp = () => this.endDrag();
-    hitArea.activate = (point) => this.activateCard(point);
-    this.addChild(hitArea, 2);
+    this.hitArea.setPosition(ccp(this.viewportRect.x, this.viewportRect.y));
+    this.hitArea.interactive = true;
+    this.hitArea.enabled = true;
+    this.hitArea.touchPriority = -20;
+    this.hitArea.onPointerDown = (point) => this.beginDrag(point);
+    this.hitArea.onPointerMove = (point) => this.moveDrag(point);
+    this.hitArea.onPointerUp = () => this.endDrag();
+    this.hitArea.activate = (point) => this.activateCard(point);
+    this.addChild(this.hitArea, 2);
   }
 
   beginDrag(point) {
@@ -813,8 +875,20 @@ class AlienArtifactLayer extends FacilityLayer {
         fontSize: 11,
       },
     );
-    this.cycleButton.setPosition(ccp(78, 31));
+    this.cycleButton.setPosition(ccp(42, 31));
     this.addChild(this.cycleButton, 3);
+    this.discardsButton = scene.buttonFromImage(
+      "ondark_button.png",
+      "ondark_button_active.png",
+      () => scene.openDiscardPile(),
+      {
+        inactiveImage: "ondark_button_inactive.png",
+        label: "0 DISCARDS",
+        fontSize: 9,
+      },
+    );
+    this.discardsButton.setPosition(ccp(114, 31));
+    this.addChild(this.discardsButton, 3);
     this.cardViews = [];
     this.signature = "";
     this.refresh();
@@ -836,6 +910,9 @@ class AlienArtifactLayer extends FacilityLayer {
       this.cycleButton,
       player.aiType === AIType.human && player.canShuffleCards,
     );
+    const discardCount = this.scene.state.techDiscardDeck.length;
+    this.scene.setButtonLabel(this.discardsButton, `${discardCount} DISCARDS`);
+    this.scene.setButtonIsEnabled(this.discardsButton, discardCount > 0);
     const signature = this.scene.state.techDisplayDeck.map((card) => card.cardID).join(",");
     if (signature === this.signature) {
       return;
@@ -864,17 +941,22 @@ class ArtifactCardDetail extends CCNode {
     super();
     this.scene = scene;
     this.card = null;
+    this.viewOnly = false;
     this.visible = false;
 
     const blocker = new CCLayerColor("rgba(0,0,0,0.35)");
     blocker.interactive = true;
     blocker.enabled = true;
-    blocker.touchPriority = -100;
-    blocker.activate = () => {};
+    blocker.touchPriority = MODAL_TOUCH_PRIORITIES.detailBlocker;
+    blocker.activate = () => this.close();
     this.addChild(blocker, 0);
 
     this.background = new CCSprite(scene.assets.image("aa_card_detail_box.png"));
     this.background.setPosition(ccp(678, 712));
+    this.background.interactive = true;
+    this.background.enabled = true;
+    this.background.touchPriority = MODAL_TOUCH_PRIORITIES.detailPanel;
+    this.background.activate = () => {};
     this.addChild(this.background, 1);
     const halfWidth = this.background.contentSize.width * 0.5;
     const height = this.background.contentSize.height;
@@ -886,6 +968,7 @@ class ArtifactCardDetail extends CCNode {
       { inactiveImage: "ondark_button_inactive.png", label: "TAKE", fontSize: 11 },
     );
     this.takeButton.setPosition(ccp(halfWidth, 16));
+    this.setButtonTouchPriority(this.takeButton, MODAL_TOUCH_PRIORITIES.detailControl);
     this.background.addChild(this.takeButton, 3);
 
     this.backButton = scene.buttonFromImage(
@@ -894,6 +977,7 @@ class ArtifactCardDetail extends CCNode {
       () => this.close(),
     );
     this.backButton.setPosition(ccp(18, height - 18));
+    this.setButtonTouchPriority(this.backButton, MODAL_TOUCH_PRIORITIES.detailControl);
     this.background.addChild(this.backButton, 3);
 
     this.title1 = this.detailLabel("", ccp(halfWidth, height - 63));
@@ -934,8 +1018,17 @@ class ArtifactCardDetail extends CCNode {
     return label;
   }
 
-  open(card) {
+  setButtonTouchPriority(button, priority) {
+    button.children[0].children[0].touchPriority = priority;
+  }
+
+  open(card, { viewOnly = false } = {}) {
     this.card = card;
+    this.viewOnly = viewOnly;
+    this.creditLabel.setPosition(ccp(
+      this.background.contentSize.width * 0.5,
+      viewOnly ? 16 : 84,
+    ));
     if (this.cardImage) {
       this.background.removeChild(this.cardImage);
     }
@@ -963,10 +1056,15 @@ class ArtifactCardDetail extends CCNode {
       return;
     }
     const player = this.scene.state.currentPlayer;
-    this.creditLabel.setString(`CREDIT ${player.artifactCreditAvailable} / 8`);
+    this.creditLabel.setString(
+      this.viewOnly ? "DISCARD PILE" : `CREDIT ${player.artifactCreditAvailable} / 8`,
+    );
+    this.takeButton.visible = !this.viewOnly;
     this.scene.setButtonIsEnabled(
       this.takeButton,
-      player.aiType === AIType.human && player.canPurchaseCard(this.card),
+      !this.viewOnly
+        && player.aiType === AIType.human
+        && player.canPurchaseCard(this.card),
     );
   }
 
@@ -979,6 +1077,91 @@ class ArtifactCardDetail extends CCNode {
   close() {
     this.visible = false;
     this.card = null;
+    this.viewOnly = false;
+  }
+}
+
+class DiscardPileOverlay extends CCNode {
+  constructor(scene) {
+    super();
+    this.scene = scene;
+    this.visible = false;
+    this.pileModel = { cards: [] };
+
+    this.shade = new CCLayerColor("rgba(0,0,0,0.42)");
+    this.shade.interactive = true;
+    this.shade.enabled = true;
+    this.shade.touchPriority = MODAL_TOUCH_PRIORITIES.pileBlocker;
+    this.shade.activate = () => this.close();
+    this.addChild(this.shade, 0);
+
+    this.panel = new CCNode();
+    this.panel.setPosition(ccp(578, 542));
+    this.addChild(this.panel, 1);
+    this.panel.addChild(new RoundedPanel(
+      DISCARD_PILE_LAYOUT.width,
+      DISCARD_PILE_LAYOUT.height,
+      DISCARD_PILE_LAYOUT.cornerRadius,
+    ), 1);
+
+    const title = new CCLabelTTF("DISCARD PILE", "DIN-Black", 14, "#fff");
+    title.setPosition(ccp(DISCARD_PILE_LAYOUT.width / 2, 258));
+    this.panel.addChild(title, 2);
+    this.countLabel = new CCLabelTTF("0 CARDS", "DIN-Medium", 11, "#9fdcf5");
+    this.countLabel.setPosition(ccp(DISCARD_PILE_LAYOUT.width / 2, 234));
+    this.panel.addChild(this.countLabel, 2);
+
+    this.closeButton = scene.buttonFromImage(
+      "aa_back_button.png",
+      "aa_back_button_active.png",
+      () => this.close(),
+    );
+    this.closeButton.setPosition(ccp(18, 262));
+    this.setButtonTouchPriority(this.closeButton, MODAL_TOUCH_PRIORITIES.pileControl);
+    this.panel.addChild(this.closeButton, 3);
+
+    this.tray = new TechCardTray(scene, "wide", (card) => this.openCard(card));
+    this.tray.setPosition(ccp(3, 122));
+    this.tray.hitArea.touchPriority = MODAL_TOUCH_PRIORITIES.pileTray;
+    this.panel.addChild(this.tray, 2);
+    const trayShadow = new CCSprite(scene.assets.image("hud_card_tray_shadow_vert.png"));
+    trayShadow.contentSize = {
+      width: DISCARD_PILE_LAYOUT.trayWidth,
+      height: DISCARD_PILE_LAYOUT.trayHeight,
+    };
+    trayShadow.setPosition(ccp(DISCARD_PILE_LAYOUT.width / 2, 110));
+    this.panel.addChild(trayShadow, 3);
+
+    this.emptyLabel = new CCLabelTTF("NO DISCARDED TECH", "DIN-Medium", 12, "#666");
+    this.emptyLabel.setPosition(ccp(DISCARD_PILE_LAYOUT.width / 2, 110));
+    this.panel.addChild(this.emptyLabel, 3);
+  }
+
+  setButtonTouchPriority(button, priority) {
+    button.children[0].children[0].touchPriority = priority;
+  }
+
+  open() {
+    this.visible = true;
+    this.refresh();
+    this.tray.setScrollOffset(discardPileInitialOffset(this.pileModel.cards.length));
+  }
+
+  close() {
+    this.visible = false;
+  }
+
+  openCard(card) {
+    this.scene.artifactDetail.open(card, { viewOnly: true });
+  }
+
+  refresh() {
+    const cards = discardPileCards(this.scene.state.techDiscardDeck);
+    this.pileModel.cards = cards;
+    this.countLabel.setString(`${cards.length} ${cards.length === 1 ? "CARD" : "CARDS"}`);
+    this.emptyLabel.visible = cards.length === 0;
+    this.tray.visible = cards.length > 0;
+    this.tray.refresh(this.pileModel);
   }
 }
 
@@ -1551,6 +1734,8 @@ export class GameScene extends AFLayer {
     this.ensureShipSprites();
     this.gameMenuOverlay = new GameMenuOverlay(this);
     this.addChild(this.gameMenuOverlay, 11);
+    this.discardPileOverlay = new DiscardPileOverlay(this);
+    this.addChild(this.discardPileOverlay, 11);
     this.artifactDetail = new ArtifactCardDetail(this);
     this.addChild(this.artifactDetail, 12);
     this.gameOverOverlay = new GameOverOverlay(this);
@@ -1848,6 +2033,10 @@ export class GameScene extends AFLayer {
     this.artifactDetail.open(card);
   }
 
+  openDiscardPile() {
+    this.discardPileOverlay.open();
+  }
+
   async returnToMainMenu() {
     const { MainMenuScene } = await import("./main-menu.js");
     this.director.replaceScene(new MainMenuScene(this.director, this.assets));
@@ -1955,6 +2144,7 @@ export class GameScene extends AFLayer {
     }
     this.marketLayer.refresh();
     this.artifactLayer.refresh();
+    this.discardPileOverlay.refresh();
     this.colonistHubLayer.refresh();
     for (const facilityLayer of this.facilityLayers) {
       facilityLayer.setPotential(this.state.canUseOrbital(facilityLayer.orbital));

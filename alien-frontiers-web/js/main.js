@@ -106,6 +106,7 @@ const MENU_IMAGES = [
   "aa_OR_bar.png",
   "aa_back_button.png",
   "aa_back_button_active.png",
+  "hud_card_tray_shadow_vert.png",
   "hud_port_or_bar.png",
   "menu_button_104.png",
   "menu_button_104_active.png",

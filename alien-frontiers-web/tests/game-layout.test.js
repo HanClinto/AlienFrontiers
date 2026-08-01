@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { colonistHubTrackPosition, gameLogPosition, lunarMineHitBounds, miniHUDPosition, regionAtBoardPoint, rollingTrayPosition, SHIP_SPRITE_SCALE, SHIP_SPRITE_SIZE, techCardPosition, techDescriptionLayout, techTrayScrollBounds, techTrayVisibleRange } from "../js/scenes/game.js";
+import { colonistHubTrackPosition, DISCARD_PILE_LAYOUT, discardPileCards, discardPileInitialOffset, gameLogPosition, lunarMineHitBounds, miniHUDPosition, MODAL_TOUCH_PRIORITIES, regionAtBoardPoint, rollingTrayPosition, SHIP_SPRITE_SCALE, SHIP_SPRITE_SIZE, techCardPosition, techDescriptionLayout, techTrayScrollBounds, techTrayVisibleRange } from "../js/scenes/game.js";
 
 test("all six ships wrap into the original four-column tray", () => {
   assert.equal(SHIP_SPRITE_SCALE, 0.8);
@@ -100,6 +100,34 @@ test("tech trays hide whole cards using the original visible index range", () =>
   assert.deepEqual(techTrayVisibleRange("tall", -89), { min: 1, max: 4 });
   assert.deepEqual(techTrayVisibleRange("wide", 0), { min: 0, max: 3 });
   assert.deepEqual(techTrayVisibleRange("wide", -56), { min: 1, max: 4 });
+});
+
+test("discard pile browsing starts at the newest card without mutating state", () => {
+  const cards = [{ cardID: 1 }, { cardID: 2 }, { cardID: 3 }];
+
+  assert.deepEqual(discardPileCards(cards).map((card) => card.cardID), [1, 2, 3]);
+  assert.deepEqual(cards.map((card) => card.cardID), [1, 2, 3]);
+  assert.equal(discardPileInitialOffset(5), -78);
+});
+
+test("discard pile window matches the mini HUD card tray width", () => {
+  assert.deepEqual(DISCARD_PILE_LAYOUT, {
+    width: 182,
+    height: 286,
+    cornerRadius: 7,
+    trayWidth: 182,
+    trayHeight: 202,
+  });
+});
+
+test("nested discard modals take pointer priority over their blockers and the board", () => {
+  assert.ok(MODAL_TOUCH_PRIORITIES.pileBlocker < -256);
+  assert.ok(MODAL_TOUCH_PRIORITIES.pileControl < MODAL_TOUCH_PRIORITIES.pileBlocker);
+  assert.ok(MODAL_TOUCH_PRIORITIES.pileTray < MODAL_TOUCH_PRIORITIES.pileControl);
+  assert.ok(MODAL_TOUCH_PRIORITIES.detailBlocker < MODAL_TOUCH_PRIORITIES.pileTray);
+  assert.ok(MODAL_TOUCH_PRIORITIES.detailPanel < MODAL_TOUCH_PRIORITIES.detailBlocker);
+  assert.ok(MODAL_TOUCH_PRIORITIES.detailControl < MODAL_TOUCH_PRIORITIES.detailPanel);
+  assert.ok(MODAL_TOUCH_PRIORITIES.detailControl < MODAL_TOUCH_PRIORITIES.detailBlocker);
 });
 
 test("game log occupies the original wrapped UITextView aperture", () => {
