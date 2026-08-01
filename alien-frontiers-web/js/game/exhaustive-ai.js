@@ -43,6 +43,7 @@ const TECH_VALUES = Object.freeze({
   [TechCardType.dataCrystal]: 1.5,
   [TechCardType.orbitalTeleporter]: 1.5,
   [TechCardType.holographicDecoy]: 1.5,
+  [TechCardType.temporalWarper]: 1,
 });
 
 const SEARCH_ORBITAL_KEYS = Object.freeze([
@@ -59,7 +60,7 @@ const SEARCH_ORBITAL_KEYS = Object.freeze([
 ]);
 const MAX_PLAYERS = 4;
 const NATIVE_SHIPS_PER_PLAYER = 6;
-const MAX_TECH_CARDS = 20;
+const MAX_TECH_CARDS = 22;
 const PACKED_CARD_SEQUENCE_WORDS = 5;
 const SEARCH_POSITION_WORDS = 85;
 
@@ -271,6 +272,9 @@ function techPowerMoves(state) {
   const player = state.currentPlayer;
   const moves = [];
   for (const card of player.cards) {
+    if (card.type === TechCardType.temporalWarper) {
+      continue;
+    }
     if (card.type === TechCardType.gravityManipulator && card.canUsePower) {
       for (const shipToRaise of player.undockedShips) {
         if (!card.canUsePowerOnShip(shipToRaise)) {
@@ -396,6 +400,18 @@ function techDiscardMoves(state) {
       }
       continue;
     }
+    if (card.hasImplementedCardDiscard) {
+      for (const discardedCard of state.techDiscardDeck) {
+        if (card.canClaimDiscardedCard(discardedCard)) {
+          moves.push({
+            type: "discard-card",
+            cardID: card.cardID,
+            targetCardID: discardedCard.cardID,
+          });
+        }
+      }
+      continue;
+    }
     if (card.type === TechCardType.orbitalTeleporter) {
       for (const selection of selections) {
         for (let destinationRegionIndex = 0;
@@ -466,6 +482,16 @@ function legacyTechDiscardMoves(state) {
       if (regionIndex >= 0) {
         moves.push({ type: "discard-region", cardID: card.cardID, regionIndex });
       }
+    } else if (card.type === TechCardType.temporalWarper) {
+      for (const discardedCard of state.techDiscardDeck) {
+        if (card.canClaimDiscardedCard(discardedCard)) {
+          moves.push({
+            type: "discard-card",
+            cardID: card.cardID,
+            targetCardID: discardedCard.cardID,
+          });
+        }
+      }
     }
   }
   return moves;
@@ -484,6 +510,10 @@ function executeTechDiscardMove(state, move) {
       (candidate) => candidate.shipIndex === move.shipIndex,
     );
     return card.useDiscardOnShip(ship) === true;
+  }
+  if (move.type === "discard-card") {
+    const target = state.allTech.find((candidate) => candidate.cardID === move.targetCardID);
+    return card.useDiscardOnCard(target) === true;
   }
   if (move.type === "discard-teleporter-colony") {
     const selection = {

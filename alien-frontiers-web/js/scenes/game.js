@@ -942,6 +942,7 @@ class ArtifactCardDetail extends CCNode {
     this.scene = scene;
     this.card = null;
     this.viewOnly = false;
+    this.claimDiscard = false;
     this.visible = false;
 
     const blocker = new CCLayerColor("rgba(0,0,0,0.35)");
@@ -1022,9 +1023,11 @@ class ArtifactCardDetail extends CCNode {
     button.children[0].children[0].touchPriority = priority;
   }
 
-  open(card, { viewOnly = false } = {}) {
+  open(card, { viewOnly = false, claimDiscard = false } = {}) {
     this.card = card;
     this.viewOnly = viewOnly;
+    this.claimDiscard = claimDiscard;
+    this.scene.setButtonLabel(this.takeButton, this.claimDiscard ? "CLAIM" : "TAKE");
     this.creditLabel.setPosition(ccp(
       this.background.contentSize.width * 0.5,
       viewOnly ? 16 : 84,
@@ -1057,19 +1060,25 @@ class ArtifactCardDetail extends CCNode {
     }
     const player = this.scene.state.currentPlayer;
     this.creditLabel.setString(
-      this.viewOnly ? "DISCARD PILE" : `CREDIT ${player.artifactCreditAvailable} / 8`,
+      this.viewOnly || this.claimDiscard
+        ? "DISCARD PILE"
+        : `CREDIT ${player.artifactCreditAvailable} / 8`,
     );
     this.takeButton.visible = !this.viewOnly;
+    const canTake = this.claimDiscard
+      ? this.scene.state.pendingTechCard?.canClaimDiscardedCard(this.card) === true
+      : player.aiType === AIType.human && player.canPurchaseCard(this.card);
     this.scene.setButtonIsEnabled(
       this.takeButton,
-      !this.viewOnly
-        && player.aiType === AIType.human
-        && player.canPurchaseCard(this.card),
+      !this.viewOnly && canTake,
     );
   }
 
   takeCard() {
-    if (this.card && this.scene.state.currentPlayer.purchaseCard(this.card)) {
+    const taken = this.claimDiscard
+      ? this.scene.claimDiscardedCard(this.card)
+      : this.scene.state.currentPlayer.purchaseCard(this.card);
+    if (this.card && taken) {
       this.close();
     }
   }
@@ -1078,6 +1087,7 @@ class ArtifactCardDetail extends CCNode {
     this.visible = false;
     this.card = null;
     this.viewOnly = false;
+    this.claimDiscard = false;
   }
 }
 
@@ -1086,6 +1096,7 @@ class DiscardPileOverlay extends CCNode {
     super();
     this.scene = scene;
     this.visible = false;
+    this.claimMode = false;
     this.pileModel = { cards: [] };
 
     this.shade = new CCLayerColor("rgba(0,0,0,0.42)");
@@ -1141,7 +1152,8 @@ class DiscardPileOverlay extends CCNode {
     button.children[0].children[0].touchPriority = priority;
   }
 
-  open() {
+  open({ claimMode = false } = {}) {
+    this.claimMode = claimMode;
     this.visible = true;
     this.refresh();
     this.tray.setScrollOffset(discardPileInitialOffset(this.pileModel.cards.length));
@@ -1149,10 +1161,17 @@ class DiscardPileOverlay extends CCNode {
 
   close() {
     this.visible = false;
+    if (this.claimMode) {
+      this.scene.state.cancelPendingSelection();
+    }
+    this.claimMode = false;
   }
 
   openCard(card) {
-    this.scene.artifactDetail.open(card, { viewOnly: true });
+    this.scene.artifactDetail.open(card, {
+      viewOnly: !this.claimMode,
+      claimDiscard: this.claimMode,
+    });
   }
 
   refresh() {
@@ -1850,7 +1869,7 @@ export class GameScene extends AFLayer {
     this.techDiscardButton = this.buttonFromImage(
       "menu_button_68.png",
       "menu_button_68_active.png",
-      () => this.state.beginTechDiscard(this.state.currentPlayer.selectedCard),
+      () => this.beginSelectedTechDiscard(),
       { label: "DISCARD", fontSize: 10, fontColor: "#000" },
     );
     this.techDiscardButton.setPosition(ccp(80, -76));
@@ -2037,6 +2056,26 @@ export class GameScene extends AFLayer {
     this.discardPileOverlay.open();
   }
 
+  beginSelectedTechDiscard() {
+    const card = this.state.currentPlayer.selectedCard;
+    if (!this.state.beginTechDiscard(card)) {
+      return false;
+    }
+    if (this.state.pendingTechAction === "discard-card") {
+      this.discardPileOverlay.open({ claimMode: true });
+    }
+    return true;
+  }
+
+  claimDiscardedCard(card) {
+    if (!this.state.claimPendingDiscardCard(card)) {
+      return false;
+    }
+    this.discardPileOverlay.claimMode = false;
+    this.discardPileOverlay.visible = false;
+    return true;
+  }
+
   async returnToMainMenu() {
     const { MainMenuScene } = await import("./main-menu.js");
     this.director.replaceScene(new MainMenuScene(this.director, this.assets));
@@ -2058,6 +2097,8 @@ export class GameScene extends AFLayer {
       && this.state.pendingTechAction === "power-multi-ship";
     const isSelectingDiscardShip = isHumanTurn
       && this.state.pendingTechAction === "discard-ship";
+    const isSelectingDiscardCard = isHumanTurn
+      && this.state.pendingTechAction === "discard-card";
     const isSelectingColony = isHumanTurn
       && ["discard-colony", "discard-colony-first"].includes(this.state.pendingTechAction);
     const isSelectingColonyDestination = isHumanTurn
@@ -2100,6 +2141,7 @@ export class GameScene extends AFLayer {
         : isSelectingFieldRegion ? "SELECT A REGION FOR THE FIELD EFFECT"
         : isSelectingPowerRegion ? "SELECT AN OCCUPIED REGION BONUS TO BORROW"
         : isSelectingDiscardShip ? "SELECT ONE DOCKED ENEMY SHIP TO DESTROY"
+        : isSelectingDiscardCard ? "SELECT ONE TECH FROM THE DISCARD PILE"
         : isSelectingColony ? this.colonyDiscardHint()
         : isSelectingColonyDestination ? "SELECT THE DESTINATION REGION"
         : this.state.pendingTechCard ? this.techPowerHint(this.state.pendingTechCard)
@@ -2130,6 +2172,7 @@ export class GameScene extends AFLayer {
         selectedCard.hasImplementedRegionDiscard
         || selectedCard.hasImplementedShipDiscard
         || selectedCard.hasImplementedColonyDiscard
+        || selectedCard.hasImplementedCardDiscard
       ),
     ) && !this.state.pendingTechCard;
     this.regionHitArea.enabled = isSelectingRegion
@@ -2162,6 +2205,9 @@ export class GameScene extends AFLayer {
   techPowerHint(card) {
     if (card.type === "plasma-cannon") {
       return "SELECT DOCKED ENEMY SHIPS FROM ONE FACILITY";
+    }
+    if (card.type === "temporal-warper") {
+      return "SELECT UNDOCKED DICE TO RE-ROLL, THEN OK";
     }
     if (card.type === "gravity-manipulator") {
       return this.state.pendingTechAction === "power-raise"

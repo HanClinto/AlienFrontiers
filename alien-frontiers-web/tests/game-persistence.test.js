@@ -119,6 +119,33 @@ test("loads legacy raw version-one snapshots without history", () => {
   assert.equal(restored.savedHistory, undefined);
 });
 
+test("adds appended tech cards beneath the preserved draw order of legacy snapshots", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const snapshot = createGameSnapshot(state);
+  snapshot.cards = snapshot.cards.filter((card) => card.cardID < 20);
+  snapshot.techDrawDeck = snapshot.techDrawDeck.filter((cardID) => cardID < 20);
+  snapshot.techDiscardDeck = snapshot.techDiscardDeck.filter((cardID) => cardID < 20);
+  snapshot.techDisplayDeck = snapshot.techDisplayDeck.filter((cardID) => cardID < 20);
+  for (const player of snapshot.players) {
+    player.cardIDs = player.cardIDs.filter((cardID) => cardID < 20);
+    if (player.selectedCard >= 20) {
+      player.selectedCard = null;
+    }
+  }
+  const previousNextCardID = snapshot.techDrawDeck.at(-1);
+
+  const restored = restoreGameSnapshot(snapshot);
+
+  assert.deepEqual(restored.techDrawDeck.slice(0, 2).map((card) => card.cardID), [20, 21]);
+  assert.equal(restored.techDrawDeck.at(-1).cardID, previousNextCardID);
+  assert.equal(new Set([
+    ...restored.players.flatMap((player) => player.cards),
+    ...restored.techDisplayDeck,
+    ...restored.techDiscardDeck,
+    ...restored.techDrawDeck,
+  ]).size, 22);
+});
+
 test("upgrades scalar history from the first version-two save envelope", () => {
   const storage = memoryStorage();
   const state = new GameState(2, [AIType.human, AIType.human]);

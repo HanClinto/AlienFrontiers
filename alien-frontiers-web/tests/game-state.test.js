@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { AIType, EventName } from "../js/game/constants.js";
+import { GameHistory } from "../js/game/game-history.js";
 import { GameState } from "../js/game/game-state.js";
 import { SimpleAI } from "../js/game/simple-ai.js";
 import { TECH_CARD_DEFINITIONS, TechCardType } from "../js/game/tech-card.js";
@@ -249,7 +250,7 @@ test("SimpleAI uses Colony Constructor and lands its pending colony", () => {
   assert.equal(player.vps, 2);
 });
 
-test("builds, shuffles, deals, and displays the exact 20-card tech deck", () => {
+test("builds, shuffles, deals, and displays the exact 22-card tech deck", () => {
   const state = new GameState(4, [AIType.human, AIType.human, AIType.human, AIType.human], Math.random, () => 0.25);
   const expectedCounts = Object.fromEntries(TECH_CARD_DEFINITIONS.map(({ type, count }) => [type, count]));
   const actualCounts = Object.fromEntries(TECH_CARD_DEFINITIONS.map(({ type }) => [
@@ -257,17 +258,17 @@ test("builds, shuffles, deals, and displays the exact 20-card tech deck", () => 
     state.allTech.filter((card) => card.type === type).length,
   ]));
 
-  assert.equal(state.allTech.length, 20);
+  assert.equal(state.allTech.length, 22);
   assert.deepEqual(actualCounts, expectedCounts);
-  assert.deepEqual(state.allTech.map((card) => card.cardID), Array.from({ length: 20 }, (_, index) => index));
+  assert.deepEqual(state.allTech.map((card) => card.cardID), Array.from({ length: 22 }, (_, index) => index));
   assert.deepEqual(state.players.map((player) => player.cards.length), [1, 1, 1, 1]);
   assert.equal(state.techDisplayDeck.length, 3);
-  assert.equal(state.techDrawDeck.length, 13);
+  assert.equal(state.techDrawDeck.length, 15);
   assert.equal(new Set([
     ...state.players.flatMap((player) => player.cards),
     ...state.techDisplayDeck,
     ...state.techDrawDeck,
-  ]).size, 20);
+  ]).size, 22);
 });
 
 test("every enabled tech card exposes its original visible description", () => {
@@ -528,6 +529,8 @@ test("facility potential includes legal completions around selected dice", () =>
 test("resource raids cap at four and finish when scarce resources are exhausted", () => {
   const state = new GameState(3, [AIType.human, AIType.human, AIType.human]);
   const [raider, victimOne, victimTwo] = state.players;
+  victimOne.cards = [];
+  victimTwo.cards = [];
   victimOne.ore = 2;
   victimOne.fuel = 1;
   victimTwo.ore = 1;
@@ -574,6 +577,7 @@ test("Holographic Decoy blocks resources and is the only raidable card", () => {
 test("canceling a raid clears provisional resources without transferring them", () => {
   const state = new GameState(2, [AIType.human, AIType.human]);
   const [raider, victim] = state.players;
+  victim.cards = [];
   victim.ore = 2;
   victim.fuel = 1;
 
@@ -588,6 +592,7 @@ test("canceling a raid clears provisional resources without transferring them", 
 test("SimpleAI uses a straight and resolves its raid", () => {
   const state = new GameState(2, [AIType.easy, AIType.human], () => 0.2);
   const [raider, victim] = state.players;
+  victim.cards = [];
   victim.ore = 2;
   victim.fuel = 2;
   SimpleAI.step(state);
@@ -816,6 +821,147 @@ test("Booster removes fields while Stasis and Gravity move their fields", () => 
     state.asimovCrater.hasIsolationField,
   ], [false, false, false]);
   assert.equal(state.beginTechDiscard(state.allTech.find((card) => card.type === TechCardType.stasisBeam)), false);
+});
+
+test("Temporal Warper discard claims one eligible discarded tech and is undoable", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  state.history = new GameHistory();
+  const player = state.currentPlayer;
+  const warper = state.allTech.find((card) => card.type === TechCardType.temporalWarper);
+  const claimed = state.allTech.find((card) => card.type === TechCardType.boosterPod);
+  player.cards = [];
+  state.techDrawDeck = state.techDrawDeck.filter((card) => card !== claimed && card !== warper);
+  state.techDisplayDeck = state.techDisplayDeck.filter((card) => card !== claimed && card !== warper);
+  player.addCard(warper);
+  state.discardTechCard(claimed);
+
+  assert.equal(state.beginTechDiscard(warper), true);
+  assert.equal(state.pendingTechAction, "discard-card");
+  assert.equal(state.claimPendingDiscardCard(claimed), true);
+  assert.equal(player.cards.includes(claimed), true);
+  assert.equal(player.cards.includes(warper), false);
+  assert.equal(state.techDiscardDeck.includes(claimed), false);
+  assert.equal(state.techDiscardDeck.at(-1), warper);
+  assert.equal(player.techsDiscarded, 1);
+
+  const restored = state.history.undo(state);
+  assert.equal(restored.currentPlayer.cards.some((card) => card.cardID === warper.cardID), true);
+  assert.equal(restored.techDiscardDeck.some((card) => card.cardID === claimed.cardID), true);
+  assert.equal(restored.currentPlayer.techsDiscarded, 0);
+});
+
+test("Temporal Warper cannot retrieve a duplicate tech type", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const warper = state.allTech.find((card) => card.type === TechCardType.temporalWarper);
+  const boosters = state.allTech.filter((card) => card.type === TechCardType.boosterPod);
+  player.cards = [];
+  player.addCard(warper);
+  player.addCard(boosters[0]);
+  state.discardTechCard(boosters[1]);
+
+  assert.equal(warper.canClaimDiscardedCard(boosters[1]), false);
+  assert.equal(state.beginTechDiscard(warper), false);
+});
+
+test("Temporal Warper rerolls selected legal ships and clears game history", () => {
+  const rolls = sequenceRandom([0, 0.99]);
+  const state = new GameState(2, [AIType.human, AIType.human], rolls);
+  state.history = new GameHistory();
+  const player = state.currentPlayer;
+  const warper = state.allTech.find((card) => card.type === TechCardType.temporalWarper);
+  player.cards = [];
+  player.addCard(warper);
+  player.initialRollDone = true;
+  player.fuel = 2;
+  player.activeShips[0].value = 3;
+  player.activeShips[1].value = 4;
+  state.history.createUndoPoint(state);
+
+  assert.equal(state.beginTechPower(warper), true);
+  assert.equal(state.usePendingTechOnShip(player.activeShips[0]), true);
+  assert.equal(state.usePendingTechOnShip(player.activeShips[1]), true);
+  assert.equal(state.confirmPendingTechPower(), true);
+  assert.deepEqual(player.activeShips.slice(0, 2).map((ship) => ship.value), [1, 6]);
+  assert.equal(player.fuel, 1);
+  assert.equal(warper.tapped, true);
+  assert.equal(state.history.canUndo, false);
+  assert.equal(state.history.canRedo, false);
+});
+
+test("Temporal Warper rejects unrolled, docked, and teleport-restricted ships", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const warper = state.allTech.find((card) => card.type === TechCardType.temporalWarper);
+  player.cards = [];
+  player.addCard(warper);
+  player.fuel = 1;
+  assert.equal(warper.canUsePowerOnShip(player.activeShips[0]), false);
+
+  player.initialRollDone = true;
+  player.activeShips[0].teleportRestriction = state.solarConverter;
+  assert.equal(warper.canUsePowerOnShip(player.activeShips[0]), false);
+  player.activeShips[0].teleportRestriction = null;
+  state.maintenanceBay.dockShip(player.activeShips[0]);
+  assert.equal(warper.canUsePowerOnShip(player.activeShips[0]), false);
+});
+
+test("canceling Temporal Warper selection preserves existing undo history", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  state.history = new GameHistory();
+  const player = state.currentPlayer;
+  const warper = state.allTech.find((card) => card.type === TechCardType.temporalWarper);
+  player.cards = [];
+  player.addCard(warper);
+  player.initialRollDone = true;
+  player.fuel = 1;
+  state.history.createUndoPoint(state);
+
+  assert.equal(state.beginTechPower(warper), true);
+  assert.equal(state.usePendingTechOnShip(player.activeShips[0]), true);
+  assert.equal(state.cancelPendingSelection(), true);
+  assert.equal(state.history.canUndo, true);
+  assert.equal(warper.tapped, false);
+  assert.equal(player.fuel, 1);
+  assert.equal(player.selectedShips.length, 0);
+});
+
+test("Pohl control makes Temporal Warper rerolls free", () => {
+  const state = new GameState(2, [AIType.human, AIType.human], () => 0);
+  const player = state.currentPlayer;
+  const warper = state.allTech.find((card) => card.type === TechCardType.temporalWarper);
+  player.cards = [];
+  player.addCard(warper);
+  player.initialRollDone = true;
+  player.fuel = 0;
+  state.pohlFoothills.addColony(player.playerIndex);
+
+  assert.equal(warper.adjustedFuelCost, 0);
+  assert.equal(state.beginTechPower(warper), true);
+  assert.equal(state.usePendingTechOnShip(player.activeShips[0]), true);
+  assert.equal(state.confirmPendingTechPower(), true);
+  assert.equal(player.fuel, 0);
+});
+
+test("Temporal Warper reroll resolves Resource Cache exactly once", () => {
+  const state = new GameState(2, [AIType.human, AIType.human], () => 0);
+  const player = state.currentPlayer;
+  const warper = state.allTech.find((card) => card.type === TechCardType.temporalWarper);
+  const cache = state.allTech.find((card) => card.type === TechCardType.resourceCache);
+  player.cards = [];
+  player.addCard(warper);
+  player.addCard(cache);
+  player.initialRollDone = true;
+  player.fuel = 1;
+  player.activeShips[0].value = 2;
+  player.activeShips[1].value = 1;
+  player.activeShips[2].value = 1;
+
+  assert.equal(state.beginTechPower(warper), true);
+  assert.equal(state.usePendingTechOnShip(player.activeShips[0]), true);
+  assert.equal(state.confirmPendingTechPower(), true);
+  assert.deepEqual([player.ore, player.fuel], [1, 0]);
+  assert.equal(player.cards.includes(cache), true);
 });
 
 test("Colonist Hub advances private tracks with Asimov bonus and launches overflow", () => {

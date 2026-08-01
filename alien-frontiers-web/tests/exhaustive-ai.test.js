@@ -877,6 +877,24 @@ test("active tech successors are opt-in, atomic, and executable", () => {
   assert.equal(state.allTech.find((card) => card.cardID === selectedMove.cardID).tapped, true);
 });
 
+test("active tech generation excludes probabilistic Temporal Warper rerolls", () => {
+  const state = new GameState(2, [AIType.hard, AIType.human]);
+  const player = state.currentPlayer;
+  const warper = state.allTech.find((card) => card.type === TechCardType.temporalWarper);
+  player.cards = [];
+  player.initialRollDone = true;
+  player.fuel = 2;
+  player.addCard(warper);
+
+  const children = ExhaustiveAI.orbitalMoves(state, {
+    includeTechPowerMoves: true,
+    maxChildren: 256,
+  });
+
+  assert.equal(children.some(({ move }) => move.cardID === warper.cardID), false);
+  assert.equal(warper.usePowerOnShip(player.undockedShips[0]), false);
+});
+
 test("tech discard successors cover implemented board effects atomically", () => {
   const state = createLateGameStressState();
   const player = state.currentPlayer;
@@ -920,6 +938,53 @@ test("tech discard successors cover implemented board effects atomically", () =>
   assert.equal(ExhaustiveAI.executeMove(state, selected), true);
   assert.equal(player.cards.some((card) => card.cardID === selected.cardID), false);
   assert.equal(player.techsDiscarded, 1);
+});
+
+test("Temporal Warper discard generates deterministic claim moves and executes one", () => {
+  const state = new GameState(2, [AIType.hard, AIType.human]);
+  const player = state.currentPlayer;
+  const warper = state.allTech.find((card) => card.type === TechCardType.temporalWarper);
+  const booster = state.allTech.find((card) => card.type === TechCardType.boosterPod);
+  const stasis = state.allTech.find((card) => card.type === TechCardType.stasisBeam);
+  player.cards = [];
+  player.initialRollDone = true;
+  player.addCard(warper);
+  state.discardTechCard(booster);
+  state.discardTechCard(stasis);
+
+  const children = ExhaustiveAI.orbitalMoves(state, {
+    includeTechDiscardMoves: true,
+    maxChildren: 256,
+  });
+  const claimMoves = children
+    .filter(({ move }) => move.type === "discard-card")
+    .map(({ move }) => move)
+    .sort((left, right) => left.targetCardID - right.targetCardID);
+
+  assert.deepEqual(claimMoves.map((move) => move.targetCardID), [booster.cardID, stasis.cardID]);
+  assert.equal(ExhaustiveAI.executeMove(state, claimMoves[0]), true);
+  assert.equal(player.cards.some((card) => card.cardID === claimMoves[0].targetCardID), true);
+  assert.equal(player.cards.includes(warper), false);
+  assert.equal(player.techsDiscarded, 1);
+});
+
+test("legacy-compact AI includes deterministic Temporal Warper claims", () => {
+  const state = new GameState(2, [AIType.hard, AIType.human]);
+  const player = state.currentPlayer;
+  const warper = state.allTech.find((card) => card.type === TechCardType.temporalWarper);
+  const booster = state.allTech.find((card) => card.type === TechCardType.boosterPod);
+  player.cards = [];
+  player.initialRollDone = true;
+  player.addCard(warper);
+  state.discardTechCard(booster);
+
+  const claim = ExhaustiveAI.orbitalMoves(state, {
+    includeTechDiscardMoves: true,
+    legacyParity: true,
+    maxChildren: 256,
+  }).find(({ move }) => move.type === "discard-card");
+
+  assert.equal(claim.move.targetCardID, booster.cardID);
 });
 
 test("legacy parity pruning matches original raid and field-discard guidance", () => {

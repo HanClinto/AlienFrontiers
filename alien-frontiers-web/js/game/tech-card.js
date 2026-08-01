@@ -10,6 +10,7 @@ export const TechCardType = Object.freeze({
   dataCrystal: "data-crystal",
   orbitalTeleporter: "orbital-teleporter",
   holographicDecoy: "holographic-decoy",
+  temporalWarper: "temporal-warper",
 });
 
 export const TECH_CARD_DEFINITIONS = Object.freeze([
@@ -24,6 +25,7 @@ export const TECH_CARD_DEFINITIONS = Object.freeze([
   { type: TechCardType.dataCrystal, title: "Data Crystal", title1: "DATA", title2: "CRYSTAL", image: "tech_dc.png", count: 2, powerText: "Pay 1 fuel per colony on a territory to use its bonus this turn.", discardText: "Discard to place or move the Positron Field." },
   { type: TechCardType.orbitalTeleporter, title: "Orbital Teleporter", title1: "ORBITAL", title2: "TELEPORTER", image: "tech_ot.png", count: 2, baseFuelCost: 2, powerText: "Pay 2 fuel to reuse one of your ships at a different orbital facility.", discardText: "Discard to move any colony to a different territory." },
   { type: TechCardType.holographicDecoy, title: "Holographic Decoy", title1: "HOLOGRAPHIC", title2: "DECOY", image: "tech_hd.png", count: 2, hasPower: false, hasDiscard: false, powerText: "Opponents may not raid fuel or ore from you.", discardText: "If an opponent steals tech from you, it must be this card." },
+  { type: TechCardType.temporalWarper, title: "Temporal Warper", title1: "TEMPORAL", title2: "WARPER", image: "tech_tw.png", count: 2, powerText: "Pay 1 fuel to reroll any number of your unplaced ships.", discardText: "Review the discard pile, then discard to claim one tech." },
 ]);
 
 export class TechCard {
@@ -61,10 +63,15 @@ export class TechCard {
   }
 
   get canUseDiscard() {
-    return this.owner === this.state.currentPlayer
+    const canUse = this.owner === this.state.currentPlayer
       && this.hasDiscard
       && !this.tapped
       && this.owner.techsDiscarded === 0;
+    if (!canUse || this.type !== TechCardType.temporalWarper) {
+      return canUse;
+    }
+    return this.state.techDiscardDeck.some((card) =>
+      !this.owner.cards.some((ownedCard) => ownedCard.type === card.type));
   }
 
   get hasImplementedRegionDiscard() {
@@ -82,6 +89,29 @@ export class TechCard {
 
   get hasImplementedColonyDiscard() {
     return [TechCardType.orbitalTeleporter, TechCardType.polarityDevice].includes(this.type);
+  }
+
+  get hasImplementedCardDiscard() {
+    return this.type === TechCardType.temporalWarper;
+  }
+
+  canClaimDiscardedCard(card) {
+    return this.type === TechCardType.temporalWarper
+      && this.canUseDiscard
+      && this.state.techDiscardDeck.includes(card)
+      && !this.owner.cards.some((ownedCard) => ownedCard.type === card.type);
+  }
+
+  useDiscardOnCard(card) {
+    if (!this.canClaimDiscardedCard(card)) {
+      return false;
+    }
+    const owner = this.owner;
+    this.state.techDiscardDeck.splice(this.state.techDiscardDeck.indexOf(card), 1);
+    owner.addCard(card);
+    this.consumeDiscard();
+    this.state.logMove(`${owner.playerName}: Discarded Temporal Warper to claim ${card.title}`);
+    return true;
   }
 
   canUsePowerOnShip(ship) {
@@ -102,6 +132,9 @@ export class TechCard {
     ) {
       return false;
     }
+    if (this.type === TechCardType.temporalWarper) {
+      return this.owner.initialRollDone;
+    }
     if (this.type === TechCardType.boosterPod) {
       return ship.value < 6;
     }
@@ -112,6 +145,35 @@ export class TechCard {
       return ship.value < 6;
     }
     return this.type === TechCardType.polarityDevice;
+  }
+
+  useTemporalWarperPower(ships, random = this.state.random) {
+    const uniqueShips = [...new Set(ships)];
+    if (
+      this.type !== TechCardType.temporalWarper
+      || uniqueShips.length === 0
+      || uniqueShips.length !== ships.length
+      || uniqueShips.some((ship) => !this.canUsePowerOnShip(ship))
+    ) {
+      return false;
+    }
+    const owner = this.owner;
+    const previousValues = uniqueShips.map((ship) => ship.value);
+    owner.fuel -= this.adjustedFuelCost;
+    for (const ship of uniqueShips) {
+      if (ship.isSelected) {
+        ship.toggleSelect();
+      }
+      ship.roll(random);
+    }
+    this.setTapped(true);
+    owner.applyResourceCache();
+    this.state.postEvent("resources-changed", owner);
+    this.state.postEvent("ships-rolled", owner);
+    this.state.logMove(
+      `${owner.playerName}: Re-rolled ${previousValues.join(", ")} to ${uniqueShips.map((ship) => ship.value).join(", ")} using ${this.adjustedFuelCost} fuel`,
+    );
+    return true;
   }
 
   canLowerGravityShip(ship, shipToRaise) {
@@ -125,7 +187,7 @@ export class TechCard {
   }
 
   usePowerOnShip(ship) {
-    if (!this.canUsePowerOnShip(ship)) {
+    if (this.type === TechCardType.temporalWarper || !this.canUsePowerOnShip(ship)) {
       return false;
     }
     this.owner.fuel -= this.adjustedFuelCost;

@@ -224,7 +224,12 @@ export function restoreGameSnapshotInto(
     }
   }
 
-  state.techDrawDeck = snapshot.techDrawDeck.map((cardID) => cardsByID.get(cardID));
+  const savedCardIDs = new Set(snapshot.cards.map((card) => card.cardID));
+  const addedCards = state.allTech.filter((card) => !savedCardIDs.has(card.cardID));
+  state.techDrawDeck = [
+    ...addedCards,
+    ...snapshot.techDrawDeck.map((cardID) => cardsByID.get(cardID)),
+  ];
   state.techDiscardDeck = snapshot.techDiscardDeck.map((cardID) => cardsByID.get(cardID));
   state.techDisplayDeck = snapshot.techDisplayDeck.map((cardID) => cardsByID.get(cardID));
   state.currentPlayerIndex = snapshot.currentPlayerIndex;

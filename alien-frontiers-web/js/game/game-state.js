@@ -268,7 +268,9 @@ export class GameState {
     this.pendingColonyTargets = [];
     this.pendingTechAction = card.type === "data-crystal"
       ? "power-region"
-      : card.type === "plasma-cannon" ? "power-multi-ship" : "power";
+      : ["plasma-cannon", "temporal-warper"].includes(card.type)
+        ? "power-multi-ship"
+        : "power";
     this.postEvent(EventName.techCardsChanged, card);
     return true;
   }
@@ -290,7 +292,7 @@ export class GameState {
       this.postEvent(EventName.techCardsChanged, card);
       return true;
     }
-    if (card.type === "plasma-cannon") {
+    if (["plasma-cannon", "temporal-warper"].includes(card.type)) {
       const selectedIndex = this.pendingTechTargets.indexOf(ship);
       if (selectedIndex >= 0) {
         this.pendingTechTargets.splice(selectedIndex, 1);
@@ -300,7 +302,10 @@ export class GameState {
         this.postEvent(EventName.techCardsChanged, card);
         return true;
       }
-      if (!card.canTargetPlasmaShip(ship, this.pendingTechTargets)) {
+      const canTarget = card.type === "plasma-cannon"
+        ? card.canTargetPlasmaShip(ship, this.pendingTechTargets)
+        : card.canUsePowerOnShip(ship);
+      if (!canTarget) {
         return false;
       }
       this.pendingTechTargets.push(ship);
@@ -427,6 +432,7 @@ export class GameState {
         !card.hasImplementedRegionDiscard
         && !card.hasImplementedShipDiscard
         && !card.hasImplementedColonyDiscard
+        && !card.hasImplementedCardDiscard
       )
     ) {
       return false;
@@ -436,29 +442,54 @@ export class GameState {
     this.pendingColonyTargets = [];
     this.pendingTechAction = card.hasImplementedShipDiscard
       ? "discard-ship"
-      : card.hasImplementedColonyDiscard ? "discard-colony" : "discard";
+      : card.hasImplementedColonyDiscard
+        ? "discard-colony"
+        : card.hasImplementedCardDiscard ? "discard-card" : "discard";
+    this.postEvent(EventName.techCardsChanged, card);
+    return true;
+  }
+
+  claimPendingDiscardCard(card) {
+    if (
+      this.pendingTechAction !== "discard-card"
+      || !this.pendingTechCard?.canClaimDiscardedCard(card)
+    ) {
+      return false;
+    }
+    this.createUndoPoint();
+    const warper = this.pendingTechCard;
+    if (!warper.useDiscardOnCard(card)) {
+      return false;
+    }
+    this.clearPendingTech();
     this.postEvent(EventName.techCardsChanged, card);
     return true;
   }
 
   confirmPendingTechPower() {
+    const card = this.pendingTechCard;
     if (
       this.pendingTechAction !== "power-multi-ship"
-      || !this.pendingTechCard
+      || !card
       || this.pendingTechTargets.length === 0
       || this.pendingTechTargets.some((ship, index) =>
-        !this.pendingTechCard.canTargetPlasmaShip(ship, this.pendingTechTargets.slice(0, index)))
+        card.type === "plasma-cannon"
+          ? !card.canTargetPlasmaShip(ship, this.pendingTechTargets.slice(0, index))
+          : !card.canUsePowerOnShip(ship))
     ) {
       return false;
     }
-    this.createUndoPoint();
-    if (
-      this.pendingTechAction !== "power-multi-ship"
-      || !this.pendingTechCard?.usePlasmaPower(this.pendingTechTargets)
-    ) {
+    if (card.type === "temporal-warper") {
+      this.clearUndoRedo();
+    } else {
+      this.createUndoPoint();
+    }
+    const used = card.type === "temporal-warper"
+      ? card.useTemporalWarperPower(this.pendingTechTargets, this.random)
+      : card.usePlasmaPower(this.pendingTechTargets);
+    if (!used) {
       return false;
     }
-    const card = this.pendingTechCard;
     this.clearPendingTech();
     this.postEvent(EventName.techCardsChanged, card);
     return true;

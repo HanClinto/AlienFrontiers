@@ -96,6 +96,7 @@ const MENU_IMAGES = [
   "tech_dc.png",
   "tech_ot.png",
   "tech_hd.png",
+  "tech_tw.png",
   "menu_button_68.png",
   "menu_button_68_active.png",
   "ondark_button.png",
