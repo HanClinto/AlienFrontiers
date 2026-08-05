@@ -3,6 +3,7 @@ import { CCDirector } from "./cocos/director.js";
 import { CCSpriteFrameCache } from "./cocos/sprite-frame-cache.js";
 import { MainMenuScene } from "./scenes/main-menu.js";
 import { GameAudioManager } from "./audio.js";
+import { FullscreenPreferences } from "./fullscreen.js";
 import { GamePersistence } from "./game/game-persistence.js";
 import { AISearchPreferences } from "./game/ai-prefs.js";
 
@@ -182,6 +183,8 @@ async function start() {
   );
   director.persistence = new GamePersistence();
   director.aiPreferences = new AISearchPreferences();
+  director.fullscreenPreferences = new FullscreenPreferences();
+  director.fullscreenPreferences.armForNextGesture();
   director.frameCache = frameCache;
   globalThis.AlienFrontiers = Object.freeze({ director });
   director.runWithScene(new MainMenuScene(director, assets));

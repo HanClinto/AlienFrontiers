@@ -214,7 +214,8 @@ class MainMenuOptionsOverlay extends CCNode {
     this.sfxButton = this.addButton("", 0, () => this.toggleSfx());
     this.musicButton = this.addButton("", 1, () => this.toggleMusic());
     this.aiSearchButton = this.addButton("", 2, () => this.cycleAISearch());
-    this.doneButton = this.addButton("DONE", 3, () => this.close());
+    this.fullscreenButton = this.addButton("", 3, () => this.toggleFullscreen());
+    this.doneButton = this.addButton("DONE", 4, () => this.close());
   }
 
   addButton(label, index, callback) {
@@ -248,6 +249,7 @@ class MainMenuOptionsOverlay extends CCNode {
       this.sfxButton,
       this.musicButton,
       this.aiSearchButton,
+      this.fullscreenButton,
       this.doneButton,
     ]) {
       const destination = ccp(384, 690 - 100 * button.menuIndex);
@@ -283,8 +285,21 @@ class MainMenuOptionsOverlay extends CCNode {
     this.updateLabels();
   }
 
+  async toggleFullscreen() {
+    const fullscreen = this.scene.director.fullscreenPreferences;
+    if (!fullscreen?.isSupported && !fullscreen?.isStandalone) {
+      window.alert(
+        "To play full screen, use your browser's Add to Home Screen option, then launch Alien Frontiers from its icon.",
+      );
+      return;
+    }
+    await fullscreen.toggle();
+    this.updateLabels();
+  }
+
   updateLabels() {
     const audio = this.scene.director.soundManager;
+    const fullscreen = this.scene.director.fullscreenPreferences;
     this.scene.setButtonLabel(
       this.sfxButton,
       `SOUND FX: ${audio?.sfxEnabled === false ? "OFF" : "ON"}`,
@@ -297,5 +312,10 @@ class MainMenuOptionsOverlay extends CCNode {
       this.aiSearchButton,
       `AI SEARCH: ${this.scene.director.aiPreferences?.preset.label ?? "STANDARD"}`,
     );
+    let fullscreenLabel = fullscreen?.isActive ? "ON" : fullscreen?.enabled ? "AUTO" : "OFF";
+    if (!fullscreen?.isSupported && !fullscreen?.isStandalone) {
+      fullscreenLabel = "ADD TO HOME";
+    }
+    this.scene.setButtonLabel(this.fullscreenButton, `FULL SCREEN: ${fullscreenLabel}`);
   }
 }
