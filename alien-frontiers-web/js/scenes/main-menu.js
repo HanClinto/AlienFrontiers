@@ -1,6 +1,7 @@
 import { AFLayer } from "../af-layer.js";
 import { CCDelayTime, CCEaseElasticInOut, CCFadeTo, CCMoveTo, CCSequence } from "../cocos/actions.js";
 import { CCLayerColor, CCLabelTTF, CCNode, CCSprite, ccp } from "../cocos/core.js";
+import { installGuidance, isMobileBrowser } from "../install.js";
 import { StartGameScene } from "./start-game.js";
 
 const Tags = Object.freeze({
@@ -13,6 +14,7 @@ const Tags = Object.freeze({
   build: 6,
   options: 7,
   credits: 8,
+  install: 9,
 });
 
 const CREDITS_COLOR = "#ffae41";
@@ -133,6 +135,38 @@ export class MainMenuScene extends AFLayer {
     buildLabel.opacity = 180;
     this.addChild(buildLabel, Tags.build, Tags.build);
 
+    if (!this.director.installPreferences?.isInstalled && isMobileBrowser()) {
+      const installCallout = new CCNode();
+      const calloutBackground = new CCSprite(this.assets.image("aa_card_detail_box.png"));
+      calloutBackground.setPosition(ccp(688, 520));
+      calloutBackground.opacity = 210;
+      installCallout.addChild(calloutBackground);
+
+      const installButton = this.buttonFromImage(
+        "app-icon-192.png",
+        "app-icon-192.png",
+        () => this.installApp(),
+      );
+      installButton.setScale(0.5);
+      installButton.setPosition(ccp(688, 555));
+      installCallout.addChild(installButton);
+
+      const installLabel = new CCLabelTTF("INSTALL APP", "DIN-Black", 15, "#ffae41");
+      installLabel.setPosition(ccp(688, 478));
+      installCallout.addChild(installLabel);
+
+      const benefitLabel = new CCLabelTTF(
+        "FULLSCREEN + OFFLINE",
+        "DIN-Medium",
+        10,
+        "#9fdcf5",
+        { maxWidth: 128 },
+      );
+      benefitLabel.setPosition(ccp(688, 455));
+      installCallout.addChild(benefitLabel);
+      this.addChild(installCallout, Tags.install, Tags.install);
+    }
+
     const hasSavedGame = this.director.persistence?.hasSavedGame;
     if (hasSavedGame) {
       const resumeButton = this.buttonFromImage(
@@ -213,6 +247,16 @@ export class MainMenuScene extends AFLayer {
   optionsButtonTapped() {
     this.optionsOverlay.open();
   }
+
+  async installApp() {
+    const outcome = await this.director.installPreferences?.request();
+    if (outcome === "instructions") {
+      window.alert(installGuidance());
+    } else if (outcome === "accepted" || outcome === "installed") {
+      this.getChildByTag(Tags.install)?.removeFromParent();
+    }
+    return outcome;
+  }
 }
 
 class MainMenuOptionsOverlay extends CCNode {
@@ -253,7 +297,7 @@ class MainMenuOptionsOverlay extends CCNode {
 
   open() {
     this.visible = true;
-    for (const tag of [Tags.play, Tags.rules, Tags.resume, Tags.options]) {
+    for (const tag of [Tags.play, Tags.rules, Tags.resume, Tags.options, Tags.install]) {
       const node = this.scene.getChildByTag(tag);
       if (node) {
         node.visible = false;
@@ -282,7 +326,7 @@ class MainMenuOptionsOverlay extends CCNode {
 
   close() {
     this.visible = false;
-    for (const tag of [Tags.play, Tags.rules, Tags.resume, Tags.options]) {
+    for (const tag of [Tags.play, Tags.rules, Tags.resume, Tags.options, Tags.install]) {
       const node = this.scene.getChildByTag(tag);
       if (node) {
         node.visible = true;
@@ -320,12 +364,8 @@ class MainMenuOptionsOverlay extends CCNode {
   }
 
   async installApp() {
-    const outcome = await this.scene.director.installPreferences?.request();
-    if (outcome === "instructions") {
-      window.alert(
-        "Install Alien Frontiers from your browser menu: choose Install App, or on iPhone and iPad choose Share, then Add to Home Screen.",
-      );
-    } else if (outcome === "accepted" || outcome === "installed") {
+    const outcome = await this.scene.installApp();
+    if (outcome === "accepted" || outcome === "installed") {
       this.close();
     }
   }

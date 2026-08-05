@@ -15,6 +15,7 @@ const MENU_IMAGES = [
   "af_game_setup.png",
   "af_ipad_gui_bg.png",
   "af_title.png",
+  "app-icon-192.png",
   "bonus_asimov.png",
   "bonus_bradbury.png",
   "bonus_burroughs.png",

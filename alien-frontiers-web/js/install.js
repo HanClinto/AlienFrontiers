@@ -1,14 +1,10 @@
-const STORAGE_KEY = "alien-frontiers:installed";
-
 export class InstallPreferences {
   constructor(
     windowRef = typeof window === "undefined" ? null : window,
-    storage = typeof localStorage === "undefined" ? null : localStorage,
   ) {
     this.window = windowRef;
-    this.storage = storage;
     this.promptEvent = null;
-    this.installed = storage?.getItem(STORAGE_KEY) === "yes";
+    this.installed = false;
     windowRef?.addEventListener?.("beforeinstallprompt", (event) => {
       event.preventDefault();
       this.promptEvent = event;
@@ -31,7 +27,6 @@ export class InstallPreferences {
 
   markInstalled() {
     this.installed = true;
-    this.storage?.setItem(STORAGE_KEY, "yes");
   }
 
   async request() {
@@ -51,4 +46,33 @@ export class InstallPreferences {
     }
     return outcome;
   }
+}
+
+export function installGuidance(navigatorRef = typeof navigator === "undefined" ? null : navigator) {
+  const userAgent = navigatorRef?.userAgent ?? "";
+  const isFirefox = /Firefox|FxiOS/i.test(userAgent);
+  const isIOS = /iPhone|iPad|iPod/i.test(userAgent) || navigatorRef?.standalone !== undefined;
+  const isAndroid = /Android/i.test(userAgent);
+  const isSafari = /Safari/i.test(userAgent) && !/Chrome|Chromium|CriOS|Edg/i.test(userAgent);
+
+  if (isIOS) {
+    return "On iPhone or iPad, tap Share, then Add to Home Screen.";
+  }
+  if (isFirefox && isAndroid) {
+    return "In Firefox, open the browser menu, then choose Install or Add app to Home Screen.";
+  }
+  if (isFirefox) {
+    return "Firefox desktop does not currently install web apps. Open Alien Frontiers in Chrome, Edge, or Safari to install it.";
+  }
+  if (isSafari) {
+    return "In Safari, open the File menu and choose Add to Dock.";
+  }
+  return "Open your browser menu and choose Install App or Add to Home Screen.";
+}
+
+export function isMobileBrowser(windowRef = typeof window === "undefined" ? null : window) {
+  const navigatorRef = windowRef?.navigator;
+  const userAgent = navigatorRef?.userAgent ?? "";
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(userAgent)
+    || (/Macintosh/i.test(userAgent) && (navigatorRef?.maxTouchPoints ?? 0) > 1);
 }

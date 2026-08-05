@@ -2,6 +2,7 @@
   "name": "Alien Frontiers",
   "short_name": "Alien Frontiers",
   "description": "Play Alien Frontiers on the web.",
+  "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "fullscreen",
