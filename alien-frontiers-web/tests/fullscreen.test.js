@@ -62,9 +62,11 @@ test("a saved preference requests fullscreen on the next user gesture", async ()
   assert.equal(documentRef.fullscreenElement, documentRef.documentElement);
 });
 
-test("installed web apps count as fullscreen without using the API", () => {
-  const { preferences } = fixture({ standalone: true });
+test("installed web apps can request system fullscreen", async () => {
+  const { preferences, documentRef } = fixture({ standalone: true });
 
-  assert.equal(preferences.isActive, true);
   assert.equal(preferences.isStandalone, true);
+  assert.equal(preferences.isActive, false);
+  assert.equal(await preferences.toggle(), true);
+  assert.equal(documentRef.fullscreenElement, documentRef.documentElement);
 });

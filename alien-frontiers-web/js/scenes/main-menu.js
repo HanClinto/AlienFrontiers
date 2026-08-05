@@ -356,10 +356,11 @@ class MainMenuOptionsOverlay extends CCNode {
 
   async toggleFullscreen() {
     const fullscreen = this.scene.director.fullscreenPreferences;
-    if (!fullscreen?.isSupported && !fullscreen?.isStandalone) {
-      window.alert(
-        "To play full screen, use your browser's Add to Home Screen option, then launch Alien Frontiers from its icon.",
-      );
+    if (!fullscreen?.isSupported) {
+      const message = fullscreen?.isStandalone
+        ? "This browser does not support expanding its installed app window to system fullscreen."
+        : "To play full screen, use your browser's Add to Home Screen option, then launch Alien Frontiers from its icon.";
+      window.alert(message);
       return;
     }
     await fullscreen.toggle();
@@ -389,8 +390,8 @@ class MainMenuOptionsOverlay extends CCNode {
       `AI SEARCH: ${this.scene.director.aiPreferences?.preset.label ?? "STANDARD"}`,
     );
     let fullscreenLabel = fullscreen?.isActive ? "ON" : fullscreen?.enabled ? "AUTO" : "OFF";
-    if (!fullscreen?.isSupported && !fullscreen?.isStandalone) {
-      fullscreenLabel = "ADD TO HOME";
+    if (!fullscreen?.isSupported) {
+      fullscreenLabel = fullscreen?.isStandalone ? "APP MODE" : "ADD TO HOME";
     }
     this.scene.setButtonLabel(this.fullscreenButton, `FULL SCREEN: ${fullscreenLabel}`);
   }

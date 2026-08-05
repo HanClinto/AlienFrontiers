@@ -20,7 +20,8 @@ export class FullscreenPreferences {
   }
 
   get isActive() {
-    return Boolean(this.document?.fullscreenElement) || this.isStandalone;
+    return Boolean(this.document?.fullscreenElement)
+      || this.window?.matchMedia?.("(display-mode: fullscreen)").matches;
   }
 
   get isSupported() {
@@ -42,7 +43,11 @@ export class FullscreenPreferences {
     }
 
     this.setEnabled(true);
-    return this.request();
+    const active = await this.request();
+    if (!active) {
+      this.setEnabled(false);
+    }
+    return active;
   }
 
   async request() {
