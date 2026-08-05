@@ -4,9 +4,7 @@ A.K.A. "Kickstarter Thank You Edition"
 Recent Changes:
 
 August 5, 2026
-Credits roll restored
-Installable app added
-Choose Install App or Add to Home Screen for fullscreen and offline play
+Credits roll restored, installable app added
 
 August 1, 2026
 Temporal Warper implemented (that's for you, Spittledung!)
