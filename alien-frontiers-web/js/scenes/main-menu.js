@@ -20,6 +20,7 @@ const Tags = Object.freeze({
 const CREDITS_COLOR = "#ffae41";
 const CREDITS_INTERVAL = 0.75;
 const CREDITS_DURATION = 8;
+const BUG_REPORT_URL = "https://github.com/hanclinto/AlienFrontiers/issues/new";
 
 function textLines(text) {
   return text.replace(/\r/g, "").replace(/\n+$/, "").split("\n");
@@ -43,6 +44,43 @@ export function mainMenuBuildLabel(version, deployedAt = "") {
       timeZone: "UTC",
     }).toUpperCase()}`;
   return `BUILD ${version.slice(0, 8)}${updated}`;
+}
+
+export function bugReportIssueUrl({
+  version = "local",
+  userAgent = "unknown",
+  platform = "unknown",
+  viewport = "unknown",
+  screenSize = "unknown",
+  devicePixelRatio = 1,
+  installed = false,
+  pageUrl = "unknown",
+} = {}) {
+  const body = [
+    "## What happened?",
+    "<!-- Please describe the problem. -->",
+    "",
+    "## Steps to reproduce",
+    "1. ",
+    "",
+    "## What did you expect?",
+    "<!-- Please describe the expected behavior. -->",
+    "",
+    "## Device information",
+    `- Build: ${version || "local"}`,
+    `- Browser: ${userAgent}`,
+    `- Platform: ${platform}`,
+    `- Viewport: ${viewport}`,
+    `- Screen: ${screenSize}`,
+    `- Pixel ratio: ${devicePixelRatio}`,
+    `- Installed app: ${installed ? "yes" : "no"}`,
+    `- Page: ${pageUrl}`,
+  ].join("\n");
+  const parameters = new URLSearchParams({
+    title: "[Bug] ",
+    body,
+  });
+  return `${BUG_REPORT_URL}?${parameters}`;
 }
 
 export class MainMenuCreditsRoll extends CCNode {
@@ -292,7 +330,11 @@ class MainMenuOptionsOverlay extends CCNode {
     this.aiSearchButton = this.addButton("", 2, () => this.cycleAISearch());
     this.fullscreenButton = this.addButton("", 3, () => this.toggleFullscreen());
     this.installButton = this.addButton("INSTALL APP", 4, () => this.installApp());
-    this.doneButton = this.addButton("DONE", 5, () => this.close());
+    this.reportBugButton = this.addButton("REPORT BUG", 5, () => this.reportBug());
+    const githubMark = new CCSprite(this.scene.assets.image("github-mark.svg"));
+    githubMark.setPosition(ccp(-50, 0));
+    this.reportBugButton.addChild(githubMark, 2);
+    this.doneButton = this.addButton("DONE", 6, () => this.close());
   }
 
   addButton(label, index, callback) {
@@ -328,6 +370,7 @@ class MainMenuOptionsOverlay extends CCNode {
       this.musicButton,
       this.aiSearchButton,
       this.fullscreenButton,
+      this.reportBugButton,
       this.doneButton,
     ];
     if (this.installButton.visible) {
@@ -385,6 +428,21 @@ class MainMenuOptionsOverlay extends CCNode {
     if (outcome === "accepted" || outcome === "installed") {
       this.close();
     }
+  }
+
+  reportBug() {
+    const { navigator, screen } = window;
+    const issueUrl = bugReportIssueUrl({
+      version: this.scene.director.buildVersion,
+      userAgent: navigator.userAgent,
+      platform: navigator.userAgentData?.platform || navigator.platform,
+      viewport: `${window.innerWidth}x${window.innerHeight}`,
+      screenSize: `${screen.width}x${screen.height}`,
+      devicePixelRatio: window.devicePixelRatio,
+      installed: this.scene.director.installPreferences?.isInstalled,
+      pageUrl: window.location.href,
+    });
+    window.open(issueUrl, "_blank", "noopener");
   }
 
   updateLabels() {

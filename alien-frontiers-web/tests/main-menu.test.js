@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   MainMenuCreditsRoll,
+  bugReportIssueUrl,
   creditsRollLines,
   mainMenuBuildLabel,
 } from "../js/scenes/main-menu.js";
@@ -13,6 +14,32 @@ test("main-menu build labels distinguish deployments from local development", ()
     "BUILD 716c7ca1 · LAST UPDATED AUG 5, 2026",
   );
   assert.equal(mainMenuBuildLabel(""), "LOCAL BUILD");
+});
+
+test("bug reports open a prefilled GitHub issue with build and device details", () => {
+  const issueUrl = new URL(bugReportIssueUrl({
+    version: "716c7ca123456789",
+    userAgent: "Example Browser/1.0",
+    platform: "Example OS",
+    viewport: "768x1024",
+    screenSize: "1170x2532",
+    devicePixelRatio: 3,
+    installed: true,
+    pageUrl: "https://hanclinto.github.io/AlienFrontiers/",
+  }));
+
+  assert.equal(issueUrl.origin, "https://github.com");
+  assert.equal(issueUrl.pathname, "/hanclinto/AlienFrontiers/issues/new");
+  assert.equal(issueUrl.searchParams.get("title"), "[Bug] ");
+  const body = issueUrl.searchParams.get("body");
+  assert.match(body, /## What happened\?/);
+  assert.match(body, /Build: 716c7ca123456789/);
+  assert.match(body, /Browser: Example Browser\/1\.0/);
+  assert.match(body, /Platform: Example OS/);
+  assert.match(body, /Viewport: 768x1024/);
+  assert.match(body, /Screen: 1170x2532/);
+  assert.match(body, /Pixel ratio: 3/);
+  assert.match(body, /Installed app: yes/);
 });
 
 test("recent changes are displayed before the original credits", () => {

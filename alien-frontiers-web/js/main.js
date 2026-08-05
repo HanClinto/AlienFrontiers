@@ -20,6 +20,7 @@ const MENU_IMAGES = [
   "af_ipad_gui_bg.png",
   "af_title.png",
   "app-icon-192.png",
+  "github-mark.svg",
   "bonus_asimov.png",
   "bonus_bradbury.png",
   "bonus_burroughs.png",
