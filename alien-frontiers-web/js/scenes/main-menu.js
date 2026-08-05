@@ -1,6 +1,6 @@
 import { AFLayer } from "../af-layer.js";
 import { CCDelayTime, CCEaseElasticInOut, CCFadeTo, CCMoveTo, CCSequence } from "../cocos/actions.js";
-import { CCLayerColor, CCNode, CCSprite, ccp } from "../cocos/core.js";
+import { CCLayerColor, CCLabelTTF, CCNode, CCSprite, ccp } from "../cocos/core.js";
 import { StartGameScene } from "./start-game.js";
 
 const Tags = Object.freeze({
@@ -11,15 +11,87 @@ const Tags = Object.freeze({
   rules: 4,
   resume: 5,
   options: 7,
+  credits: 8,
 });
+
+const CREDITS_COLOR = "#ffae41";
+const CREDITS_INTERVAL = 0.75;
+const CREDITS_DURATION = 8;
+
+export class MainMenuCreditsRoll extends CCNode {
+  constructor(lines, initialDelay = 1) {
+    super();
+    this.lines = lines.length > 0 ? lines : [""];
+    this.lineIndex = 0;
+    this.timeUntilNextLine = initialDelay;
+  }
+
+  update(deltaTime) {
+    let remaining = deltaTime;
+    while (remaining + Number.EPSILON >= this.timeUntilNextLine) {
+      this.advanceLabels(this.timeUntilNextLine);
+      remaining = Math.max(0, remaining - this.timeUntilNextLine);
+      this.nextLine();
+      this.timeUntilNextLine = CREDITS_INTERVAL;
+    }
+    this.timeUntilNextLine -= remaining;
+    this.advanceLabels(remaining);
+  }
+
+  advanceLabels(deltaTime) {
+    super.update(deltaTime);
+    for (const label of [...this.children]) {
+      if (label.position.y >= 350) {
+        this.removeChild(label);
+      }
+    }
+  }
+
+  nextLine() {
+    const segments = this.lines[this.lineIndex].split(";");
+    segments.forEach((text, columnIndex) => this.addSegment(text, columnIndex, segments.length));
+    this.lineIndex = (this.lineIndex + 1) % this.lines.length;
+  }
+
+  addSegment(text, columnIndex, columnCount) {
+    let columnX = (768 / (columnCount + 1)) * (columnIndex + 1);
+    columnX += (columnIndex - (columnCount - 1) * 0.5) * 50;
+
+    const columnWidth = columnCount === 1 ? 700 : Math.max(120, 700 / columnCount);
+    const label = new CCLabelTTF(text, "DIN-Black", 18, CREDITS_COLOR, {
+      maxWidth: columnWidth,
+    });
+    label.setPosition(ccp(columnX, 50));
+    label.opacity = 0;
+    this.addChild(label);
+
+    label.runAction(new CCMoveTo(CREDITS_DURATION, ccp(columnX, 350)));
+    label.runAction(new CCSequence(
+      new CCFadeTo(CREDITS_DURATION * 0.2, 255),
+      new CCDelayTime(CREDITS_DURATION * 0.6),
+      new CCFadeTo(CREDITS_DURATION * 0.2, 0),
+    ));
+  }
+}
 
 export class MainMenuScene extends AFLayer {
   constructor(director, assets) {
     super(assets);
     this.director = director;
     this.initChildren();
+    this.initCredits();
     this.optionsOverlay = new MainMenuOptionsOverlay(this);
     this.addChild(this.optionsOverlay, 20);
+  }
+
+  async initCredits() {
+    try {
+      const creditsText = await this.assets.loadText("AFCredits.txt");
+      const lines = creditsText.replace(/\r/g, "").replace(/\n+$/, "").split("\n");
+      this.addChild(new MainMenuCreditsRoll(lines), Tags.credits, Tags.credits);
+    } catch (error) {
+      console.error("Unable to load Alien Frontiers credits", error);
+    }
   }
 
   initChildren() {
