@@ -1,8 +1,8 @@
 # Alien Frontiers: Kickstarter Edition for Web
 
-Way back in the day (circa 2011), there was a kickstarter for an iOS version of the Alien Frontiers board game. So many people pulled weight and helped -- with programming, with artwork, with design, and with financial backing -- it was a wonderful passion project for me, and I was very thankful to be able to do it.
+Way back in the day (circa 2011), there was a [kickstarter for an iOS version](https://boardgamegeek.com/thread/3745513/digital-version-remake-re-release-open-source-wip) of the [Alien Frontiers board game](https://boardgamegeek.com/videogame/90308/alien-frontiers). So many people pulled weight and helped -- with programming, with artwork, with design, and with financial backing -- it was a [wonderful passion project for me](https://boardgamegeek.com/videogame/90308/alien-frontiers), and I was very thankful to be able to be a part of it.
 
-However, bitrot has set in over the years, and I find even myself unable to play the game that I worked so hard on to enjoy.
+However, bitrot has set in over the years, coupled with difficult maintenance requirements (primarily iOS publishing restrictions), and even I'm not able to run the game anymore on any of my devices.
 
 I'm sad that so many people contributed to this project, and very few of us still have operating devices that are able to run this old game.
 

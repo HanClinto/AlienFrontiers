@@ -1,18 +1,16 @@
 Alien Frontiers Web Edition
+A.K.A. "Kickstarter Thank You Edition"
 
 Recent Changes:
 
 August 5, 2026
-Credits roll and release notes restored
+Credits roll restored
 
 August 1, 2026
-Temporal Warper implemented
+Temporal Warper implemented (that's for you, Spittledung!)
 
 July 31, 2026
-AI upgraded with configurable Deep search
+AI personalities restored, configurable search depth
 
 July 30, 2026
-AI personalities and full-turn search added
-
-July 30, 2026
-Initial playable web edition released
+Initial playable web edition released, basic AI
