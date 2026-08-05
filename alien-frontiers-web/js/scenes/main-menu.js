@@ -231,7 +231,8 @@ class MainMenuOptionsOverlay extends CCNode {
     this.musicButton = this.addButton("", 1, () => this.toggleMusic());
     this.aiSearchButton = this.addButton("", 2, () => this.cycleAISearch());
     this.fullscreenButton = this.addButton("", 3, () => this.toggleFullscreen());
-    this.doneButton = this.addButton("DONE", 4, () => this.close());
+    this.installButton = this.addButton("INSTALL APP", 4, () => this.installApp());
+    this.doneButton = this.addButton("DONE", 5, () => this.close());
   }
 
   addButton(label, index, callback) {
@@ -261,17 +262,22 @@ class MainMenuOptionsOverlay extends CCNode {
     this.shade.opacity = 0;
     this.shade.runAction(new CCFadeTo(0.35, 192));
     this.updateLabels();
-    for (const button of [
+    this.installButton.visible = !this.scene.director.installPreferences?.isInstalled;
+    const buttons = [
       this.sfxButton,
       this.musicButton,
       this.aiSearchButton,
       this.fullscreenButton,
       this.doneButton,
-    ]) {
-      const destination = ccp(384, 690 - 100 * button.menuIndex);
+    ];
+    if (this.installButton.visible) {
+      buttons.splice(4, 0, this.installButton);
+    }
+    buttons.forEach((button, index) => {
+      const destination = ccp(384, 690 - 100 * index);
       button.setPosition(ccp(-500, destination.y));
       button.runAction(new CCEaseElasticInOut(new CCMoveTo(0.65, destination), 0.8));
-    }
+    });
   }
 
   close() {
@@ -311,6 +317,17 @@ class MainMenuOptionsOverlay extends CCNode {
     }
     await fullscreen.toggle();
     this.updateLabels();
+  }
+
+  async installApp() {
+    const outcome = await this.scene.director.installPreferences?.request();
+    if (outcome === "instructions") {
+      window.alert(
+        "Install Alien Frontiers from your browser menu: choose Install App, or on iPhone and iPad choose Share, then Add to Home Screen.",
+      );
+    } else if (outcome === "accepted" || outcome === "installed") {
+      this.close();
+    }
   }
 
   updateLabels() {

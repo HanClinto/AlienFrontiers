@@ -5,8 +5,11 @@ import { registerServiceWorker } from "./pwa.js";
 import { MainMenuScene } from "./scenes/main-menu.js";
 import { GameAudioManager } from "./audio.js";
 import { FullscreenPreferences } from "./fullscreen.js";
+import { InstallPreferences } from "./install.js";
 import { GamePersistence } from "./game/game-persistence.js";
 import { AISearchPreferences } from "./game/ai-prefs.js";
+
+const installPreferences = new InstallPreferences();
 
 const MENU_IMAGES = [
   "af_game_setup.png",
@@ -186,6 +189,7 @@ async function start() {
   director.aiPreferences = new AISearchPreferences();
   director.fullscreenPreferences = new FullscreenPreferences();
   director.fullscreenPreferences.armForNextGesture();
+  director.installPreferences = installPreferences;
   director.buildVersion = version;
   director.frameCache = frameCache;
   globalThis.AlienFrontiers = Object.freeze({ director });
