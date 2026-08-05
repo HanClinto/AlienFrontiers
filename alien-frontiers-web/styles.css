@@ -56,6 +56,10 @@ body {
   z-index: 1;
 }
 
+#report-bug-link[hidden] {
+  display: none;
+}
+
 #loading {
   margin: 0;
   color: #ffae41;
