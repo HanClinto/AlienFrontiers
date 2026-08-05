@@ -83,6 +83,13 @@ export function bugReportIssueUrl({
   return `${BUG_REPORT_URL}?${parameters}`;
 }
 
+export function openExternalLink(url, windowObject = globalThis.window) {
+  const externalWindow = windowObject.open(url, "_blank", "");
+  if (externalWindow) {
+    externalWindow.opener = null;
+  }
+}
+
 export class MainMenuCreditsRoll extends CCNode {
   constructor(lines, initialDelay = 1) {
     super();
@@ -431,7 +438,7 @@ class MainMenuOptionsOverlay extends CCNode {
       installed: this.scene.director.installPreferences?.isInstalled,
       pageUrl: window.location.href,
     });
-    window.open(issueUrl, "_blank", "noopener");
+    openExternalLink(issueUrl);
   }
 
   updateLabels() {

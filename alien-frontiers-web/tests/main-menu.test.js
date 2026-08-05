@@ -6,6 +6,7 @@ import {
   bugReportIssueUrl,
   creditsRollLines,
   mainMenuBuildLabel,
+  openExternalLink,
 } from "../js/scenes/main-menu.js";
 
 test("main-menu build labels distinguish deployments from local development", () => {
@@ -40,6 +41,20 @@ test("bug reports open a prefilled GitHub issue with build and device details", 
   assert.match(body, /Screen: 1170x2532/);
   assert.match(body, /Pixel ratio: 3/);
   assert.match(body, /Installed app: yes/);
+});
+
+test("external links use native hyperlink navigation for installed app handoff", () => {
+  const externalWindow = { opener: "source-window" };
+  const windowObject = {
+    open(...argumentsReceived) {
+      assert.deepEqual(argumentsReceived, ["https://example.com/report", "_blank", ""]);
+      return externalWindow;
+    },
+  };
+
+  openExternalLink("https://example.com/report", windowObject);
+
+  assert.equal(externalWindow.opener, null);
 });
 
 test("recent changes are displayed before the original credits", () => {
