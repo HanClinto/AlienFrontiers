@@ -27,7 +27,10 @@ test("deployment stamping produces a versioned offline precache manifest", async
     ]);
 
     const manifest = JSON.parse(await readFile(join(directory, "precache-manifest.json")));
+    const versionMetadata = JSON.parse(await readFile(join(directory, "version.json")));
     assert.equal(manifest.version, "release-1");
+    assert.equal(versionMetadata.version, "release-1");
+    assert.equal(Number.isNaN(Date.parse(versionMetadata.deployedAt)), false);
     assert.deepEqual(manifest.files, [
       "./index.html?v=release-1",
       "./js/game.js?v=release-1",

@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { registerServiceWorker } from "../js/pwa.js";
+import {
+  DeploymentUpdates,
+  registerServiceWorker,
+  watchForDeploymentUpdates,
+} from "../js/pwa.js";
 
 test("service worker registration inherits the deployment version", async () => {
   let registration = null;
@@ -22,4 +26,62 @@ test("service worker registration inherits the deployment version", async () => 
 
 test("unsupported browsers skip service worker registration", async () => {
   assert.equal(await registerServiceWorker({}, "https://example.com/js/pwa.js"), null);
+});
+
+test("deployment checks reload a stale resumed app and share concurrent requests", async () => {
+  let fetchCount = 0;
+  let replacement = null;
+  const fetchDeployment = async function () {
+    assert.equal(this, undefined);
+    fetchCount += 1;
+    return {
+      ok: true,
+      json: async () => ({ version: "release-2", deployedAt: "2026-08-05T12:00:00.000Z" }),
+    };
+  };
+  const updates = new DeploymentUpdates(
+    "release-1",
+    fetchDeployment,
+    {
+      href: "https://example.com/game/?seat=1",
+      replace: (url) => { replacement = url; },
+    },
+    "https://example.com/game/js/pwa.js?v=release-1",
+  );
+
+  const [first, second] = await Promise.all([updates.check(), updates.check()]);
+  assert.equal(fetchCount, 1);
+  assert.equal(first.current, false);
+  assert.deepEqual(second, first);
+  assert.equal(replacement.href, "https://example.com/game/?seat=1&build=release-2");
+});
+
+test("visible main-menu resumes check for deployments", () => {
+  const listeners = new Map();
+  const documentRef = {
+    visibilityState: "hidden",
+    addEventListener: (name, callback) => listeners.set(`document:${name}`, callback),
+  };
+  const windowRef = {
+    addEventListener: (name, callback) => listeners.set(`window:${name}`, callback),
+  };
+  let mainMenu = true;
+  let checks = 0;
+  watchForDeploymentUpdates(
+    { check: () => { checks += 1; } },
+    () => mainMenu,
+    documentRef,
+    windowRef,
+  );
+
+  listeners.get("document:visibilitychange")();
+  assert.equal(checks, 0);
+  documentRef.visibilityState = "visible";
+  mainMenu = false;
+  listeners.get("window:pageshow")();
+  assert.equal(checks, 0);
+  mainMenu = true;
+  listeners.get("document:visibilitychange")();
+  listeners.get("window:pageshow")();
+  assert.equal(checks, 2);
 });

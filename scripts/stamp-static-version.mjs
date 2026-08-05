@@ -73,5 +73,5 @@ await writeFile(
 
 await writeFile(
   join(rootDirectory, "version.json"),
-  `${JSON.stringify({ version })}\n`,
+  `${JSON.stringify({ version, deployedAt: new Date().toISOString() })}\n`,
 );

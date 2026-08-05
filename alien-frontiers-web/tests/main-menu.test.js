@@ -8,7 +8,10 @@ import {
 } from "../js/scenes/main-menu.js";
 
 test("main-menu build labels distinguish deployments from local development", () => {
-  assert.equal(mainMenuBuildLabel("716c7ca123456789"), "BUILD 716c7ca1");
+  assert.equal(
+    mainMenuBuildLabel("716c7ca123456789", "2026-08-05T12:00:00.000Z"),
+    "BUILD 716c7ca1 · LAST UPDATED AUG 5, 2026",
+  );
   assert.equal(mainMenuBuildLabel(""), "LOCAL BUILD");
 });
 

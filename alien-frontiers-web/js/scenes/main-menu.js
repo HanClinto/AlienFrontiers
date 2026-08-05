@@ -29,8 +29,20 @@ export function creditsRollLines(recentChangesText, creditsText) {
   return [...textLines(recentChangesText), "", "", ...textLines(creditsText)];
 }
 
-export function mainMenuBuildLabel(version) {
-  return version ? `BUILD ${version.slice(0, 8)}` : "LOCAL BUILD";
+export function mainMenuBuildLabel(version, deployedAt = "") {
+  if (!version) {
+    return "LOCAL BUILD";
+  }
+  const date = new Date(deployedAt);
+  const updated = Number.isNaN(date.getTime())
+    ? ""
+    : ` · LAST UPDATED ${date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      timeZone: "UTC",
+    }).toUpperCase()}`;
+  return `BUILD ${version.slice(0, 8)}${updated}`;
 }
 
 export class MainMenuCreditsRoll extends CCNode {
@@ -93,6 +105,7 @@ export class MainMenuScene extends AFLayer {
   constructor(director, assets) {
     super(assets);
     this.director = director;
+    void director.deploymentUpdates?.check();
     this.initChildren();
     this.initCredits();
     this.optionsOverlay = new MainMenuOptionsOverlay(this);
@@ -125,7 +138,7 @@ export class MainMenuScene extends AFLayer {
     this.addChild(title, Tags.title, Tags.title);
 
     const buildLabel = new CCLabelTTF(
-      mainMenuBuildLabel(this.director.buildVersion),
+      mainMenuBuildLabel(this.director.buildVersion, this.director.buildDate),
       "DIN-Medium",
       11,
       "#9aa5bd",
