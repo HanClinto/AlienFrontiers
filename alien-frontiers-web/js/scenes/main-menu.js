@@ -151,19 +151,22 @@ export class MainMenuScene extends AFLayer {
       installButton.setPosition(ccp(688, 555));
       installCallout.addChild(installButton);
 
-      const installLabel = new CCLabelTTF("INSTALL APP", "DIN-Black", 15, "#ffae41");
-      installLabel.setPosition(ccp(688, 478));
+      const installLabel = new CCLabelTTF("Install App", "DIN-Black", 15, "#ffae41");
+      installLabel.setPosition(ccp(688, 615));
       installCallout.addChild(installLabel);
 
-      const benefitLabel = new CCLabelTTF(
-        "FULLSCREEN + OFFLINE",
-        "DIN-Medium",
-        10,
-        "#9fdcf5",
-        { maxWidth: 128 },
-      );
-      benefitLabel.setPosition(ccp(688, 455));
-      installCallout.addChild(benefitLabel);
+      ["Fullscreen", "Offline Play", "Cross Platform", "Automatic Updates"]
+        .forEach((benefit, index) => {
+          const benefitLabel = new CCLabelTTF(
+            benefit,
+            "DIN-Medium",
+            10,
+            "#9fdcf5",
+            { maxWidth: 128 },
+          );
+          benefitLabel.setPosition(ccp(688, 490 - index * 23));
+          installCallout.addChild(benefitLabel);
+        });
       this.addChild(installCallout, Tags.install, Tags.install);
     }
 
