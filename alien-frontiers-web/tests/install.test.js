@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { InstallPreferences, installGuidance, isMobileBrowser } from "../js/install.js";
+import { InstallPreferences, installGuidance } from "../js/install.js";
 
 function fixture({ standalone = false } = {}) {
   const listeners = new Map();
@@ -45,11 +45,4 @@ test("manual install guidance reflects browser capabilities", () => {
   assert.match(installGuidance({ userAgent: "Mozilla/5.0 (Android) Firefox/141.0" }), /browser menu.*Install/);
   assert.match(installGuidance({ userAgent: "Mozilla/5.0 Firefox/141.0" }), /does not currently install/);
   assert.match(installGuidance({ userAgent: "Mozilla/5.0 Safari/605.1" }), /File menu.*Add to Dock/);
-});
-
-test("home-screen install advertising is limited to mobile-class browsers", () => {
-  assert.equal(isMobileBrowser({ navigator: { userAgent: "Mozilla/5.0 (Android) Firefox/141.0" } }), true);
-  assert.equal(isMobileBrowser({ navigator: { userAgent: "Mozilla/5.0 (iPhone) Safari/605.1" } }), true);
-  assert.equal(isMobileBrowser({ navigator: { userAgent: "Mozilla/5.0 (Macintosh)", maxTouchPoints: 5 } }), true);
-  assert.equal(isMobileBrowser({ navigator: { userAgent: "Mozilla/5.0 (Macintosh)", maxTouchPoints: 0 } }), false);
 });

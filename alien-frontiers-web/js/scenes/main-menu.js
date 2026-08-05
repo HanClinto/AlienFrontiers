@@ -1,7 +1,7 @@
 import { AFLayer } from "../af-layer.js";
 import { CCDelayTime, CCEaseElasticInOut, CCFadeTo, CCMoveTo, CCSequence } from "../cocos/actions.js";
 import { CCLayerColor, CCLabelTTF, CCNode, CCSprite, ccp } from "../cocos/core.js";
-import { installGuidance, isMobileBrowser } from "../install.js";
+import { installGuidance } from "../install.js";
 import { StartGameScene } from "./start-game.js";
 
 const Tags = Object.freeze({
@@ -135,7 +135,7 @@ export class MainMenuScene extends AFLayer {
     buildLabel.opacity = 180;
     this.addChild(buildLabel, Tags.build, Tags.build);
 
-    if (!this.director.installPreferences?.isInstalled && isMobileBrowser()) {
+    if (!this.director.installPreferences?.isInstalled) {
       const installCallout = new CCNode();
       const calloutBackground = new CCSprite(this.assets.image("aa_card_detail_box.png"));
       calloutBackground.setPosition(ccp(688, 520));

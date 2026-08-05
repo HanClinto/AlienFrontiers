@@ -69,10 +69,3 @@ export function installGuidance(navigatorRef = typeof navigator === "undefined" 
   }
   return "Open your browser menu and choose Install App or Add to Home Screen.";
 }
-
-export function isMobileBrowser(windowRef = typeof window === "undefined" ? null : window) {
-  const navigatorRef = windowRef?.navigator;
-  const userAgent = navigatorRef?.userAgent ?? "";
-  return /Android|iPhone|iPad|iPod|Mobile/i.test(userAgent)
-    || (/Macintosh/i.test(userAgent) && (navigatorRef?.maxTouchPoints ?? 0) > 1);
-}
