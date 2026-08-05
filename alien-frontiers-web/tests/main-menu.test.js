@@ -7,6 +7,7 @@ import {
   creditsRollLines,
   mainMenuBuildLabel,
   openExternalLink,
+  reportBugLinkRect,
 } from "../js/scenes/main-menu.js";
 
 test("main-menu build labels distinguish deployments from local development", () => {
@@ -55,6 +56,16 @@ test("external links use native hyperlink navigation for installed app handoff",
   openExternalLink("https://example.com/report", windowObject);
 
   assert.equal(externalWindow.opener, null);
+});
+
+test("native bug report link tracks the canvas button at responsive scale", () => {
+  assert.deepEqual(
+    reportBugLinkRect(
+      { left: 100, top: 20, width: 384, height: 512 },
+      { width: 134, height: 52 },
+    ),
+    { left: 258.5, top: 374, width: 67, height: 26 },
+  );
 });
 
 test("recent changes are displayed before the original credits", () => {

@@ -90,6 +90,17 @@ export function openExternalLink(url, windowObject = globalThis.window) {
   }
 }
 
+export function reportBugLinkRect(canvasBounds, buttonSize) {
+  const scaleX = canvasBounds.width / 768;
+  const scaleY = canvasBounds.height / 1024;
+  return {
+    left: canvasBounds.left + (384 - buttonSize.width * 0.5) * scaleX,
+    top: canvasBounds.top + (1024 - 290 - buttonSize.height * 0.5) * scaleY,
+    width: buttonSize.width * scaleX,
+    height: buttonSize.height * scaleY,
+  };
+}
+
 export class MainMenuCreditsRoll extends CCNode {
   constructor(lines, initialDelay = 1) {
     super();
@@ -168,6 +179,10 @@ export class MainMenuScene extends AFLayer {
     } catch (error) {
       console.error("Unable to load Alien Frontiers credits", error);
     }
+  }
+
+  onExit() {
+    this.optionsOverlay.hideReportBugLink();
   }
 
   initChildren() {
@@ -342,6 +357,8 @@ class MainMenuOptionsOverlay extends CCNode {
     this.reportBugButton.addChild(githubMark, 2);
     this.reportBugButton.getChildByTag(ButtonTags.label)?.setPosition(ccp(13, 1));
     this.doneButton = this.addButton("DONE", 5, () => this.close());
+    this.reportBugLink = document.getElementById("report-bug-link");
+    this.syncReportBugLink = () => this.positionReportBugLink();
   }
 
   addButton(label, index, callback) {
@@ -384,10 +401,12 @@ class MainMenuOptionsOverlay extends CCNode {
       button.setPosition(ccp(-500, destination.y));
       button.runAction(new CCEaseElasticInOut(new CCMoveTo(0.65, destination), 0.8));
     });
+    this.showReportBugLink();
   }
 
   close() {
     this.visible = false;
+    this.hideReportBugLink();
     for (const tag of [Tags.play, Tags.rules, Tags.resume, Tags.options, Tags.install]) {
       const node = this.scene.getChildByTag(tag);
       if (node) {
@@ -427,8 +446,12 @@ class MainMenuOptionsOverlay extends CCNode {
   }
 
   reportBug() {
+    openExternalLink(this.reportBugUrl());
+  }
+
+  reportBugUrl() {
     const { navigator, screen } = window;
-    const issueUrl = bugReportIssueUrl({
+    return bugReportIssueUrl({
       version: this.scene.director.buildVersion,
       userAgent: navigator.userAgent,
       platform: navigator.userAgentData?.platform || navigator.platform,
@@ -438,7 +461,35 @@ class MainMenuOptionsOverlay extends CCNode {
       installed: this.scene.director.installPreferences?.isInstalled,
       pageUrl: window.location.href,
     });
-    openExternalLink(issueUrl);
+  }
+
+  showReportBugLink() {
+    if (!this.reportBugLink) {
+      return;
+    }
+    this.reportBugLink.href = this.reportBugUrl();
+    this.reportBugLink.hidden = false;
+    this.positionReportBugLink();
+    window.addEventListener("resize", this.syncReportBugLink);
+  }
+
+  hideReportBugLink() {
+    if (this.reportBugLink) {
+      this.reportBugLink.hidden = true;
+    }
+    window.removeEventListener("resize", this.syncReportBugLink);
+  }
+
+  positionReportBugLink() {
+    if (!this.reportBugLink || this.reportBugLink.hidden) {
+      return;
+    }
+    const canvasBounds = this.scene.director.canvas.getBoundingClientRect();
+    const rect = reportBugLinkRect(canvasBounds, this.reportBugButton.contentSize);
+    this.reportBugLink.style.left = `${rect.left}px`;
+    this.reportBugLink.style.top = `${rect.top}px`;
+    this.reportBugLink.style.width = `${rect.width}px`;
+    this.reportBugLink.style.height = `${rect.height}px`;
   }
 
   updateLabels() {

@@ -50,6 +50,12 @@ body {
   -webkit-user-select: none;
 }
 
+#report-bug-link {
+  display: block;
+  position: fixed;
+  z-index: 1;
+}
+
 #loading {
   margin: 0;
   color: #ffae41;
