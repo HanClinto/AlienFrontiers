@@ -10,6 +10,7 @@ const Tags = Object.freeze({
   play: 3,
   rules: 4,
   resume: 5,
+  build: 6,
   options: 7,
   credits: 8,
 });
@@ -24,6 +25,10 @@ function textLines(text) {
 
 export function creditsRollLines(recentChangesText, creditsText) {
   return [...textLines(recentChangesText), "", "", ...textLines(creditsText)];
+}
+
+export function mainMenuBuildLabel(version) {
+  return version ? `BUILD ${version.slice(0, 8)}` : "LOCAL BUILD";
 }
 
 export class MainMenuCreditsRoll extends CCNode {
@@ -116,6 +121,17 @@ export class MainMenuScene extends AFLayer {
     const title = new CCSprite(this.assets.image("af_title.png"));
     title.setPosition(ccp(halfWinWidth, 900));
     this.addChild(title, Tags.title, Tags.title);
+
+    const buildLabel = new CCLabelTTF(
+      mainMenuBuildLabel(this.director.buildVersion),
+      "DIN-Medium",
+      11,
+      "#9aa5bd",
+    );
+    buildLabel.setAnchorPoint(ccp(1, 0));
+    buildLabel.setPosition(ccp(756, 10));
+    buildLabel.opacity = 180;
+    this.addChild(buildLabel, Tags.build, Tags.build);
 
     const hasSavedGame = this.director.persistence?.hasSavedGame;
     if (hasSavedGame) {

@@ -186,6 +186,7 @@ async function start() {
   director.aiPreferences = new AISearchPreferences();
   director.fullscreenPreferences = new FullscreenPreferences();
   director.fullscreenPreferences.armForNextGesture();
+  director.buildVersion = version;
   director.frameCache = frameCache;
   globalThis.AlienFrontiers = Object.freeze({ director });
   director.runWithScene(new MainMenuScene(director, assets));

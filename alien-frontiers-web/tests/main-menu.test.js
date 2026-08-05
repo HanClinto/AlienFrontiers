@@ -1,7 +1,16 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { MainMenuCreditsRoll, creditsRollLines } from "../js/scenes/main-menu.js";
+import {
+  MainMenuCreditsRoll,
+  creditsRollLines,
+  mainMenuBuildLabel,
+} from "../js/scenes/main-menu.js";
+
+test("main-menu build labels distinguish deployments from local development", () => {
+  assert.equal(mainMenuBuildLabel("716c7ca123456789"), "BUILD 716c7ca1");
+  assert.equal(mainMenuBuildLabel(""), "LOCAL BUILD");
+});
 
 test("recent changes are displayed before the original credits", () => {
   assert.deepEqual(
