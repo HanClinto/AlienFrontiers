@@ -106,7 +106,9 @@ The complete browser project lives in `alien-frontiers-web/`. GitHub Actions pub
 that directory to GitHub Pages on pushes to `main`. Deployment stamps HTML, CSS, every
 JavaScript module import, and runtime asset URL with the commit SHA; a no-cache version
 manifest also reloads stale open builds under the latest commit-specific URL. Local
-development remains a direct static-file workflow with no build step.
+development remains a direct static-file workflow with no build step. Deployed builds
+also precache their SHA-versioned files for offline play. Page navigations and the version
+manifest always use the network when available, so refreshing still picks up new releases.
 
 # Reference implementations
 

@@ -1,6 +1,7 @@
 import { AssetCache } from "./cocos/assets.js";
 import { CCDirector } from "./cocos/director.js";
 import { CCSpriteFrameCache } from "./cocos/sprite-frame-cache.js";
+import { registerServiceWorker } from "./pwa.js";
 import { MainMenuScene } from "./scenes/main-menu.js";
 import { GameAudioManager } from "./audio.js";
 import { FullscreenPreferences } from "./fullscreen.js";
@@ -190,7 +191,9 @@ async function start() {
   director.runWithScene(new MainMenuScene(director, assets));
 }
 
-start().catch((error) => {
+start().then(() => registerServiceWorker().catch((error) => {
+  console.warn("Unable to enable offline play", error);
+})).catch((error) => {
   console.error(error);
   const loading = document.querySelector("#loading");
   loading.textContent = "Unable to load Alien Frontiers.";

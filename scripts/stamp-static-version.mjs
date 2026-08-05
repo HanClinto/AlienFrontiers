@@ -1,5 +1,5 @@
 import { readFile, readdir, writeFile } from "node:fs/promises";
-import { extname, join } from "node:path";
+import { extname, join, relative, sep } from "node:path";
 
 const [rootDirectory, version] = process.argv.slice(2);
 if (!rootDirectory || !version || !/^[A-Za-z0-9._-]+$/.test(version)) {
@@ -41,7 +41,8 @@ function stampCss(source) {
   );
 }
 
-for (const filePath of await filesUnder(rootDirectory)) {
+const files = await filesUnder(rootDirectory);
+for (const filePath of files) {
   const extension = extname(filePath);
   if (![".js", ".html", ".css"].includes(extension)) {
     continue;
@@ -54,6 +55,21 @@ for (const filePath of await filesUnder(rootDirectory)) {
     await writeFile(filePath, stamped);
   }
 }
+
+const precacheFiles = files
+  .filter((filePath) => {
+    const relativePath = relative(rootDirectory, filePath);
+    return relativePath !== "service-worker.js"
+      && relativePath !== "package.json"
+      && !relativePath.startsWith(`tests${sep}`);
+  })
+  .map((filePath) => `./${relative(rootDirectory, filePath).split(sep).join("/")}?v=${version}`)
+  .sort();
+
+await writeFile(
+  join(rootDirectory, "precache-manifest.json"),
+  `${JSON.stringify({ version, files: precacheFiles })}\n`,
+);
 
 await writeFile(
   join(rootDirectory, "version.json"),
