@@ -1,4 +1,4 @@
-import { AFLayer } from "../af-layer.js";
+import { AFLayer, ButtonTags } from "../af-layer.js";
 import { CCDelayTime, CCEaseElasticInOut, CCFadeTo, CCMoveTo, CCSequence } from "../cocos/actions.js";
 import { CCLayerColor, CCLabelTTF, CCNode, CCSprite, ccp } from "../cocos/core.js";
 import { installGuidance } from "../install.js";
@@ -329,12 +329,12 @@ class MainMenuOptionsOverlay extends CCNode {
     this.musicButton = this.addButton("", 1, () => this.toggleMusic());
     this.aiSearchButton = this.addButton("", 2, () => this.cycleAISearch());
     this.fullscreenButton = this.addButton("", 3, () => this.toggleFullscreen());
-    this.installButton = this.addButton("INSTALL APP", 4, () => this.installApp());
-    this.reportBugButton = this.addButton("REPORT BUG", 5, () => this.reportBug());
+    this.reportBugButton = this.addButton("REPORT BUG", 4, () => this.reportBug());
     const githubMark = new CCSprite(this.scene.assets.image("github-mark.svg"));
-    githubMark.setPosition(ccp(-50, 0));
+    githubMark.setPosition(ccp(-36, 0));
     this.reportBugButton.addChild(githubMark, 2);
-    this.doneButton = this.addButton("DONE", 6, () => this.close());
+    this.reportBugButton.getChildByTag(ButtonTags.label)?.setPosition(ccp(13, 1));
+    this.doneButton = this.addButton("DONE", 5, () => this.close());
   }
 
   addButton(label, index, callback) {
@@ -364,7 +364,6 @@ class MainMenuOptionsOverlay extends CCNode {
     this.shade.opacity = 0;
     this.shade.runAction(new CCFadeTo(0.35, 192));
     this.updateLabels();
-    this.installButton.visible = !this.scene.director.installPreferences?.isInstalled;
     const buttons = [
       this.sfxButton,
       this.musicButton,
@@ -373,9 +372,6 @@ class MainMenuOptionsOverlay extends CCNode {
       this.reportBugButton,
       this.doneButton,
     ];
-    if (this.installButton.visible) {
-      buttons.splice(4, 0, this.installButton);
-    }
     buttons.forEach((button, index) => {
       const destination = ccp(384, 690 - 100 * index);
       button.setPosition(ccp(-500, destination.y));
@@ -421,13 +417,6 @@ class MainMenuOptionsOverlay extends CCNode {
     }
     await fullscreen.toggle();
     this.updateLabels();
-  }
-
-  async installApp() {
-    const outcome = await this.scene.installApp();
-    if (outcome === "accepted" || outcome === "installed") {
-      this.close();
-    }
   }
 
   reportBug() {
