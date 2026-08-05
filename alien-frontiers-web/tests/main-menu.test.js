@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { MainMenuCreditsRoll } from "../js/scenes/main-menu.js";
+import { MainMenuCreditsRoll, creditsRollLines } from "../js/scenes/main-menu.js";
+
+test("recent changes are displayed before the original credits", () => {
+  assert.deepEqual(
+    creditsRollLines("RECENT\n\nCHANGE\n", "ORIGINAL\r\nCREDITS\r\n"),
+    ["RECENT", "", "CHANGE", "", "", "ORIGINAL", "CREDITS"],
+  );
+});
 
 test("main-menu credits reproduce the original timing, columns, and fixed scale", () => {
   const roll = new MainMenuCreditsRoll(["RELEASE NOTES", "LEFT;RIGHT"], 1);

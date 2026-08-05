@@ -18,6 +18,14 @@ const CREDITS_COLOR = "#ffae41";
 const CREDITS_INTERVAL = 0.75;
 const CREDITS_DURATION = 8;
 
+function textLines(text) {
+  return text.replace(/\r/g, "").replace(/\n+$/, "").split("\n");
+}
+
+export function creditsRollLines(recentChangesText, creditsText) {
+  return [...textLines(recentChangesText), "", "", ...textLines(creditsText)];
+}
+
 export class MainMenuCreditsRoll extends CCNode {
   constructor(lines, initialDelay = 1) {
     super();
@@ -86,8 +94,11 @@ export class MainMenuScene extends AFLayer {
 
   async initCredits() {
     try {
-      const creditsText = await this.assets.loadText("AFCredits.txt");
-      const lines = creditsText.replace(/\r/g, "").replace(/\n+$/, "").split("\n");
+      const [recentChangesText, creditsText] = await Promise.all([
+        this.assets.loadText("RECENT_CHANGES.txt"),
+        this.assets.loadText("AFCredits.txt"),
+      ]);
+      const lines = creditsRollLines(recentChangesText, creditsText);
       this.addChild(new MainMenuCreditsRoll(lines), Tags.credits, Tags.credits);
     } catch (error) {
       console.error("Unable to load Alien Frontiers credits", error);
