@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "reportId": "2026-08-05-97e5f09",
+  "generatedAt": "2026-08-06T15:17:51.546Z",
+  "gameVersion": "97e5f099c2767b40312daa5e997a69889cab4300",
+  "dirty": false,
+  "nodeVersion": "v16.20.2",
+  "blocks": 201,
+  "games": 8040,
+  "completed": 8040,
+  "seedStart": 60000,
+  "maxNodes": 12800,
+  "maxSteps": 10000,
+  "workerCount": 8,
+  "aiDefinitions": {
+    "simple": {
+      "name": "Simple",
+      "personality": 1,
+      "policy": "simple"
+    },
+    "spacer": {
+      "name": "Spacer",
+      "personality": 2,
+      "policy": "legacy-compact"
+    },
+    "admiral": {
+      "name": "Admiral",
+      "personality": 3,
+      "policy": "legacy-compact"
+    },
+    "pirate": {
+      "name": "Pirate",
+      "personality": 4,
+      "policy": "legacy-compact"
+    }
+  },
+  "timing": {
+    "runtimeMs": 46809585.640667,
+    "games": 8040,
+    "gamesPerSecond": 0.17175969173747713,
+    "secondsPerBlock": 232.88351065008456,
+    "targetHours": 9,
+    "projectedGames": 5565,
+    "projectedBlocks": 139,
+    "projectedRuntimeHours": 8.991891105656043
+  }
+}

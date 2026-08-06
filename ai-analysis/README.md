@@ -20,6 +20,12 @@ Final tech ownership and region control are observational associations. Starting
 randomly dealt, while seat results come from identical-AI mirror games. Reports keep those
 evidence classes separate.
 
+## Published Reports
+
+| Date | Game version | Games | Search budget | Runtime | Report |
+|---|---|---:|---:|---:|---|
+| 2026-08-05 | `97e5f099` | 8,040 | 12,800 nodes | 13.00 hours | [Report and raw data](reports/2026-08-05-97e5f09/REPORT.md) |
+
 ## Tournament Schedule
 
 One analysis block contains 40 games:
@@ -40,12 +46,14 @@ node scripts/run-ai-analysis.mjs \
   --output ai-analysis/pilots/2026-08-05-format-pilot
 ```
 
-The representative Deep pilot completed 40 games in 160.90 seconds on eight workers.
-At that measured rate, 201 blocks (8,040 games) are projected to take 8.98 hours:
+The representative Deep pilot completed 40 games in 160.90 seconds on eight workers. The first
+full run used 201 blocks but took 13.00 hours because workers received fixed task chunks and the
+slowest chunk determined wall time. Its measured full-run rate projects 139 blocks (5,560 games)
+for a future nine-hour run:
 
 ```sh
 node scripts/run-ai-analysis.mjs \
-  --blocks 201 --seed 60000 --max-nodes 12800 --workers 8 \
+  --blocks 139 --seed 70000 --max-nodes 12800 --workers 8 \
   --target-hours 9 \
   --label YYYY-MM-DD-COMMIT \
   --output ai-analysis/reports/YYYY-MM-DD-COMMIT
@@ -61,3 +69,4 @@ promoted to the root README as a balance result.
 |---|---:|---:|---:|---:|---:|---:|
 | [Format](pilots/2026-08-05-format-pilot/REPORT.md) | 100 nodes | 40 | 8 | 4.71 s | 8.498 games/s | 275,280 games |
 | [Deep](pilots/2026-08-05-deep-timing-pilot/REPORT.md) | 12,800 nodes | 40 | 8 | 160.90 s | 0.249 games/s | 8,040 games |
+| [Full analysis](reports/2026-08-05-97e5f09/REPORT.md) | 12,800 nodes | 8,040 | 8 | 13.00 h | 0.172 games/s | 5,560 games |
