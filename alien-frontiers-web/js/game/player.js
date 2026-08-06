@@ -204,6 +204,7 @@ export class Player {
     }
     card.owner = this;
     this.cards.push(card);
+    this.selectedCard ??= card;
     this.state.postEvent(EventName.techCardsChanged, card);
     return true;
   }
