@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "reportId": "2026-08-05-deep-timing-pilot",
+  "generatedAt": "2026-08-06T02:15:39.150Z",
+  "gameVersion": "69635512aed640877018b06aa86c7b15e277c90e",
+  "dirty": true,
+  "nodeVersion": "v16.20.2",
+  "blocks": 1,
+  "games": 40,
+  "completed": 40,
+  "seedStart": 52000,
+  "maxNodes": 12800,
+  "maxSteps": 10000,
+  "workerCount": 8,
+  "aiDefinitions": {
+    "simple": {
+      "name": "Simple",
+      "personality": 1,
+      "policy": "simple"
+    },
+    "spacer": {
+      "name": "Spacer",
+      "personality": 2,
+      "policy": "legacy-compact"
+    },
+    "admiral": {
+      "name": "Admiral",
+      "personality": 3,
+      "policy": "legacy-compact"
+    },
+    "pirate": {
+      "name": "Pirate",
+      "personality": 4,
+      "policy": "legacy-compact"
+    }
+  },
+  "timing": {
+    "runtimeMs": 160895.38833300024,
+    "games": 40,
+    "gamesPerSecond": 0.24860874145884918,
+    "secondsPerBlock": 160.89538833300026,
+    "targetHours": 9,
+    "projectedGames": 8054,
+    "projectedBlocks": 201,
+    "projectedRuntimeHours": 8.983325848592514
+  }
+}

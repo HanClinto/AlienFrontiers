@@ -1,0 +1,410 @@
+{
+  "aiStrength": [
+    {
+      "key": "Pirate",
+      "games": 4,
+      "wins": 3,
+      "winRate": 0.75,
+      "winRate95": {
+        "low": 0.30064184258240184,
+        "high": 0.9544127391902995,
+        "margin": 0.3268854483039488
+      }
+    },
+    {
+      "key": "Admiral",
+      "games": 4,
+      "wins": 1,
+      "winRate": 0.25,
+      "winRate95": {
+        "low": 0.04558726080970055,
+        "high": 0.6993581574175981,
+        "margin": 0.3268854483039488
+      }
+    },
+    {
+      "key": "Simple",
+      "games": 4,
+      "wins": 0,
+      "winRate": 0,
+      "winRate95": {
+        "low": 0,
+        "high": 0.4898908364545973,
+        "margin": 0.24494541822729865
+      }
+    },
+    {
+      "key": "Spacer",
+      "games": 4,
+      "wins": 0,
+      "winRate": 0,
+      "winRate95": {
+        "low": 0,
+        "high": 0.4898908364545973,
+        "margin": 0.24494541822729865
+      }
+    }
+  ],
+  "startingTech": [
+    {
+      "key": "holographic-decoy",
+      "games": 4,
+      "wins": 3,
+      "winRate": 0.75,
+      "winRate95": {
+        "low": 0.30064184258240184,
+        "high": 0.9544127391902995,
+        "margin": 0.3268854483039488
+      }
+    },
+    {
+      "key": "booster-pod",
+      "games": 4,
+      "wins": 1,
+      "winRate": 0.25,
+      "winRate95": {
+        "low": 0.04558726080970055,
+        "high": 0.6993581574175981,
+        "margin": 0.3268854483039488
+      }
+    },
+    {
+      "key": "resource-cache",
+      "games": 4,
+      "wins": 0,
+      "winRate": 0,
+      "winRate95": {
+        "low": 0,
+        "high": 0.4898908364545973,
+        "margin": 0.24494541822729865
+      }
+    },
+    {
+      "key": "gravity-manipulator",
+      "games": 4,
+      "wins": 0,
+      "winRate": 0,
+      "winRate95": {
+        "low": 0,
+        "high": 0.4898908364545973,
+        "margin": 0.24494541822729865
+      }
+    }
+  ],
+  "turnOrder": {
+    "2": [
+      {
+        "key": "Seat 1",
+        "games": 4,
+        "wins": 4,
+        "winRate": 1,
+        "winRate95": {
+          "low": 0.5101091635454027,
+          "high": 1,
+          "margin": 0.24494541822729865
+        }
+      },
+      {
+        "key": "Seat 2",
+        "games": 4,
+        "wins": 0,
+        "winRate": 0,
+        "winRate95": {
+          "low": 0,
+          "high": 0.4898908364545973,
+          "margin": 0.24494541822729865
+        }
+      }
+    ],
+    "3": [
+      {
+        "key": "Seat 1",
+        "games": 4,
+        "wins": 2,
+        "winRate": 0.5,
+        "winRate95": {
+          "low": 0.15003898915214947,
+          "high": 0.8499610108478506,
+          "margin": 0.34996101084785053
+        }
+      },
+      {
+        "key": "Seat 3",
+        "games": 4,
+        "wins": 2,
+        "winRate": 0.5,
+        "winRate95": {
+          "low": 0.15003898915214947,
+          "high": 0.8499610108478506,
+          "margin": 0.34996101084785053
+        }
+      },
+      {
+        "key": "Seat 2",
+        "games": 4,
+        "wins": 0,
+        "winRate": 0,
+        "winRate95": {
+          "low": 0,
+          "high": 0.4898908364545973,
+          "margin": 0.24494541822729865
+        }
+      }
+    ],
+    "4": [
+      {
+        "key": "Seat 3",
+        "games": 4,
+        "wins": 3,
+        "winRate": 0.75,
+        "winRate95": {
+          "low": 0.30064184258240184,
+          "high": 0.9544127391902995,
+          "margin": 0.3268854483039488
+        }
+      },
+      {
+        "key": "Seat 4",
+        "games": 4,
+        "wins": 1,
+        "winRate": 0.25,
+        "winRate95": {
+          "low": 0.04558726080970055,
+          "high": 0.6993581574175981,
+          "margin": 0.3268854483039488
+        }
+      },
+      {
+        "key": "Seat 1",
+        "games": 4,
+        "wins": 0,
+        "winRate": 0,
+        "winRate95": {
+          "low": 0,
+          "high": 0.4898908364545973,
+          "margin": 0.24494541822729865
+        }
+      },
+      {
+        "key": "Seat 2",
+        "games": 4,
+        "wins": 0,
+        "winRate": 0,
+        "winRate95": {
+          "low": 0,
+          "high": 0.4898908364545973,
+          "margin": 0.24494541822729865
+        }
+      }
+    ]
+  },
+  "tech": [
+    {
+      "techType": "resource-cache",
+      "ownershipGames": 64,
+      "wins": 32,
+      "winRate": 0.5,
+      "powerUses": 0,
+      "discardUses": 0,
+      "usesPerOwnership": 0
+    },
+    {
+      "techType": "booster-pod",
+      "ownershipGames": 60,
+      "wins": 29,
+      "winRate": 0.48333333333333334,
+      "powerUses": 148,
+      "discardUses": 0,
+      "usesPerOwnership": 2.466666666666667
+    },
+    {
+      "techType": "holographic-decoy",
+      "ownershipGames": 79,
+      "wins": 30,
+      "winRate": 0.379746835443038,
+      "powerUses": 0,
+      "discardUses": 0,
+      "usesPerOwnership": 0
+    },
+    {
+      "techType": "temporal-warper",
+      "ownershipGames": 33,
+      "wins": 12,
+      "winRate": 0.36363636363636365,
+      "powerUses": 0,
+      "discardUses": 24,
+      "usesPerOwnership": 0.7272727272727273
+    },
+    {
+      "techType": "orbital-teleporter",
+      "ownershipGames": 80,
+      "wins": 27,
+      "winRate": 0.3375,
+      "powerUses": 616,
+      "discardUses": 0,
+      "usesPerOwnership": 7.7
+    },
+    {
+      "techType": "alien-monument",
+      "ownershipGames": 6,
+      "wins": 2,
+      "winRate": 0.3333333333333333,
+      "powerUses": 0,
+      "discardUses": 0,
+      "usesPerOwnership": 0
+    },
+    {
+      "techType": "stasis-beam",
+      "ownershipGames": 79,
+      "wins": 22,
+      "winRate": 0.27848101265822783,
+      "powerUses": 40,
+      "discardUses": 47,
+      "usesPerOwnership": 1.1012658227848102
+    },
+    {
+      "techType": "polarity-device",
+      "ownershipGames": 44,
+      "wins": 11,
+      "winRate": 0.25,
+      "powerUses": 65,
+      "discardUses": 0,
+      "usesPerOwnership": 1.4772727272727273
+    },
+    {
+      "techType": "plasma-cannon",
+      "ownershipGames": 37,
+      "wins": 7,
+      "winRate": 0.1891891891891892,
+      "powerUses": 41,
+      "discardUses": 0,
+      "usesPerOwnership": 1.1081081081081081
+    },
+    {
+      "techType": "data-crystal",
+      "ownershipGames": 24,
+      "wins": 4,
+      "winRate": 0.16666666666666666,
+      "powerUses": 55,
+      "discardUses": 0,
+      "usesPerOwnership": 2.2916666666666665
+    },
+    {
+      "techType": "gravity-manipulator",
+      "ownershipGames": 55,
+      "wins": 8,
+      "winRate": 0.14545454545454545,
+      "powerUses": 64,
+      "discardUses": 0,
+      "usesPerOwnership": 1.1636363636363636
+    },
+    {
+      "techType": "alien-city",
+      "ownershipGames": 20,
+      "wins": 2,
+      "winRate": 0.1,
+      "powerUses": 0,
+      "discardUses": 0,
+      "usesPerOwnership": 0
+    }
+  ],
+  "regions": [
+    {
+      "region": "Heinlein Plains",
+      "controllers": 26,
+      "wins": 22,
+      "controllerWinRate": 0.8461538461538461
+    },
+    {
+      "region": "Burroughs Desert",
+      "controllers": 36,
+      "wins": 23,
+      "controllerWinRate": 0.6388888888888888
+    },
+    {
+      "region": "Lem Badlands",
+      "controllers": 36,
+      "wins": 19,
+      "controllerWinRate": 0.5277777777777778
+    },
+    {
+      "region": "Asimov Crater",
+      "controllers": 39,
+      "wins": 20,
+      "controllerWinRate": 0.5128205128205128
+    },
+    {
+      "region": "Herbert Valley",
+      "controllers": 30,
+      "wins": 15,
+      "controllerWinRate": 0.5
+    },
+    {
+      "region": "Pohl Foothills",
+      "controllers": 37,
+      "wins": 17,
+      "controllerWinRate": 0.4594594594594595
+    },
+    {
+      "region": "Bradbury Plateau",
+      "controllers": 31,
+      "wins": 14,
+      "controllerWinRate": 0.45161290322580644
+    },
+    {
+      "region": "Van Vogt Mountains",
+      "controllers": 34,
+      "wins": 15,
+      "controllerWinRate": 0.4411764705882353
+    }
+  ],
+  "gameLength": [
+    {
+      "playerCount": 2,
+      "games": 16,
+      "meanRounds": 14.625,
+      "medianRounds": 14,
+      "minimumRounds": 11,
+      "maximumRounds": 21
+    },
+    {
+      "playerCount": 3,
+      "games": 16,
+      "meanRounds": 13.0625,
+      "medianRounds": 13,
+      "minimumRounds": 11,
+      "maximumRounds": 17
+    },
+    {
+      "playerCount": 4,
+      "games": 8,
+      "meanRounds": 11.5,
+      "medianRounds": 10.5,
+      "minimumRounds": 10,
+      "maximumRounds": 17
+    }
+  ],
+  "estimatorAccuracy": [
+    {
+      "playerCount": 2,
+      "samples": 487,
+      "meanError": -2.7104722792607805,
+      "meanAbsoluteError": 2.909650924024641,
+      "rootMeanSquaredError": 3.9482015763996916
+    },
+    {
+      "playerCount": 3,
+      "samples": 655,
+      "meanError": -2.279898218829516,
+      "meanAbsoluteError": 2.4732824427480904,
+      "rootMeanSquaredError": 3.21135601638194
+    },
+    {
+      "playerCount": 4,
+      "samples": 390,
+      "meanError": -2.514102564102564,
+      "meanAbsoluteError": 2.66025641025641,
+      "rootMeanSquaredError": 3.658280035824598
+    }
+  ]
+}

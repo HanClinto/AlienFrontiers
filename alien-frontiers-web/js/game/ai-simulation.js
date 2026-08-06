@@ -4,6 +4,14 @@ import { EventName } from "./constants.js";
 import { GameState } from "./game-state.js";
 import { SimpleAI } from "./simple-ai.js";
 
+function incrementCount(counts, key) {
+  counts[key] = (counts[key] ?? 0) + 1;
+}
+
+function sortedTechTypes(cards) {
+  return cards.map((card) => card.type).sort();
+}
+
 export function seededRandom(seed) {
   let value = seed >>> 0;
   return () => {
@@ -462,12 +470,50 @@ export function simulateGame(options) {
   const maxSteps = options.maxSteps ?? 10_000;
   const random = seededRandom(seed);
   const personalities = options.personalities
-    ?? strategies.map((_strategy, index) => [AIType.hard, AIType.pirate, AIType.medium, AIType.easy][index]);
+    ?? strategies.map((strategy, index) => strategy.personality
+      ?? [AIType.hard, AIType.pirate, AIType.medium, AIType.easy][index]);
   const state = new GameState(strategies.length, personalities, random, random);
   let mutationCount = 0;
-  const unsubscribe = state.events.on(EventName.stateChanged, () => {
+  const unsubscribers = [state.events.on(EventName.stateChanged, () => {
     mutationCount += 1;
-  });
+  })];
+  const startingTech = state.players.map((player) => player.cards[0]?.type ?? null);
+  const everOwnedTech = state.players.map((player) => new Set(sortedTechTypes(player.cards)));
+  const techPowerUses = state.players.map(() => ({}));
+  const techDiscardUses = state.players.map(() => ({}));
+  const refreshTechOwnership = () => {
+    for (const player of state.players) {
+      for (const card of player.cards) {
+        everOwnedTech[player.playerIndex].add(card.type);
+      }
+    }
+  };
+  unsubscribers.push(state.events.on(EventName.techCardsChanged, refreshTechOwnership));
+  unsubscribers.push(state.events.on(EventName.techUsed, ({ object }) => {
+    const counts = object.mode === "discard"
+      ? techDiscardUses[object.playerIndex]
+      : techPowerUses[object.playerIndex];
+    incrementCount(counts, object.cardType);
+  }));
+  let playerTurn = 0;
+  const turnEstimateSamples = [];
+  const recordTurnEstimate = () => {
+    const coloniesLeft = state.players.map((player) => player.coloniesLeft);
+    turnEstimateSamples.push({
+      playerTurn,
+      round: state.numTurns,
+      currentSeat: state.currentPlayerIndex,
+      estimatedRoundsRemaining: Math.min(...coloniesLeft),
+      coloniesLeft,
+      coloniesToLaunch: state.players.map((player) => player.coloniesToLaunch),
+      activeShips: state.players.map((player) => player.activeNativeShips.length),
+    });
+  };
+  recordTurnEstimate();
+  unsubscribers.push(state.events.on(EventName.nextPlayer, () => {
+    playerTurn += 1;
+    recordTurnEstimate();
+  }));
   const metrics = strategies.map(() => ({
     decisions: 0,
     searchedDecisions: 0,
@@ -495,11 +541,11 @@ export function simulateGame(options) {
       throw new Error(`AI strategy ${strategies[playerIndex].name} made no move at step ${steps}`);
     }
     if (beforeMutationCount === mutationCount) {
-      unsubscribe();
+      for (const unsubscribe of unsubscribers) unsubscribe();
       throw new Error(`AI strategy ${strategies[playerIndex].name} reported a no-progress move at step ${steps}`);
     }
   }
-  unsubscribe();
+  for (const unsubscribe of unsubscribers) unsubscribe();
   const completed = state.gameOver;
   const ranking = state.winningPlayers;
   return {
@@ -510,12 +556,30 @@ export function simulateGame(options) {
     turns: state.numTurns,
     winnerIndex: completed ? ranking[0].playerIndex : null,
     ranking: ranking.map((player) => player.playerIndex),
+    turnEstimateSamples: turnEstimateSamples.map((sample) => ({
+      ...sample,
+      actualPlayerTurnsRemaining: playerTurn - sample.playerTurn + 1,
+      actualRoundsRemaining: (playerTurn - sample.playerTurn + 1) / state.numPlayers,
+    })),
     players: state.players.map((player, playerIndex) => ({
       playerIndex,
+      seat: playerIndex + 1,
       strategy: strategies[playerIndex].name,
+      personality: player.aiType,
       score: player.score,
       victoryPoints: player.vps,
       cards: player.cards.length,
+      startingTech: startingTech[playerIndex],
+      everOwnedTech: [...everOwnedTech[playerIndex]].sort(),
+      finalTech: sortedTechTypes(player.cards),
+      techPowerUses: techPowerUses[playerIndex],
+      techDiscardUses: techDiscardUses[playerIndex],
+      regions: state.regions.map((region) => ({
+        name: region.title,
+        colonies: region.coloniesForPlayer(playerIndex),
+        controlled: region.playerWithMajority === playerIndex,
+        isolated: region.hasIsolationField,
+      })),
       ore: player.ore,
       fuel: player.fuel,
       ...metrics[playerIndex],

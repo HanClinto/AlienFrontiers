@@ -1,0 +1,897 @@
+game_id,player_count,tournament,seat,ai_id,region,final_colonies,final_control,isolated_at_end,won,rank,victory_points
+mirror-p2-b0-admiral,2,mirror,1,admiral,Heinlein Plains,1,1,0,1,1,12
+mirror-p2-b0-admiral,2,mirror,1,admiral,Pohl Foothills,0,0,0,1,1,12
+mirror-p2-b0-admiral,2,mirror,1,admiral,Van Vogt Mountains,1,1,0,1,1,12
+mirror-p2-b0-admiral,2,mirror,1,admiral,Bradbury Plateau,0,0,0,1,1,12
+mirror-p2-b0-admiral,2,mirror,1,admiral,Asimov Crater,1,1,0,1,1,12
+mirror-p2-b0-admiral,2,mirror,1,admiral,Herbert Valley,0,0,1,1,1,12
+mirror-p2-b0-admiral,2,mirror,1,admiral,Lem Badlands,1,1,0,1,1,12
+mirror-p2-b0-admiral,2,mirror,1,admiral,Burroughs Desert,4,0,0,1,1,12
+mirror-p2-b0-admiral,2,mirror,2,admiral,Heinlein Plains,0,0,0,0,2,10
+mirror-p2-b0-admiral,2,mirror,2,admiral,Pohl Foothills,1,1,0,0,2,10
+mirror-p2-b0-admiral,2,mirror,2,admiral,Van Vogt Mountains,0,0,0,0,2,10
+mirror-p2-b0-admiral,2,mirror,2,admiral,Bradbury Plateau,0,0,0,0,2,10
+mirror-p2-b0-admiral,2,mirror,2,admiral,Asimov Crater,0,0,0,0,2,10
+mirror-p2-b0-admiral,2,mirror,2,admiral,Herbert Valley,1,1,1,0,2,10
+mirror-p2-b0-admiral,2,mirror,2,admiral,Lem Badlands,0,0,0,0,2,10
+mirror-p2-b0-admiral,2,mirror,2,admiral,Burroughs Desert,5,1,0,0,2,10
+mirror-p2-b0-pirate,2,mirror,1,pirate,Heinlein Plains,1,1,0,1,1,10
+mirror-p2-b0-pirate,2,mirror,1,pirate,Pohl Foothills,0,0,0,1,1,10
+mirror-p2-b0-pirate,2,mirror,1,pirate,Van Vogt Mountains,0,0,0,1,1,10
+mirror-p2-b0-pirate,2,mirror,1,pirate,Bradbury Plateau,0,0,0,1,1,10
+mirror-p2-b0-pirate,2,mirror,1,pirate,Asimov Crater,0,0,1,1,1,10
+mirror-p2-b0-pirate,2,mirror,1,pirate,Herbert Valley,3,0,0,1,1,10
+mirror-p2-b0-pirate,2,mirror,1,pirate,Lem Badlands,1,1,0,1,1,10
+mirror-p2-b0-pirate,2,mirror,1,pirate,Burroughs Desert,3,0,0,1,1,10
+mirror-p2-b0-pirate,2,mirror,2,pirate,Heinlein Plains,0,0,0,0,2,8
+mirror-p2-b0-pirate,2,mirror,2,pirate,Pohl Foothills,0,0,0,0,2,8
+mirror-p2-b0-pirate,2,mirror,2,pirate,Van Vogt Mountains,0,0,0,0,2,8
+mirror-p2-b0-pirate,2,mirror,2,pirate,Bradbury Plateau,0,0,0,0,2,8
+mirror-p2-b0-pirate,2,mirror,2,pirate,Asimov Crater,1,1,1,0,2,8
+mirror-p2-b0-pirate,2,mirror,2,pirate,Herbert Valley,3,0,0,0,2,8
+mirror-p2-b0-pirate,2,mirror,2,pirate,Lem Badlands,0,0,0,0,2,8
+mirror-p2-b0-pirate,2,mirror,2,pirate,Burroughs Desert,3,0,0,0,2,8
+mirror-p2-b0-simple,2,mirror,1,simple,Heinlein Plains,1,1,0,1,1,15
+mirror-p2-b0-simple,2,mirror,1,simple,Pohl Foothills,2,1,0,1,1,15
+mirror-p2-b0-simple,2,mirror,1,simple,Van Vogt Mountains,1,1,0,1,1,15
+mirror-p2-b0-simple,2,mirror,1,simple,Bradbury Plateau,0,0,0,1,1,15
+mirror-p2-b0-simple,2,mirror,1,simple,Asimov Crater,1,1,0,1,1,15
+mirror-p2-b0-simple,2,mirror,1,simple,Herbert Valley,1,1,0,1,1,15
+mirror-p2-b0-simple,2,mirror,1,simple,Lem Badlands,1,0,0,1,1,15
+mirror-p2-b0-simple,2,mirror,1,simple,Burroughs Desert,1,1,0,1,1,15
+mirror-p2-b0-simple,2,mirror,2,simple,Heinlein Plains,0,0,0,0,2,5
+mirror-p2-b0-simple,2,mirror,2,simple,Pohl Foothills,1,0,0,0,2,5
+mirror-p2-b0-simple,2,mirror,2,simple,Van Vogt Mountains,0,0,0,0,2,5
+mirror-p2-b0-simple,2,mirror,2,simple,Bradbury Plateau,1,1,0,0,2,5
+mirror-p2-b0-simple,2,mirror,2,simple,Asimov Crater,0,0,0,0,2,5
+mirror-p2-b0-simple,2,mirror,2,simple,Herbert Valley,0,0,0,0,2,5
+mirror-p2-b0-simple,2,mirror,2,simple,Lem Badlands,1,0,0,0,2,5
+mirror-p2-b0-simple,2,mirror,2,simple,Burroughs Desert,0,0,0,0,2,5
+mirror-p2-b0-spacer,2,mirror,1,spacer,Heinlein Plains,1,1,0,1,1,13
+mirror-p2-b0-spacer,2,mirror,1,spacer,Pohl Foothills,0,0,0,1,1,13
+mirror-p2-b0-spacer,2,mirror,1,spacer,Van Vogt Mountains,1,1,0,1,1,13
+mirror-p2-b0-spacer,2,mirror,1,spacer,Bradbury Plateau,0,0,0,1,1,13
+mirror-p2-b0-spacer,2,mirror,1,spacer,Asimov Crater,0,0,1,1,1,13
+mirror-p2-b0-spacer,2,mirror,1,spacer,Herbert Valley,1,1,0,1,1,13
+mirror-p2-b0-spacer,2,mirror,1,spacer,Lem Badlands,1,1,0,1,1,13
+mirror-p2-b0-spacer,2,mirror,1,spacer,Burroughs Desert,4,1,0,1,1,13
+mirror-p2-b0-spacer,2,mirror,2,spacer,Heinlein Plains,0,0,0,0,2,7
+mirror-p2-b0-spacer,2,mirror,2,spacer,Pohl Foothills,1,1,0,0,2,7
+mirror-p2-b0-spacer,2,mirror,2,spacer,Van Vogt Mountains,0,0,0,0,2,7
+mirror-p2-b0-spacer,2,mirror,2,spacer,Bradbury Plateau,0,0,0,0,2,7
+mirror-p2-b0-spacer,2,mirror,2,spacer,Asimov Crater,1,1,1,0,2,7
+mirror-p2-b0-spacer,2,mirror,2,spacer,Herbert Valley,0,0,0,0,2,7
+mirror-p2-b0-spacer,2,mirror,2,spacer,Lem Badlands,0,0,0,0,2,7
+mirror-p2-b0-spacer,2,mirror,2,spacer,Burroughs Desert,3,0,0,0,2,7
+mirror-p3-b0-admiral,3,mirror,1,admiral,Heinlein Plains,2,1,0,0,2,8
+mirror-p3-b0-admiral,3,mirror,1,admiral,Pohl Foothills,0,0,0,0,2,8
+mirror-p3-b0-admiral,3,mirror,1,admiral,Van Vogt Mountains,1,1,0,0,2,8
+mirror-p3-b0-admiral,3,mirror,1,admiral,Bradbury Plateau,0,0,0,0,2,8
+mirror-p3-b0-admiral,3,mirror,1,admiral,Asimov Crater,1,1,1,0,2,8
+mirror-p3-b0-admiral,3,mirror,1,admiral,Herbert Valley,1,0,0,0,2,8
+mirror-p3-b0-admiral,3,mirror,1,admiral,Lem Badlands,0,0,0,0,2,8
+mirror-p3-b0-admiral,3,mirror,1,admiral,Burroughs Desert,0,0,0,0,2,8
+mirror-p3-b0-admiral,3,mirror,2,admiral,Heinlein Plains,1,0,0,0,3,5
+mirror-p3-b0-admiral,3,mirror,2,admiral,Pohl Foothills,1,1,0,0,3,5
+mirror-p3-b0-admiral,3,mirror,2,admiral,Van Vogt Mountains,0,0,0,0,3,5
+mirror-p3-b0-admiral,3,mirror,2,admiral,Bradbury Plateau,0,0,0,0,3,5
+mirror-p3-b0-admiral,3,mirror,2,admiral,Asimov Crater,0,0,1,0,3,5
+mirror-p3-b0-admiral,3,mirror,2,admiral,Herbert Valley,0,0,0,0,3,5
+mirror-p3-b0-admiral,3,mirror,2,admiral,Lem Badlands,0,0,0,0,3,5
+mirror-p3-b0-admiral,3,mirror,2,admiral,Burroughs Desert,2,0,0,0,3,5
+mirror-p3-b0-admiral,3,mirror,3,admiral,Heinlein Plains,1,0,0,1,1,10
+mirror-p3-b0-admiral,3,mirror,3,admiral,Pohl Foothills,0,0,0,1,1,10
+mirror-p3-b0-admiral,3,mirror,3,admiral,Van Vogt Mountains,0,0,0,1,1,10
+mirror-p3-b0-admiral,3,mirror,3,admiral,Bradbury Plateau,1,1,0,1,1,10
+mirror-p3-b0-admiral,3,mirror,3,admiral,Asimov Crater,0,0,1,1,1,10
+mirror-p3-b0-admiral,3,mirror,3,admiral,Herbert Valley,1,0,0,1,1,10
+mirror-p3-b0-admiral,3,mirror,3,admiral,Lem Badlands,1,1,0,1,1,10
+mirror-p3-b0-admiral,3,mirror,3,admiral,Burroughs Desert,3,1,0,1,1,10
+mirror-p3-b0-pirate,3,mirror,1,pirate,Heinlein Plains,0,0,0,0,3,8
+mirror-p3-b0-pirate,3,mirror,1,pirate,Pohl Foothills,0,0,0,0,3,8
+mirror-p3-b0-pirate,3,mirror,1,pirate,Van Vogt Mountains,1,1,0,0,3,8
+mirror-p3-b0-pirate,3,mirror,1,pirate,Bradbury Plateau,0,0,0,0,3,8
+mirror-p3-b0-pirate,3,mirror,1,pirate,Asimov Crater,1,1,1,0,3,8
+mirror-p3-b0-pirate,3,mirror,1,pirate,Herbert Valley,0,0,0,0,3,8
+mirror-p3-b0-pirate,3,mirror,1,pirate,Lem Badlands,3,1,0,0,3,8
+mirror-p3-b0-pirate,3,mirror,1,pirate,Burroughs Desert,0,0,0,0,3,8
+mirror-p3-b0-pirate,3,mirror,2,pirate,Heinlein Plains,0,0,0,0,2,9
+mirror-p3-b0-pirate,3,mirror,2,pirate,Pohl Foothills,1,1,0,0,2,9
+mirror-p3-b0-pirate,3,mirror,2,pirate,Van Vogt Mountains,0,0,0,0,2,9
+mirror-p3-b0-pirate,3,mirror,2,pirate,Bradbury Plateau,2,1,0,0,2,9
+mirror-p3-b0-pirate,3,mirror,2,pirate,Asimov Crater,0,0,1,0,2,9
+mirror-p3-b0-pirate,3,mirror,2,pirate,Herbert Valley,0,0,0,0,2,9
+mirror-p3-b0-pirate,3,mirror,2,pirate,Lem Badlands,0,0,0,0,2,9
+mirror-p3-b0-pirate,3,mirror,2,pirate,Burroughs Desert,3,1,0,0,2,9
+mirror-p3-b0-pirate,3,mirror,3,pirate,Heinlein Plains,1,1,0,1,1,9
+mirror-p3-b0-pirate,3,mirror,3,pirate,Pohl Foothills,0,0,0,1,1,9
+mirror-p3-b0-pirate,3,mirror,3,pirate,Van Vogt Mountains,0,0,0,1,1,9
+mirror-p3-b0-pirate,3,mirror,3,pirate,Bradbury Plateau,1,0,0,1,1,9
+mirror-p3-b0-pirate,3,mirror,3,pirate,Asimov Crater,0,0,1,1,1,9
+mirror-p3-b0-pirate,3,mirror,3,pirate,Herbert Valley,1,1,0,1,1,9
+mirror-p3-b0-pirate,3,mirror,3,pirate,Lem Badlands,2,0,0,1,1,9
+mirror-p3-b0-pirate,3,mirror,3,pirate,Burroughs Desert,2,0,0,1,1,9
+mirror-p3-b0-simple,3,mirror,1,simple,Heinlein Plains,0,0,0,1,1,13
+mirror-p3-b0-simple,3,mirror,1,simple,Pohl Foothills,2,1,0,1,1,13
+mirror-p3-b0-simple,3,mirror,1,simple,Van Vogt Mountains,2,1,0,1,1,13
+mirror-p3-b0-simple,3,mirror,1,simple,Bradbury Plateau,0,0,0,1,1,13
+mirror-p3-b0-simple,3,mirror,1,simple,Asimov Crater,0,0,0,1,1,13
+mirror-p3-b0-simple,3,mirror,1,simple,Herbert Valley,1,1,0,1,1,13
+mirror-p3-b0-simple,3,mirror,1,simple,Lem Badlands,1,1,0,1,1,13
+mirror-p3-b0-simple,3,mirror,1,simple,Burroughs Desert,1,1,0,1,1,13
+mirror-p3-b0-simple,3,mirror,2,simple,Heinlein Plains,1,0,0,0,3,3
+mirror-p3-b0-simple,3,mirror,2,simple,Pohl Foothills,1,0,0,0,3,3
+mirror-p3-b0-simple,3,mirror,2,simple,Van Vogt Mountains,0,0,0,0,3,3
+mirror-p3-b0-simple,3,mirror,2,simple,Bradbury Plateau,0,0,0,0,3,3
+mirror-p3-b0-simple,3,mirror,2,simple,Asimov Crater,1,0,0,0,3,3
+mirror-p3-b0-simple,3,mirror,2,simple,Herbert Valley,0,0,0,0,3,3
+mirror-p3-b0-simple,3,mirror,2,simple,Lem Badlands,0,0,0,0,3,3
+mirror-p3-b0-simple,3,mirror,2,simple,Burroughs Desert,0,0,0,0,3,3
+mirror-p3-b0-simple,3,mirror,3,simple,Heinlein Plains,1,0,0,0,2,8
+mirror-p3-b0-simple,3,mirror,3,simple,Pohl Foothills,0,0,0,0,2,8
+mirror-p3-b0-simple,3,mirror,3,simple,Van Vogt Mountains,1,0,0,0,2,8
+mirror-p3-b0-simple,3,mirror,3,simple,Bradbury Plateau,1,1,0,0,2,8
+mirror-p3-b0-simple,3,mirror,3,simple,Asimov Crater,2,1,0,0,2,8
+mirror-p3-b0-simple,3,mirror,3,simple,Herbert Valley,0,0,0,0,2,8
+mirror-p3-b0-simple,3,mirror,3,simple,Lem Badlands,0,0,0,0,2,8
+mirror-p3-b0-simple,3,mirror,3,simple,Burroughs Desert,0,0,0,0,2,8
+mirror-p3-b0-spacer,3,mirror,1,spacer,Heinlein Plains,4,1,0,1,1,10
+mirror-p3-b0-spacer,3,mirror,1,spacer,Pohl Foothills,0,0,0,1,1,10
+mirror-p3-b0-spacer,3,mirror,1,spacer,Van Vogt Mountains,1,1,0,1,1,10
+mirror-p3-b0-spacer,3,mirror,1,spacer,Bradbury Plateau,0,0,0,1,1,10
+mirror-p3-b0-spacer,3,mirror,1,spacer,Asimov Crater,0,0,0,1,1,10
+mirror-p3-b0-spacer,3,mirror,1,spacer,Herbert Valley,0,0,0,1,1,10
+mirror-p3-b0-spacer,3,mirror,1,spacer,Lem Badlands,0,0,0,1,1,10
+mirror-p3-b0-spacer,3,mirror,1,spacer,Burroughs Desert,2,1,1,1,1,10
+mirror-p3-b0-spacer,3,mirror,2,spacer,Heinlein Plains,0,0,0,0,3,7
+mirror-p3-b0-spacer,3,mirror,2,spacer,Pohl Foothills,2,0,0,0,3,7
+mirror-p3-b0-spacer,3,mirror,2,spacer,Van Vogt Mountains,0,0,0,0,3,7
+mirror-p3-b0-spacer,3,mirror,2,spacer,Bradbury Plateau,0,0,0,0,3,7
+mirror-p3-b0-spacer,3,mirror,2,spacer,Asimov Crater,1,1,0,0,3,7
+mirror-p3-b0-spacer,3,mirror,2,spacer,Herbert Valley,0,0,0,0,3,7
+mirror-p3-b0-spacer,3,mirror,2,spacer,Lem Badlands,1,1,0,0,3,7
+mirror-p3-b0-spacer,3,mirror,2,spacer,Burroughs Desert,1,0,1,0,3,7
+mirror-p3-b0-spacer,3,mirror,3,spacer,Heinlein Plains,1,0,0,0,2,9
+mirror-p3-b0-spacer,3,mirror,3,spacer,Pohl Foothills,3,1,0,0,2,9
+mirror-p3-b0-spacer,3,mirror,3,spacer,Van Vogt Mountains,0,0,0,0,2,9
+mirror-p3-b0-spacer,3,mirror,3,spacer,Bradbury Plateau,1,1,0,0,2,9
+mirror-p3-b0-spacer,3,mirror,3,spacer,Asimov Crater,0,0,0,0,2,9
+mirror-p3-b0-spacer,3,mirror,3,spacer,Herbert Valley,1,1,0,0,2,9
+mirror-p3-b0-spacer,3,mirror,3,spacer,Lem Badlands,0,0,0,0,2,9
+mirror-p3-b0-spacer,3,mirror,3,spacer,Burroughs Desert,0,0,1,0,2,9
+mirror-p4-b0-admiral,4,mirror,1,admiral,Heinlein Plains,1,0,0,0,2,5
+mirror-p4-b0-admiral,4,mirror,1,admiral,Pohl Foothills,0,0,0,0,2,5
+mirror-p4-b0-admiral,4,mirror,1,admiral,Van Vogt Mountains,0,0,0,0,2,5
+mirror-p4-b0-admiral,4,mirror,1,admiral,Bradbury Plateau,0,0,0,0,2,5
+mirror-p4-b0-admiral,4,mirror,1,admiral,Asimov Crater,2,0,0,0,2,5
+mirror-p4-b0-admiral,4,mirror,1,admiral,Herbert Valley,1,0,0,0,2,5
+mirror-p4-b0-admiral,4,mirror,1,admiral,Lem Badlands,1,0,0,0,2,5
+mirror-p4-b0-admiral,4,mirror,1,admiral,Burroughs Desert,0,0,0,0,2,5
+mirror-p4-b0-admiral,4,mirror,2,admiral,Heinlein Plains,0,0,0,0,3,5
+mirror-p4-b0-admiral,4,mirror,2,admiral,Pohl Foothills,0,0,0,0,3,5
+mirror-p4-b0-admiral,4,mirror,2,admiral,Van Vogt Mountains,0,0,0,0,3,5
+mirror-p4-b0-admiral,4,mirror,2,admiral,Bradbury Plateau,1,1,0,0,3,5
+mirror-p4-b0-admiral,4,mirror,2,admiral,Asimov Crater,0,0,0,0,3,5
+mirror-p4-b0-admiral,4,mirror,2,admiral,Herbert Valley,1,0,0,0,3,5
+mirror-p4-b0-admiral,4,mirror,2,admiral,Lem Badlands,0,0,0,0,3,5
+mirror-p4-b0-admiral,4,mirror,2,admiral,Burroughs Desert,1,1,0,0,3,5
+mirror-p4-b0-admiral,4,mirror,3,admiral,Heinlein Plains,1,0,0,1,1,8
+mirror-p4-b0-admiral,4,mirror,3,admiral,Pohl Foothills,1,1,0,1,1,8
+mirror-p4-b0-admiral,4,mirror,3,admiral,Van Vogt Mountains,0,0,0,1,1,8
+mirror-p4-b0-admiral,4,mirror,3,admiral,Bradbury Plateau,0,0,0,1,1,8
+mirror-p4-b0-admiral,4,mirror,3,admiral,Asimov Crater,2,0,0,1,1,8
+mirror-p4-b0-admiral,4,mirror,3,admiral,Herbert Valley,0,0,0,1,1,8
+mirror-p4-b0-admiral,4,mirror,3,admiral,Lem Badlands,2,1,0,1,1,8
+mirror-p4-b0-admiral,4,mirror,3,admiral,Burroughs Desert,0,0,0,1,1,8
+mirror-p4-b0-admiral,4,mirror,4,admiral,Heinlein Plains,2,1,0,0,4,5
+mirror-p4-b0-admiral,4,mirror,4,admiral,Pohl Foothills,0,0,0,0,4,5
+mirror-p4-b0-admiral,4,mirror,4,admiral,Van Vogt Mountains,1,1,0,0,4,5
+mirror-p4-b0-admiral,4,mirror,4,admiral,Bradbury Plateau,0,0,0,0,4,5
+mirror-p4-b0-admiral,4,mirror,4,admiral,Asimov Crater,0,0,0,0,4,5
+mirror-p4-b0-admiral,4,mirror,4,admiral,Herbert Valley,0,0,0,0,4,5
+mirror-p4-b0-admiral,4,mirror,4,admiral,Lem Badlands,0,0,0,0,4,5
+mirror-p4-b0-admiral,4,mirror,4,admiral,Burroughs Desert,0,0,0,0,4,5
+mirror-p4-b0-pirate,4,mirror,1,pirate,Heinlein Plains,1,0,0,0,4,6
+mirror-p4-b0-pirate,4,mirror,1,pirate,Pohl Foothills,0,0,0,0,4,6
+mirror-p4-b0-pirate,4,mirror,1,pirate,Van Vogt Mountains,0,0,0,0,4,6
+mirror-p4-b0-pirate,4,mirror,1,pirate,Bradbury Plateau,0,0,0,0,4,6
+mirror-p4-b0-pirate,4,mirror,1,pirate,Asimov Crater,0,0,0,0,4,6
+mirror-p4-b0-pirate,4,mirror,1,pirate,Herbert Valley,3,1,0,0,4,6
+mirror-p4-b0-pirate,4,mirror,1,pirate,Lem Badlands,0,0,0,0,4,6
+mirror-p4-b0-pirate,4,mirror,1,pirate,Burroughs Desert,1,0,1,0,4,6
+mirror-p4-b0-pirate,4,mirror,2,pirate,Heinlein Plains,1,0,0,0,3,6
+mirror-p4-b0-pirate,4,mirror,2,pirate,Pohl Foothills,1,1,0,0,3,6
+mirror-p4-b0-pirate,4,mirror,2,pirate,Van Vogt Mountains,0,0,0,0,3,6
+mirror-p4-b0-pirate,4,mirror,2,pirate,Bradbury Plateau,0,0,0,0,3,6
+mirror-p4-b0-pirate,4,mirror,2,pirate,Asimov Crater,0,0,0,0,3,6
+mirror-p4-b0-pirate,4,mirror,2,pirate,Herbert Valley,0,0,0,0,3,6
+mirror-p4-b0-pirate,4,mirror,2,pirate,Lem Badlands,0,0,0,0,3,6
+mirror-p4-b0-pirate,4,mirror,2,pirate,Burroughs Desert,2,1,1,0,3,6
+mirror-p4-b0-pirate,4,mirror,3,pirate,Heinlein Plains,0,0,0,0,2,6
+mirror-p4-b0-pirate,4,mirror,3,pirate,Pohl Foothills,0,0,0,0,2,6
+mirror-p4-b0-pirate,4,mirror,3,pirate,Van Vogt Mountains,1,0,0,0,2,6
+mirror-p4-b0-pirate,4,mirror,3,pirate,Bradbury Plateau,1,1,0,0,2,6
+mirror-p4-b0-pirate,4,mirror,3,pirate,Asimov Crater,1,0,0,0,2,6
+mirror-p4-b0-pirate,4,mirror,3,pirate,Herbert Valley,0,0,0,0,2,6
+mirror-p4-b0-pirate,4,mirror,3,pirate,Lem Badlands,1,1,0,0,2,6
+mirror-p4-b0-pirate,4,mirror,3,pirate,Burroughs Desert,0,0,1,0,2,6
+mirror-p4-b0-pirate,4,mirror,4,pirate,Heinlein Plains,1,0,0,1,1,7
+mirror-p4-b0-pirate,4,mirror,4,pirate,Pohl Foothills,0,0,0,1,1,7
+mirror-p4-b0-pirate,4,mirror,4,pirate,Van Vogt Mountains,1,0,0,1,1,7
+mirror-p4-b0-pirate,4,mirror,4,pirate,Bradbury Plateau,0,0,0,1,1,7
+mirror-p4-b0-pirate,4,mirror,4,pirate,Asimov Crater,2,1,0,1,1,7
+mirror-p4-b0-pirate,4,mirror,4,pirate,Herbert Valley,2,0,0,1,1,7
+mirror-p4-b0-pirate,4,mirror,4,pirate,Lem Badlands,0,0,0,1,1,7
+mirror-p4-b0-pirate,4,mirror,4,pirate,Burroughs Desert,0,0,1,1,1,7
+mirror-p4-b0-simple,4,mirror,1,simple,Heinlein Plains,0,0,0,0,3,4
+mirror-p4-b0-simple,4,mirror,1,simple,Pohl Foothills,0,0,0,0,3,4
+mirror-p4-b0-simple,4,mirror,1,simple,Van Vogt Mountains,1,1,0,0,3,4
+mirror-p4-b0-simple,4,mirror,1,simple,Bradbury Plateau,0,0,0,0,3,4
+mirror-p4-b0-simple,4,mirror,1,simple,Asimov Crater,0,0,0,0,3,4
+mirror-p4-b0-simple,4,mirror,1,simple,Herbert Valley,1,0,0,0,3,4
+mirror-p4-b0-simple,4,mirror,1,simple,Lem Badlands,0,0,0,0,3,4
+mirror-p4-b0-simple,4,mirror,1,simple,Burroughs Desert,0,0,0,0,3,4
+mirror-p4-b0-simple,4,mirror,2,simple,Heinlein Plains,0,0,0,0,4,4
+mirror-p4-b0-simple,4,mirror,2,simple,Pohl Foothills,0,0,0,0,4,4
+mirror-p4-b0-simple,4,mirror,2,simple,Van Vogt Mountains,0,0,0,0,4,4
+mirror-p4-b0-simple,4,mirror,2,simple,Bradbury Plateau,1,0,0,0,4,4
+mirror-p4-b0-simple,4,mirror,2,simple,Asimov Crater,0,0,0,0,4,4
+mirror-p4-b0-simple,4,mirror,2,simple,Herbert Valley,0,0,0,0,4,4
+mirror-p4-b0-simple,4,mirror,2,simple,Lem Badlands,0,0,0,0,4,4
+mirror-p4-b0-simple,4,mirror,2,simple,Burroughs Desert,1,1,0,0,4,4
+mirror-p4-b0-simple,4,mirror,3,simple,Heinlein Plains,1,1,0,1,1,9
+mirror-p4-b0-simple,4,mirror,3,simple,Pohl Foothills,1,0,0,1,1,9
+mirror-p4-b0-simple,4,mirror,3,simple,Van Vogt Mountains,0,0,0,1,1,9
+mirror-p4-b0-simple,4,mirror,3,simple,Bradbury Plateau,2,1,0,1,1,9
+mirror-p4-b0-simple,4,mirror,3,simple,Asimov Crater,1,1,0,1,1,9
+mirror-p4-b0-simple,4,mirror,3,simple,Herbert Valley,0,0,0,1,1,9
+mirror-p4-b0-simple,4,mirror,3,simple,Lem Badlands,1,0,0,1,1,9
+mirror-p4-b0-simple,4,mirror,3,simple,Burroughs Desert,0,0,0,1,1,9
+mirror-p4-b0-simple,4,mirror,4,simple,Heinlein Plains,0,0,0,0,2,7
+mirror-p4-b0-simple,4,mirror,4,simple,Pohl Foothills,2,1,0,0,2,7
+mirror-p4-b0-simple,4,mirror,4,simple,Van Vogt Mountains,0,0,0,0,2,7
+mirror-p4-b0-simple,4,mirror,4,simple,Bradbury Plateau,0,0,0,0,2,7
+mirror-p4-b0-simple,4,mirror,4,simple,Asimov Crater,0,0,0,0,2,7
+mirror-p4-b0-simple,4,mirror,4,simple,Herbert Valley,2,1,0,0,2,7
+mirror-p4-b0-simple,4,mirror,4,simple,Lem Badlands,1,0,0,0,2,7
+mirror-p4-b0-simple,4,mirror,4,simple,Burroughs Desert,0,0,0,0,2,7
+mirror-p4-b0-spacer,4,mirror,1,spacer,Heinlein Plains,0,0,0,0,4,6
+mirror-p4-b0-spacer,4,mirror,1,spacer,Pohl Foothills,1,0,0,0,4,6
+mirror-p4-b0-spacer,4,mirror,1,spacer,Van Vogt Mountains,0,0,1,0,4,6
+mirror-p4-b0-spacer,4,mirror,1,spacer,Bradbury Plateau,1,0,0,0,4,6
+mirror-p4-b0-spacer,4,mirror,1,spacer,Asimov Crater,0,0,0,0,4,6
+mirror-p4-b0-spacer,4,mirror,1,spacer,Herbert Valley,0,0,0,0,4,6
+mirror-p4-b0-spacer,4,mirror,1,spacer,Lem Badlands,2,1,0,0,4,6
+mirror-p4-b0-spacer,4,mirror,1,spacer,Burroughs Desert,1,0,0,0,4,6
+mirror-p4-b0-spacer,4,mirror,2,spacer,Heinlein Plains,0,0,0,0,2,7
+mirror-p4-b0-spacer,4,mirror,2,spacer,Pohl Foothills,0,0,0,0,2,7
+mirror-p4-b0-spacer,4,mirror,2,spacer,Van Vogt Mountains,0,0,1,0,2,7
+mirror-p4-b0-spacer,4,mirror,2,spacer,Bradbury Plateau,2,1,0,0,2,7
+mirror-p4-b0-spacer,4,mirror,2,spacer,Asimov Crater,1,0,0,0,2,7
+mirror-p4-b0-spacer,4,mirror,2,spacer,Herbert Valley,0,0,0,0,2,7
+mirror-p4-b0-spacer,4,mirror,2,spacer,Lem Badlands,0,0,0,0,2,7
+mirror-p4-b0-spacer,4,mirror,2,spacer,Burroughs Desert,2,1,0,0,2,7
+mirror-p4-b0-spacer,4,mirror,3,spacer,Heinlein Plains,1,1,0,1,1,8
+mirror-p4-b0-spacer,4,mirror,3,spacer,Pohl Foothills,0,0,0,1,1,8
+mirror-p4-b0-spacer,4,mirror,3,spacer,Van Vogt Mountains,2,0,1,1,1,8
+mirror-p4-b0-spacer,4,mirror,3,spacer,Bradbury Plateau,0,0,0,1,1,8
+mirror-p4-b0-spacer,4,mirror,3,spacer,Asimov Crater,2,1,0,1,1,8
+mirror-p4-b0-spacer,4,mirror,3,spacer,Herbert Valley,0,0,0,1,1,8
+mirror-p4-b0-spacer,4,mirror,3,spacer,Lem Badlands,1,0,0,1,1,8
+mirror-p4-b0-spacer,4,mirror,3,spacer,Burroughs Desert,0,0,0,1,1,8
+mirror-p4-b0-spacer,4,mirror,4,spacer,Heinlein Plains,0,0,0,0,3,7
+mirror-p4-b0-spacer,4,mirror,4,spacer,Pohl Foothills,2,1,0,0,3,7
+mirror-p4-b0-spacer,4,mirror,4,spacer,Van Vogt Mountains,2,0,1,0,3,7
+mirror-p4-b0-spacer,4,mirror,4,spacer,Bradbury Plateau,0,0,0,0,3,7
+mirror-p4-b0-spacer,4,mirror,4,spacer,Asimov Crater,0,0,0,0,3,7
+mirror-p4-b0-spacer,4,mirror,4,spacer,Herbert Valley,1,1,0,0,3,7
+mirror-p4-b0-spacer,4,mirror,4,spacer,Lem Badlands,0,0,0,0,3,7
+mirror-p4-b0-spacer,4,mirror,4,spacer,Burroughs Desert,0,0,0,0,3,7
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,1,admiral,Heinlein Plains,2,1,0,1,1,11
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,1,admiral,Pohl Foothills,1,1,0,1,1,11
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,1,admiral,Van Vogt Mountains,0,0,0,1,1,11
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,1,admiral,Bradbury Plateau,0,0,0,1,1,11
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,1,admiral,Asimov Crater,0,0,1,1,1,11
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,1,admiral,Herbert Valley,1,0,0,1,1,11
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,1,admiral,Lem Badlands,0,0,0,1,1,11
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,1,admiral,Burroughs Desert,4,1,0,1,1,11
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,2,pirate,Heinlein Plains,0,0,0,0,2,10
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,2,pirate,Pohl Foothills,0,0,0,0,2,10
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,2,pirate,Van Vogt Mountains,0,0,0,0,2,10
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,2,pirate,Bradbury Plateau,0,0,0,0,2,10
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,2,pirate,Asimov Crater,1,1,1,0,2,10
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,2,pirate,Herbert Valley,2,1,0,0,2,10
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,2,pirate,Lem Badlands,1,1,0,0,2,10
+mixed-p2-b0-madmiral-pirate-r0,2,mixed,2,pirate,Burroughs Desert,3,0,0,0,2,10
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,1,pirate,Heinlein Plains,3,1,0,1,1,12
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,1,pirate,Pohl Foothills,0,0,1,1,1,12
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,1,pirate,Van Vogt Mountains,0,0,0,1,1,12
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,1,pirate,Bradbury Plateau,1,1,0,1,1,12
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,1,pirate,Asimov Crater,1,1,0,1,1,12
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,1,pirate,Herbert Valley,1,1,0,1,1,12
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,1,pirate,Lem Badlands,0,0,0,1,1,12
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,1,pirate,Burroughs Desert,2,0,0,1,1,12
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,2,admiral,Heinlein Plains,0,0,0,0,2,10
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,2,admiral,Pohl Foothills,1,1,1,0,2,10
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,2,admiral,Van Vogt Mountains,1,1,0,0,2,10
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,2,admiral,Bradbury Plateau,0,0,0,0,2,10
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,2,admiral,Asimov Crater,0,0,0,0,2,10
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,2,admiral,Herbert Valley,0,0,0,0,2,10
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,2,admiral,Lem Badlands,1,1,0,0,2,10
+mixed-p2-b0-madmiral-pirate-r1,2,mixed,2,admiral,Burroughs Desert,3,1,0,0,2,10
+mixed-p2-b0-msimple-admiral-r0,2,mixed,1,simple,Heinlein Plains,2,0,0,0,2,6
+mixed-p2-b0-msimple-admiral-r0,2,mixed,1,simple,Pohl Foothills,0,0,0,0,2,6
+mixed-p2-b0-msimple-admiral-r0,2,mixed,1,simple,Van Vogt Mountains,0,0,0,0,2,6
+mixed-p2-b0-msimple-admiral-r0,2,mixed,1,simple,Bradbury Plateau,1,1,0,0,2,6
+mixed-p2-b0-msimple-admiral-r0,2,mixed,1,simple,Asimov Crater,0,0,0,0,2,6
+mixed-p2-b0-msimple-admiral-r0,2,mixed,1,simple,Herbert Valley,1,1,1,0,2,6
+mixed-p2-b0-msimple-admiral-r0,2,mixed,1,simple,Lem Badlands,0,0,0,0,2,6
+mixed-p2-b0-msimple-admiral-r0,2,mixed,1,simple,Burroughs Desert,0,0,0,0,2,6
+mixed-p2-b0-msimple-admiral-r0,2,mixed,2,admiral,Heinlein Plains,3,1,0,1,1,15
+mixed-p2-b0-msimple-admiral-r0,2,mixed,2,admiral,Pohl Foothills,1,1,0,1,1,15
+mixed-p2-b0-msimple-admiral-r0,2,mixed,2,admiral,Van Vogt Mountains,1,1,0,1,1,15
+mixed-p2-b0-msimple-admiral-r0,2,mixed,2,admiral,Bradbury Plateau,0,0,0,1,1,15
+mixed-p2-b0-msimple-admiral-r0,2,mixed,2,admiral,Asimov Crater,1,1,0,1,1,15
+mixed-p2-b0-msimple-admiral-r0,2,mixed,2,admiral,Herbert Valley,0,0,1,1,1,15
+mixed-p2-b0-msimple-admiral-r0,2,mixed,2,admiral,Lem Badlands,1,1,0,1,1,15
+mixed-p2-b0-msimple-admiral-r0,2,mixed,2,admiral,Burroughs Desert,1,1,0,1,1,15
+mixed-p2-b0-msimple-admiral-r1,2,mixed,1,admiral,Heinlein Plains,1,1,0,1,1,15
+mixed-p2-b0-msimple-admiral-r1,2,mixed,1,admiral,Pohl Foothills,1,1,0,1,1,15
+mixed-p2-b0-msimple-admiral-r1,2,mixed,1,admiral,Van Vogt Mountains,0,0,0,1,1,15
+mixed-p2-b0-msimple-admiral-r1,2,mixed,1,admiral,Bradbury Plateau,2,1,0,1,1,15
+mixed-p2-b0-msimple-admiral-r1,2,mixed,1,admiral,Asimov Crater,1,1,0,1,1,15
+mixed-p2-b0-msimple-admiral-r1,2,mixed,1,admiral,Herbert Valley,1,1,0,1,1,15
+mixed-p2-b0-msimple-admiral-r1,2,mixed,1,admiral,Lem Badlands,1,1,0,1,1,15
+mixed-p2-b0-msimple-admiral-r1,2,mixed,1,admiral,Burroughs Desert,1,1,0,1,1,15
+mixed-p2-b0-msimple-admiral-r1,2,mixed,2,simple,Heinlein Plains,0,0,0,0,2,4
+mixed-p2-b0-msimple-admiral-r1,2,mixed,2,simple,Pohl Foothills,0,0,0,0,2,4
+mixed-p2-b0-msimple-admiral-r1,2,mixed,2,simple,Van Vogt Mountains,1,1,0,0,2,4
+mixed-p2-b0-msimple-admiral-r1,2,mixed,2,simple,Bradbury Plateau,1,0,0,0,2,4
+mixed-p2-b0-msimple-admiral-r1,2,mixed,2,simple,Asimov Crater,0,0,0,0,2,4
+mixed-p2-b0-msimple-admiral-r1,2,mixed,2,simple,Herbert Valley,0,0,0,0,2,4
+mixed-p2-b0-msimple-admiral-r1,2,mixed,2,simple,Lem Badlands,0,0,0,0,2,4
+mixed-p2-b0-msimple-admiral-r1,2,mixed,2,simple,Burroughs Desert,0,0,0,0,2,4
+mixed-p2-b0-msimple-pirate-r0,2,mixed,1,simple,Heinlein Plains,1,0,0,0,2,4
+mixed-p2-b0-msimple-pirate-r0,2,mixed,1,simple,Pohl Foothills,0,0,0,0,2,4
+mixed-p2-b0-msimple-pirate-r0,2,mixed,1,simple,Van Vogt Mountains,0,0,0,0,2,4
+mixed-p2-b0-msimple-pirate-r0,2,mixed,1,simple,Bradbury Plateau,0,0,0,0,2,4
+mixed-p2-b0-msimple-pirate-r0,2,mixed,1,simple,Asimov Crater,0,0,0,0,2,4
+mixed-p2-b0-msimple-pirate-r0,2,mixed,1,simple,Herbert Valley,1,0,0,0,2,4
+mixed-p2-b0-msimple-pirate-r0,2,mixed,1,simple,Lem Badlands,1,0,0,0,2,4
+mixed-p2-b0-msimple-pirate-r0,2,mixed,1,simple,Burroughs Desert,0,0,0,0,2,4
+mixed-p2-b0-msimple-pirate-r0,2,mixed,2,pirate,Heinlein Plains,1,0,0,1,1,13
+mixed-p2-b0-msimple-pirate-r0,2,mixed,2,pirate,Pohl Foothills,1,1,0,1,1,13
+mixed-p2-b0-msimple-pirate-r0,2,mixed,2,pirate,Van Vogt Mountains,1,1,0,1,1,13
+mixed-p2-b0-msimple-pirate-r0,2,mixed,2,pirate,Bradbury Plateau,1,1,0,1,1,13
+mixed-p2-b0-msimple-pirate-r0,2,mixed,2,pirate,Asimov Crater,1,1,0,1,1,13
+mixed-p2-b0-msimple-pirate-r0,2,mixed,2,pirate,Herbert Valley,1,0,0,1,1,13
+mixed-p2-b0-msimple-pirate-r0,2,mixed,2,pirate,Lem Badlands,1,0,0,1,1,13
+mixed-p2-b0-msimple-pirate-r0,2,mixed,2,pirate,Burroughs Desert,1,1,0,1,1,13
+mixed-p2-b0-msimple-pirate-r1,2,mixed,1,pirate,Heinlein Plains,1,1,0,1,1,15
+mixed-p2-b0-msimple-pirate-r1,2,mixed,1,pirate,Pohl Foothills,1,1,0,1,1,15
+mixed-p2-b0-msimple-pirate-r1,2,mixed,1,pirate,Van Vogt Mountains,0,0,0,1,1,15
+mixed-p2-b0-msimple-pirate-r1,2,mixed,1,pirate,Bradbury Plateau,2,1,0,1,1,15
+mixed-p2-b0-msimple-pirate-r1,2,mixed,1,pirate,Asimov Crater,1,1,0,1,1,15
+mixed-p2-b0-msimple-pirate-r1,2,mixed,1,pirate,Herbert Valley,1,1,0,1,1,15
+mixed-p2-b0-msimple-pirate-r1,2,mixed,1,pirate,Lem Badlands,1,1,0,1,1,15
+mixed-p2-b0-msimple-pirate-r1,2,mixed,1,pirate,Burroughs Desert,1,1,0,1,1,15
+mixed-p2-b0-msimple-pirate-r1,2,mixed,2,simple,Heinlein Plains,0,0,0,0,2,4
+mixed-p2-b0-msimple-pirate-r1,2,mixed,2,simple,Pohl Foothills,0,0,0,0,2,4
+mixed-p2-b0-msimple-pirate-r1,2,mixed,2,simple,Van Vogt Mountains,1,1,0,0,2,4
+mixed-p2-b0-msimple-pirate-r1,2,mixed,2,simple,Bradbury Plateau,1,0,0,0,2,4
+mixed-p2-b0-msimple-pirate-r1,2,mixed,2,simple,Asimov Crater,0,0,0,0,2,4
+mixed-p2-b0-msimple-pirate-r1,2,mixed,2,simple,Herbert Valley,0,0,0,0,2,4
+mixed-p2-b0-msimple-pirate-r1,2,mixed,2,simple,Lem Badlands,0,0,0,0,2,4
+mixed-p2-b0-msimple-pirate-r1,2,mixed,2,simple,Burroughs Desert,0,0,0,0,2,4
+mixed-p2-b0-msimple-spacer-r0,2,mixed,1,simple,Heinlein Plains,1,0,0,0,2,4
+mixed-p2-b0-msimple-spacer-r0,2,mixed,1,simple,Pohl Foothills,0,0,0,0,2,4
+mixed-p2-b0-msimple-spacer-r0,2,mixed,1,simple,Van Vogt Mountains,0,0,0,0,2,4
+mixed-p2-b0-msimple-spacer-r0,2,mixed,1,simple,Bradbury Plateau,1,0,0,0,2,4
+mixed-p2-b0-msimple-spacer-r0,2,mixed,1,simple,Asimov Crater,0,0,0,0,2,4
+mixed-p2-b0-msimple-spacer-r0,2,mixed,1,simple,Herbert Valley,1,1,0,0,2,4
+mixed-p2-b0-msimple-spacer-r0,2,mixed,1,simple,Lem Badlands,0,0,0,0,2,4
+mixed-p2-b0-msimple-spacer-r0,2,mixed,1,simple,Burroughs Desert,0,0,0,0,2,4
+mixed-p2-b0-msimple-spacer-r0,2,mixed,2,spacer,Heinlein Plains,1,0,0,1,1,14
+mixed-p2-b0-msimple-spacer-r0,2,mixed,2,spacer,Pohl Foothills,1,1,0,1,1,14
+mixed-p2-b0-msimple-spacer-r0,2,mixed,2,spacer,Van Vogt Mountains,1,1,0,1,1,14
+mixed-p2-b0-msimple-spacer-r0,2,mixed,2,spacer,Bradbury Plateau,2,1,0,1,1,14
+mixed-p2-b0-msimple-spacer-r0,2,mixed,2,spacer,Asimov Crater,1,1,0,1,1,14
+mixed-p2-b0-msimple-spacer-r0,2,mixed,2,spacer,Herbert Valley,0,0,0,1,1,14
+mixed-p2-b0-msimple-spacer-r0,2,mixed,2,spacer,Lem Badlands,1,1,0,1,1,14
+mixed-p2-b0-msimple-spacer-r0,2,mixed,2,spacer,Burroughs Desert,1,1,0,1,1,14
+mixed-p2-b0-msimple-spacer-r1,2,mixed,1,spacer,Heinlein Plains,2,1,0,1,1,14
+mixed-p2-b0-msimple-spacer-r1,2,mixed,1,spacer,Pohl Foothills,1,1,0,1,1,14
+mixed-p2-b0-msimple-spacer-r1,2,mixed,1,spacer,Van Vogt Mountains,0,0,0,1,1,14
+mixed-p2-b0-msimple-spacer-r1,2,mixed,1,spacer,Bradbury Plateau,1,0,0,1,1,14
+mixed-p2-b0-msimple-spacer-r1,2,mixed,1,spacer,Asimov Crater,1,1,0,1,1,14
+mixed-p2-b0-msimple-spacer-r1,2,mixed,1,spacer,Herbert Valley,1,1,0,1,1,14
+mixed-p2-b0-msimple-spacer-r1,2,mixed,1,spacer,Lem Badlands,1,1,0,1,1,14
+mixed-p2-b0-msimple-spacer-r1,2,mixed,1,spacer,Burroughs Desert,1,1,0,1,1,14
+mixed-p2-b0-msimple-spacer-r1,2,mixed,2,simple,Heinlein Plains,0,0,0,0,2,4
+mixed-p2-b0-msimple-spacer-r1,2,mixed,2,simple,Pohl Foothills,0,0,0,0,2,4
+mixed-p2-b0-msimple-spacer-r1,2,mixed,2,simple,Van Vogt Mountains,1,1,0,0,2,4
+mixed-p2-b0-msimple-spacer-r1,2,mixed,2,simple,Bradbury Plateau,1,0,0,0,2,4
+mixed-p2-b0-msimple-spacer-r1,2,mixed,2,simple,Asimov Crater,0,0,0,0,2,4
+mixed-p2-b0-msimple-spacer-r1,2,mixed,2,simple,Herbert Valley,0,0,0,0,2,4
+mixed-p2-b0-msimple-spacer-r1,2,mixed,2,simple,Lem Badlands,0,0,0,0,2,4
+mixed-p2-b0-msimple-spacer-r1,2,mixed,2,simple,Burroughs Desert,0,0,0,0,2,4
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,1,spacer,Heinlein Plains,1,1,0,1,1,13
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,1,spacer,Pohl Foothills,0,0,0,1,1,13
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,1,spacer,Van Vogt Mountains,1,1,0,1,1,13
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,1,spacer,Bradbury Plateau,0,0,0,1,1,13
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,1,spacer,Asimov Crater,0,0,1,1,1,13
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,1,spacer,Herbert Valley,1,1,0,1,1,13
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,1,spacer,Lem Badlands,1,1,0,1,1,13
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,1,spacer,Burroughs Desert,4,1,0,1,1,13
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,2,admiral,Heinlein Plains,0,0,0,0,2,7
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,2,admiral,Pohl Foothills,1,1,0,0,2,7
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,2,admiral,Van Vogt Mountains,0,0,0,0,2,7
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,2,admiral,Bradbury Plateau,0,0,0,0,2,7
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,2,admiral,Asimov Crater,1,1,1,0,2,7
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,2,admiral,Herbert Valley,0,0,0,0,2,7
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,2,admiral,Lem Badlands,0,0,0,0,2,7
+mixed-p2-b0-mspacer-admiral-r0,2,mixed,2,admiral,Burroughs Desert,3,0,0,0,2,7
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,1,admiral,Heinlein Plains,2,1,0,1,1,12
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,1,admiral,Pohl Foothills,0,0,0,1,1,12
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,1,admiral,Van Vogt Mountains,1,1,0,1,1,12
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,1,admiral,Bradbury Plateau,0,0,0,1,1,12
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,1,admiral,Asimov Crater,1,1,0,1,1,12
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,1,admiral,Herbert Valley,0,0,1,1,1,12
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,1,admiral,Lem Badlands,1,1,0,1,1,12
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,1,admiral,Burroughs Desert,3,0,0,1,1,12
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,2,spacer,Heinlein Plains,0,0,0,0,2,9
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,2,spacer,Pohl Foothills,1,1,0,0,2,9
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,2,spacer,Van Vogt Mountains,0,0,0,0,2,9
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,2,spacer,Bradbury Plateau,1,1,0,0,2,9
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,2,spacer,Asimov Crater,0,0,0,0,2,9
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,2,spacer,Herbert Valley,1,1,1,0,2,9
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,2,spacer,Lem Badlands,0,0,0,0,2,9
+mixed-p2-b0-mspacer-admiral-r1,2,mixed,2,spacer,Burroughs Desert,3,0,0,0,2,9
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,1,spacer,Heinlein Plains,1,1,0,1,1,12
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,1,spacer,Pohl Foothills,1,0,0,1,1,12
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,1,spacer,Van Vogt Mountains,1,1,0,1,1,12
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,1,spacer,Bradbury Plateau,1,1,0,1,1,12
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,1,spacer,Asimov Crater,0,0,1,1,1,12
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,1,spacer,Herbert Valley,1,0,0,1,1,12
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,1,spacer,Lem Badlands,1,1,0,1,1,12
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,1,spacer,Burroughs Desert,2,0,0,1,1,12
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,2,pirate,Heinlein Plains,0,0,0,0,2,10
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,2,pirate,Pohl Foothills,2,1,0,0,2,10
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,2,pirate,Van Vogt Mountains,0,0,0,0,2,10
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,2,pirate,Bradbury Plateau,0,0,0,0,2,10
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,2,pirate,Asimov Crater,1,1,1,0,2,10
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,2,pirate,Herbert Valley,2,1,0,0,2,10
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,2,pirate,Lem Badlands,0,0,0,0,2,10
+mixed-p2-b0-mspacer-pirate-r0,2,mixed,2,pirate,Burroughs Desert,2,0,0,0,2,10
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,1,pirate,Heinlein Plains,1,0,0,1,1,13
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,1,pirate,Pohl Foothills,2,1,0,1,1,13
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,1,pirate,Van Vogt Mountains,0,0,0,1,1,13
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,1,pirate,Bradbury Plateau,1,1,0,1,1,13
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,1,pirate,Asimov Crater,1,1,0,1,1,13
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,1,pirate,Herbert Valley,1,1,0,1,1,13
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,1,pirate,Lem Badlands,0,0,0,1,1,13
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,1,pirate,Burroughs Desert,2,1,1,1,1,13
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,2,spacer,Heinlein Plains,1,0,0,0,2,7
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,2,spacer,Pohl Foothills,1,0,0,0,2,7
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,2,spacer,Van Vogt Mountains,1,1,0,0,2,7
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,2,spacer,Bradbury Plateau,0,0,0,0,2,7
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,2,spacer,Asimov Crater,0,0,0,0,2,7
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,2,spacer,Herbert Valley,0,0,0,0,2,7
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,2,spacer,Lem Badlands,1,1,0,0,2,7
+mixed-p2-b0-mspacer-pirate-r1,2,mixed,2,spacer,Burroughs Desert,1,0,1,0,2,7
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,1,simple,Heinlein Plains,1,0,0,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,1,simple,Pohl Foothills,1,1,0,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,1,simple,Van Vogt Mountains,0,0,1,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,1,simple,Bradbury Plateau,1,1,0,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,1,simple,Asimov Crater,2,1,0,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,1,simple,Herbert Valley,1,0,0,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,1,simple,Lem Badlands,0,0,0,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,1,simple,Burroughs Desert,0,0,0,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,2,admiral,Heinlein Plains,0,0,0,0,3,6
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,2,admiral,Pohl Foothills,0,0,0,0,3,6
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,2,admiral,Van Vogt Mountains,1,0,1,0,3,6
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,2,admiral,Bradbury Plateau,0,0,0,0,3,6
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,2,admiral,Asimov Crater,0,0,0,0,3,6
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,2,admiral,Herbert Valley,1,0,0,0,3,6
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,2,admiral,Lem Badlands,0,0,0,0,3,6
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,2,admiral,Burroughs Desert,3,1,0,0,3,6
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,3,pirate,Heinlein Plains,1,0,0,0,2,9
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,3,pirate,Pohl Foothills,0,0,0,0,2,9
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,3,pirate,Van Vogt Mountains,2,1,1,0,2,9
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,3,pirate,Bradbury Plateau,0,0,0,0,2,9
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,3,pirate,Asimov Crater,1,0,0,0,2,9
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,3,pirate,Herbert Valley,0,0,0,0,2,9
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,3,pirate,Lem Badlands,1,1,0,0,2,9
+mixed-p3-b0-msimple-admiral-pirate-r0,3,mixed,3,pirate,Burroughs Desert,2,0,0,0,2,9
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,1,admiral,Heinlein Plains,1,0,0,1,1,9
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,1,admiral,Pohl Foothills,0,0,0,1,1,9
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,1,admiral,Van Vogt Mountains,0,0,0,1,1,9
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,1,admiral,Bradbury Plateau,0,0,0,1,1,9
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,1,admiral,Asimov Crater,1,1,0,1,1,9
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,1,admiral,Herbert Valley,1,1,0,1,1,9
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,1,admiral,Lem Badlands,0,0,0,1,1,9
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,1,admiral,Burroughs Desert,4,0,0,1,1,9
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,2,pirate,Heinlein Plains,0,0,0,0,2,8
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,2,pirate,Pohl Foothills,1,1,0,0,2,8
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,2,pirate,Van Vogt Mountains,1,1,0,0,2,8
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,2,pirate,Bradbury Plateau,0,0,0,0,2,8
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,2,pirate,Asimov Crater,0,0,0,0,2,8
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,2,pirate,Herbert Valley,0,0,0,0,2,8
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,2,pirate,Lem Badlands,0,0,0,0,2,8
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,2,pirate,Burroughs Desert,4,0,0,0,2,8
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,3,simple,Heinlein Plains,1,0,0,0,3,7
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,3,simple,Pohl Foothills,0,0,0,0,3,7
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,3,simple,Van Vogt Mountains,0,0,0,0,3,7
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,3,simple,Bradbury Plateau,1,1,0,0,3,7
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,3,simple,Asimov Crater,0,0,0,0,3,7
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,3,simple,Herbert Valley,0,0,0,0,3,7
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,3,simple,Lem Badlands,1,1,0,0,3,7
+mixed-p3-b0-msimple-admiral-pirate-r1,3,mixed,3,simple,Burroughs Desert,0,0,0,0,3,7
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,1,pirate,Heinlein Plains,1,0,0,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,1,pirate,Pohl Foothills,0,0,0,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,1,pirate,Van Vogt Mountains,0,0,0,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,1,pirate,Bradbury Plateau,0,0,0,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,1,pirate,Asimov Crater,1,1,0,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,1,pirate,Herbert Valley,1,0,0,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,1,pirate,Lem Badlands,1,1,0,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,1,pirate,Burroughs Desert,3,1,1,1,1,10
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,2,simple,Heinlein Plains,1,0,0,0,2,6
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,2,simple,Pohl Foothills,0,0,0,0,2,6
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,2,simple,Van Vogt Mountains,1,1,0,0,2,6
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,2,simple,Bradbury Plateau,1,1,0,0,2,6
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,2,simple,Asimov Crater,0,0,0,0,2,6
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,2,simple,Herbert Valley,0,0,0,0,2,6
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,2,simple,Lem Badlands,0,0,0,0,2,6
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,2,simple,Burroughs Desert,0,0,1,0,2,6
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,3,admiral,Heinlein Plains,0,0,0,0,3,5
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,3,admiral,Pohl Foothills,1,1,0,0,3,5
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,3,admiral,Van Vogt Mountains,0,0,0,0,3,5
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,3,admiral,Bradbury Plateau,0,0,0,0,3,5
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,3,admiral,Asimov Crater,0,0,0,0,3,5
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,3,admiral,Herbert Valley,1,0,0,0,3,5
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,3,admiral,Lem Badlands,0,0,0,0,3,5
+mixed-p3-b0-msimple-admiral-pirate-r2,3,mixed,3,admiral,Burroughs Desert,2,0,1,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,1,simple,Heinlein Plains,1,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,1,simple,Pohl Foothills,0,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,1,simple,Van Vogt Mountains,0,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,1,simple,Bradbury Plateau,0,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,1,simple,Asimov Crater,0,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,1,simple,Herbert Valley,0,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,1,simple,Lem Badlands,1,1,0,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,1,simple,Burroughs Desert,0,0,1,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,2,spacer,Heinlein Plains,0,0,0,0,2,8
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,2,spacer,Pohl Foothills,1,0,0,0,2,8
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,2,spacer,Van Vogt Mountains,0,0,0,0,2,8
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,2,spacer,Bradbury Plateau,1,1,0,0,2,8
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,2,spacer,Asimov Crater,1,1,0,0,2,8
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,2,spacer,Herbert Valley,1,1,0,0,2,8
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,2,spacer,Lem Badlands,0,0,0,0,2,8
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,2,spacer,Burroughs Desert,1,0,1,0,2,8
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,3,admiral,Heinlein Plains,2,1,0,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,3,admiral,Pohl Foothills,2,1,0,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,3,admiral,Van Vogt Mountains,1,1,0,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,3,admiral,Bradbury Plateau,0,0,0,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,3,admiral,Asimov Crater,0,0,0,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,3,admiral,Herbert Valley,0,0,0,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,3,admiral,Lem Badlands,0,0,0,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r0,3,mixed,3,admiral,Burroughs Desert,2,1,1,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,1,spacer,Heinlein Plains,2,1,0,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,1,spacer,Pohl Foothills,0,0,0,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,1,spacer,Van Vogt Mountains,2,1,0,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,1,spacer,Bradbury Plateau,1,0,0,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,1,spacer,Asimov Crater,0,0,0,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,1,spacer,Herbert Valley,1,1,0,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,1,spacer,Lem Badlands,0,0,0,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,1,spacer,Burroughs Desert,1,1,1,1,1,11
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,2,admiral,Heinlein Plains,0,0,0,0,2,9
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,2,admiral,Pohl Foothills,2,1,0,0,2,9
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,2,admiral,Van Vogt Mountains,1,0,0,0,2,9
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,2,admiral,Bradbury Plateau,2,1,0,0,2,9
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,2,admiral,Asimov Crater,1,1,0,0,2,9
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,2,admiral,Herbert Valley,0,0,0,0,2,9
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,2,admiral,Lem Badlands,0,0,0,0,2,9
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,2,admiral,Burroughs Desert,0,0,1,0,2,9
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,3,simple,Heinlein Plains,1,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,3,simple,Pohl Foothills,1,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,3,simple,Van Vogt Mountains,0,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,3,simple,Bradbury Plateau,0,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,3,simple,Asimov Crater,0,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,3,simple,Herbert Valley,0,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,3,simple,Lem Badlands,1,1,0,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r1,3,mixed,3,simple,Burroughs Desert,0,0,1,0,3,5
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,1,admiral,Heinlein Plains,1,0,0,1,1,10
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,1,admiral,Pohl Foothills,3,1,0,1,1,10
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,1,admiral,Van Vogt Mountains,0,0,0,1,1,10
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,1,admiral,Bradbury Plateau,0,0,0,1,1,10
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,1,admiral,Asimov Crater,0,0,0,1,1,10
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,1,admiral,Herbert Valley,1,1,0,1,1,10
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,1,admiral,Lem Badlands,1,0,0,1,1,10
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,1,admiral,Burroughs Desert,1,1,1,1,1,10
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,2,simple,Heinlein Plains,2,1,0,0,3,6
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,2,simple,Pohl Foothills,0,0,0,0,3,6
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,2,simple,Van Vogt Mountains,1,1,0,0,3,6
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,2,simple,Bradbury Plateau,0,0,0,0,3,6
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,2,simple,Asimov Crater,0,0,0,0,3,6
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,2,simple,Herbert Valley,0,0,0,0,3,6
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,2,simple,Lem Badlands,0,0,0,0,3,6
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,2,simple,Burroughs Desert,0,0,1,0,3,6
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,3,spacer,Heinlein Plains,1,0,0,0,2,8
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,3,spacer,Pohl Foothills,2,0,0,0,2,8
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,3,spacer,Van Vogt Mountains,0,0,0,0,2,8
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,3,spacer,Bradbury Plateau,1,1,0,0,2,8
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,3,spacer,Asimov Crater,1,1,0,0,2,8
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,3,spacer,Herbert Valley,0,0,0,0,2,8
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,3,spacer,Lem Badlands,1,0,0,0,2,8
+mixed-p3-b0-msimple-spacer-admiral-r2,3,mixed,3,spacer,Burroughs Desert,0,0,1,0,2,8
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,1,simple,Heinlein Plains,0,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,1,simple,Pohl Foothills,0,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,1,simple,Van Vogt Mountains,1,1,0,0,3,5
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,1,simple,Bradbury Plateau,0,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,1,simple,Asimov Crater,0,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,1,simple,Herbert Valley,0,0,0,0,3,5
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,1,simple,Lem Badlands,1,1,0,0,3,5
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,1,simple,Burroughs Desert,0,0,1,0,3,5
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,2,spacer,Heinlein Plains,0,0,0,0,2,6
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,2,spacer,Pohl Foothills,0,0,0,0,2,6
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,2,spacer,Van Vogt Mountains,0,0,0,0,2,6
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,2,spacer,Bradbury Plateau,0,0,0,0,2,6
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,2,spacer,Asimov Crater,1,1,0,0,2,6
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,2,spacer,Herbert Valley,3,0,0,0,2,6
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,2,spacer,Lem Badlands,0,0,0,0,2,6
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,2,spacer,Burroughs Desert,1,0,1,0,2,6
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,3,pirate,Heinlein Plains,1,1,0,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,3,pirate,Pohl Foothills,1,1,0,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,3,pirate,Van Vogt Mountains,0,0,0,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,3,pirate,Bradbury Plateau,0,0,0,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,3,pirate,Asimov Crater,0,0,0,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,3,pirate,Herbert Valley,3,0,0,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,3,pirate,Lem Badlands,0,0,0,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r0,3,mixed,3,pirate,Burroughs Desert,2,1,1,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,1,spacer,Heinlein Plains,1,0,0,1,1,9
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,1,spacer,Pohl Foothills,0,0,0,1,1,9
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,1,spacer,Van Vogt Mountains,1,1,0,1,1,9
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,1,spacer,Bradbury Plateau,0,0,0,1,1,9
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,1,spacer,Asimov Crater,0,0,0,1,1,9
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,1,spacer,Herbert Valley,2,0,0,1,1,9
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,1,spacer,Lem Badlands,0,0,0,1,1,9
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,1,spacer,Burroughs Desert,3,1,1,1,1,9
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,2,pirate,Heinlein Plains,0,0,0,0,2,8
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,2,pirate,Pohl Foothills,1,1,0,0,2,8
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,2,pirate,Van Vogt Mountains,0,0,0,0,2,8
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,2,pirate,Bradbury Plateau,0,0,0,0,2,8
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,2,pirate,Asimov Crater,1,1,0,0,2,8
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,2,pirate,Herbert Valley,2,0,0,0,2,8
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,2,pirate,Lem Badlands,0,0,0,0,2,8
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,2,pirate,Burroughs Desert,2,0,1,0,2,8
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,3,simple,Heinlein Plains,1,0,0,0,3,4
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,3,simple,Pohl Foothills,0,0,0,0,3,4
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,3,simple,Van Vogt Mountains,0,0,0,0,3,4
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,3,simple,Bradbury Plateau,0,0,0,0,3,4
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,3,simple,Asimov Crater,0,0,0,0,3,4
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,3,simple,Herbert Valley,0,0,0,0,3,4
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,3,simple,Lem Badlands,1,1,0,0,3,4
+mixed-p3-b0-msimple-spacer-pirate-r1,3,mixed,3,simple,Burroughs Desert,0,0,1,0,3,4
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,1,pirate,Heinlein Plains,1,0,0,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,1,pirate,Pohl Foothills,2,0,0,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,1,pirate,Van Vogt Mountains,0,0,0,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,1,pirate,Bradbury Plateau,1,0,0,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,1,pirate,Asimov Crater,0,0,0,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,1,pirate,Herbert Valley,1,1,0,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,1,pirate,Lem Badlands,1,1,0,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,1,pirate,Burroughs Desert,1,1,1,1,1,10
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,2,simple,Heinlein Plains,2,1,0,0,2,7
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,2,simple,Pohl Foothills,0,0,0,0,2,7
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,2,simple,Van Vogt Mountains,1,1,0,0,2,7
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,2,simple,Bradbury Plateau,0,0,0,0,2,7
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,2,simple,Asimov Crater,0,0,0,0,2,7
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,2,simple,Herbert Valley,0,0,0,0,2,7
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,2,simple,Lem Badlands,0,0,0,0,2,7
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,2,simple,Burroughs Desert,0,0,1,0,2,7
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,3,spacer,Heinlein Plains,1,0,0,0,3,6
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,3,spacer,Pohl Foothills,2,0,0,0,3,6
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,3,spacer,Van Vogt Mountains,0,0,0,0,3,6
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,3,spacer,Bradbury Plateau,1,0,0,0,3,6
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,3,spacer,Asimov Crater,1,1,0,0,3,6
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,3,spacer,Herbert Valley,0,0,0,0,3,6
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,3,spacer,Lem Badlands,0,0,0,0,3,6
+mixed-p3-b0-msimple-spacer-pirate-r2,3,mixed,3,spacer,Burroughs Desert,0,0,1,0,3,6
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,1,spacer,Heinlein Plains,2,1,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,1,spacer,Pohl Foothills,3,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,1,spacer,Van Vogt Mountains,0,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,1,spacer,Bradbury Plateau,0,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,1,spacer,Asimov Crater,0,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,1,spacer,Herbert Valley,0,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,1,spacer,Lem Badlands,0,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,1,spacer,Burroughs Desert,2,1,1,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,2,admiral,Heinlein Plains,1,0,0,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,2,admiral,Pohl Foothills,0,0,0,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,2,admiral,Van Vogt Mountains,1,0,0,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,2,admiral,Bradbury Plateau,1,1,0,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,2,admiral,Asimov Crater,0,0,0,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,2,admiral,Herbert Valley,0,0,0,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,2,admiral,Lem Badlands,1,1,0,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,2,admiral,Burroughs Desert,1,0,1,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,3,pirate,Heinlein Plains,0,0,0,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,3,pirate,Pohl Foothills,3,0,0,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,3,pirate,Van Vogt Mountains,1,0,0,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,3,pirate,Bradbury Plateau,0,0,0,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,3,pirate,Asimov Crater,1,1,0,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,3,pirate,Herbert Valley,1,1,0,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,3,pirate,Lem Badlands,0,0,0,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r0,3,mixed,3,pirate,Burroughs Desert,0,0,1,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,1,admiral,Heinlein Plains,1,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,1,admiral,Pohl Foothills,0,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,1,admiral,Van Vogt Mountains,1,0,1,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,1,admiral,Bradbury Plateau,1,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,1,admiral,Asimov Crater,3,1,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,1,admiral,Herbert Valley,0,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,1,admiral,Lem Badlands,1,1,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,1,admiral,Burroughs Desert,0,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,2,pirate,Heinlein Plains,0,0,0,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,2,pirate,Pohl Foothills,1,1,0,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,2,pirate,Van Vogt Mountains,0,0,1,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,2,pirate,Bradbury Plateau,2,1,0,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,2,pirate,Asimov Crater,0,0,0,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,2,pirate,Herbert Valley,0,0,0,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,2,pirate,Lem Badlands,0,0,0,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,2,pirate,Burroughs Desert,1,1,0,0,3,7
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,3,spacer,Heinlein Plains,1,0,0,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,3,spacer,Pohl Foothills,0,0,0,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,3,spacer,Van Vogt Mountains,2,1,1,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,3,spacer,Bradbury Plateau,0,0,0,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,3,spacer,Asimov Crater,2,0,0,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,3,spacer,Herbert Valley,1,1,0,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,3,spacer,Lem Badlands,0,0,0,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r1,3,mixed,3,spacer,Burroughs Desert,0,0,0,0,2,8
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,1,pirate,Heinlein Plains,0,0,0,0,2,7
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,1,pirate,Pohl Foothills,0,0,0,0,2,7
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,1,pirate,Van Vogt Mountains,1,1,0,0,2,7
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,1,pirate,Bradbury Plateau,0,0,0,0,2,7
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,1,pirate,Asimov Crater,1,1,0,0,2,7
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,1,pirate,Herbert Valley,2,0,0,0,2,7
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,1,pirate,Lem Badlands,1,0,0,0,2,7
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,1,pirate,Burroughs Desert,0,0,0,0,2,7
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,2,spacer,Heinlein Plains,1,0,0,0,3,6
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,2,spacer,Pohl Foothills,1,1,0,0,3,6
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,2,spacer,Van Vogt Mountains,0,0,0,0,3,6
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,2,spacer,Bradbury Plateau,0,0,0,0,3,6
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,2,spacer,Asimov Crater,0,0,0,0,3,6
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,2,spacer,Herbert Valley,0,0,0,0,3,6
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,2,spacer,Lem Badlands,0,0,0,0,3,6
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,2,spacer,Burroughs Desert,2,1,0,0,3,6
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,3,admiral,Heinlein Plains,1,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,3,admiral,Pohl Foothills,0,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,3,admiral,Van Vogt Mountains,0,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,3,admiral,Bradbury Plateau,1,1,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,3,admiral,Asimov Crater,0,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,3,admiral,Herbert Valley,2,0,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,3,admiral,Lem Badlands,2,1,0,1,1,9
+mixed-p3-b0-mspacer-admiral-pirate-r2,3,mixed,3,admiral,Burroughs Desert,1,0,0,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,1,simple,Heinlein Plains,0,0,0,0,4,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,1,simple,Pohl Foothills,0,0,0,0,4,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,1,simple,Van Vogt Mountains,0,0,0,0,4,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,1,simple,Bradbury Plateau,0,0,0,0,4,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,1,simple,Asimov Crater,0,0,0,0,4,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,1,simple,Herbert Valley,2,0,0,0,4,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,1,simple,Lem Badlands,0,0,0,0,4,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,1,simple,Burroughs Desert,1,0,1,0,4,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,2,spacer,Heinlein Plains,0,0,0,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,2,spacer,Pohl Foothills,0,0,0,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,2,spacer,Van Vogt Mountains,1,0,0,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,2,spacer,Bradbury Plateau,0,0,0,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,2,spacer,Asimov Crater,0,0,0,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,2,spacer,Herbert Valley,0,0,0,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,2,spacer,Lem Badlands,1,1,0,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,2,spacer,Burroughs Desert,2,1,1,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,3,admiral,Heinlein Plains,1,0,0,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,3,admiral,Pohl Foothills,1,0,0,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,3,admiral,Van Vogt Mountains,0,0,0,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,3,admiral,Bradbury Plateau,0,0,0,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,3,admiral,Asimov Crater,0,0,0,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,3,admiral,Herbert Valley,3,1,0,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,3,admiral,Lem Badlands,0,0,0,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,3,admiral,Burroughs Desert,0,0,1,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,4,pirate,Heinlein Plains,1,0,0,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,4,pirate,Pohl Foothills,2,1,0,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,4,pirate,Van Vogt Mountains,1,0,0,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,4,pirate,Bradbury Plateau,1,1,0,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,4,pirate,Asimov Crater,1,1,0,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,4,pirate,Herbert Valley,0,0,0,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,4,pirate,Lem Badlands,0,0,0,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r0,4,mixed,4,pirate,Burroughs Desert,0,0,1,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,1,spacer,Heinlein Plains,1,0,0,0,2,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,1,spacer,Pohl Foothills,0,0,0,0,2,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,1,spacer,Van Vogt Mountains,0,0,0,0,2,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,1,spacer,Bradbury Plateau,1,0,0,0,2,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,1,spacer,Asimov Crater,0,0,0,0,2,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,1,spacer,Herbert Valley,0,0,0,0,2,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,1,spacer,Lem Badlands,0,0,0,0,2,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,1,spacer,Burroughs Desert,2,1,0,0,2,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,2,admiral,Heinlein Plains,0,0,0,0,3,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,2,admiral,Pohl Foothills,0,0,0,0,3,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,2,admiral,Van Vogt Mountains,1,1,0,0,3,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,2,admiral,Bradbury Plateau,0,0,0,0,3,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,2,admiral,Asimov Crater,0,0,0,0,3,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,2,admiral,Herbert Valley,0,0,0,0,3,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,2,admiral,Lem Badlands,1,1,0,0,3,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,2,admiral,Burroughs Desert,1,0,0,0,3,5
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,3,pirate,Heinlein Plains,1,0,0,1,1,10
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,3,pirate,Pohl Foothills,1,1,0,1,1,10
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,3,pirate,Van Vogt Mountains,0,0,0,1,1,10
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,3,pirate,Bradbury Plateau,2,1,0,1,1,10
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,3,pirate,Asimov Crater,1,1,0,1,1,10
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,3,pirate,Herbert Valley,1,1,0,1,1,10
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,3,pirate,Lem Badlands,0,0,0,1,1,10
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,3,pirate,Burroughs Desert,0,0,0,1,1,10
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,4,simple,Heinlein Plains,0,0,0,0,4,1
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,4,simple,Pohl Foothills,0,0,0,0,4,1
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,4,simple,Van Vogt Mountains,0,0,0,0,4,1
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,4,simple,Bradbury Plateau,0,0,0,0,4,1
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,4,simple,Asimov Crater,0,0,0,0,4,1
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,4,simple,Herbert Valley,0,0,0,0,4,1
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,4,simple,Lem Badlands,0,0,0,0,4,1
+mixed-p4-b0-msimple-spacer-admiral-pirate-r1,4,mixed,4,simple,Burroughs Desert,0,0,0,0,4,1
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,1,admiral,Heinlein Plains,1,0,0,1,1,8
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,1,admiral,Pohl Foothills,0,0,0,1,1,8
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,1,admiral,Van Vogt Mountains,1,1,0,1,1,8
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,1,admiral,Bradbury Plateau,4,1,0,1,1,8
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,1,admiral,Asimov Crater,0,0,0,1,1,8
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,1,admiral,Herbert Valley,0,0,0,1,1,8
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,1,admiral,Lem Badlands,0,0,0,1,1,8
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,1,admiral,Burroughs Desert,0,0,1,1,1,8
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,2,pirate,Heinlein Plains,0,0,0,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,2,pirate,Pohl Foothills,0,0,0,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,2,pirate,Van Vogt Mountains,0,0,0,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,2,pirate,Bradbury Plateau,3,0,0,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,2,pirate,Asimov Crater,1,1,0,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,2,pirate,Herbert Valley,1,0,0,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,2,pirate,Lem Badlands,0,0,0,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,2,pirate,Burroughs Desert,0,0,1,0,3,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,3,simple,Heinlein Plains,0,0,0,0,4,3
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,3,simple,Pohl Foothills,0,0,0,0,4,3
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,3,simple,Van Vogt Mountains,0,0,0,0,4,3
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,3,simple,Bradbury Plateau,0,0,0,0,4,3
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,3,simple,Asimov Crater,0,0,0,0,4,3
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,3,simple,Herbert Valley,0,0,0,0,4,3
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,3,simple,Lem Badlands,1,1,0,0,4,3
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,3,simple,Burroughs Desert,0,0,1,0,4,3
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,4,spacer,Heinlein Plains,1,0,0,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,4,spacer,Pohl Foothills,1,1,0,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,4,spacer,Van Vogt Mountains,0,0,0,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,4,spacer,Bradbury Plateau,0,0,0,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,4,spacer,Asimov Crater,0,0,0,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,4,spacer,Herbert Valley,1,0,0,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,4,spacer,Lem Badlands,0,0,0,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r2,4,mixed,4,spacer,Burroughs Desert,1,1,1,0,2,6
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,1,pirate,Heinlein Plains,2,1,0,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,1,pirate,Pohl Foothills,0,0,0,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,1,pirate,Van Vogt Mountains,0,0,0,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,1,pirate,Bradbury Plateau,0,0,0,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,1,pirate,Asimov Crater,0,0,0,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,1,pirate,Herbert Valley,0,0,1,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,1,pirate,Lem Badlands,2,1,0,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,1,pirate,Burroughs Desert,2,1,0,1,1,9
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,2,simple,Heinlein Plains,0,0,0,0,4,2
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,2,simple,Pohl Foothills,0,0,0,0,4,2
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,2,simple,Van Vogt Mountains,0,0,0,0,4,2
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,2,simple,Bradbury Plateau,0,0,0,0,4,2
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,2,simple,Asimov Crater,1,1,0,0,4,2
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,2,simple,Herbert Valley,0,0,1,0,4,2
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,2,simple,Lem Badlands,0,0,0,0,4,2
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,2,simple,Burroughs Desert,0,0,0,0,4,2
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,3,spacer,Heinlein Plains,0,0,0,0,3,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,3,spacer,Pohl Foothills,0,0,0,0,3,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,3,spacer,Van Vogt Mountains,0,0,0,0,3,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,3,spacer,Bradbury Plateau,0,0,0,0,3,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,3,spacer,Asimov Crater,0,0,0,0,3,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,3,spacer,Herbert Valley,1,1,1,0,3,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,3,spacer,Lem Badlands,1,0,0,0,3,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,3,spacer,Burroughs Desert,1,0,0,0,3,4
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,4,admiral,Heinlein Plains,1,0,0,0,2,7
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,4,admiral,Pohl Foothills,1,1,0,0,2,7
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,4,admiral,Van Vogt Mountains,1,1,0,0,2,7
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,4,admiral,Bradbury Plateau,1,1,0,0,2,7
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,4,admiral,Asimov Crater,0,0,0,0,2,7
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,4,admiral,Herbert Valley,0,0,1,0,2,7
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,4,admiral,Lem Badlands,0,0,0,0,2,7
+mixed-p4-b0-msimple-spacer-admiral-pirate-r3,4,mixed,4,admiral,Burroughs Desert,0,0,0,0,2,7

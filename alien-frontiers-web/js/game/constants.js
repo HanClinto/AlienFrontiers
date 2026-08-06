@@ -21,6 +21,7 @@ export const EventName = Object.freeze({
   coloniesChanged: "colonies-changed",
   launchColony: "launch-colony",
   techCardsChanged: "tech-cards-changed",
+  techUsed: "tech-used",
   cardTapped: "card-tapped",
   raidChanged: "raid-changed",
   beginRaid: "begin-raid",

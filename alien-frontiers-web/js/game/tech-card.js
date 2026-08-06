@@ -1,3 +1,5 @@
+import { EventName } from "./constants.js";
+
 export const TechCardType = Object.freeze({
   alienCity: "alien-city",
   alienMonument: "alien-monument",
@@ -49,6 +51,14 @@ export class TechCard {
   get hasDiscard() { return this.definition.hasDiscard ?? true; }
   get powerText() { return this.definition.powerText ?? ""; }
   get discardText() { return this.definition.discardText ?? ""; }
+
+  recordUse(mode, owner = this.owner) {
+    this.state.postEvent(EventName.techUsed, {
+      cardType: this.type,
+      mode,
+      playerIndex: owner.playerIndex,
+    });
+  }
 
   get adjustedFuelCost() {
     const discount = this.owner && this.state.pohlFoothills.playerHasBonus(this.owner) ? 1 : 0;
@@ -167,6 +177,7 @@ export class TechCard {
       ship.roll(random);
     }
     this.setTapped(true);
+    this.recordUse("power", owner);
     owner.applyResourceCache();
     this.state.postEvent("resources-changed", owner);
     this.state.postEvent("ships-rolled", owner);
@@ -205,6 +216,7 @@ export class TechCard {
       ship.rollIndex += 1;
     }
     this.setTapped(true);
+    this.recordUse("power");
     this.state.postEvent("resources-changed", this.owner);
     this.state.postEvent("ship-changed", ship);
     return true;
@@ -224,6 +236,7 @@ export class TechCard {
     shipToRaise.rollIndex += 1;
     shipToLower.rollIndex += 1;
     this.setTapped(true);
+    this.recordUse("power");
     this.state.postEvent("resources-changed", this.owner);
     this.state.postEvent("ship-changed", shipToRaise);
     this.state.postEvent("ship-changed", shipToLower);
@@ -254,6 +267,7 @@ export class TechCard {
     this.owner.fuel -= this.dataCrystalCost(region);
     this.owner.borrowingRegion = region;
     this.setTapped(true);
+    this.recordUse("power");
     this.state.postEvent("resources-changed", this.owner);
     return true;
   }
@@ -303,6 +317,7 @@ export class TechCard {
       }
     }
     this.setTapped(true);
+    this.recordUse("power");
     this.state.postEvent("resources-changed", this.owner);
     return true;
   }
@@ -322,6 +337,7 @@ export class TechCard {
     }
     const owner = this.owner;
     ship.player.deactivateShip(ship);
+    this.recordUse("discard", owner);
     owner.techsDiscarded += 1;
     owner.removeCard(this);
     this.state.discardTechCard(this);
@@ -331,6 +347,7 @@ export class TechCard {
   consumeDiscard() {
     const owner = this.owner;
     this.state.checkArtifactShipControl();
+    this.recordUse("discard", owner);
     owner.techsDiscarded += 1;
     owner.removeCard(this);
     this.state.discardTechCard(this);
@@ -409,6 +426,7 @@ export class TechCard {
     }
     this.state.checkArtifactShipControl();
     const owner = this.owner;
+    this.recordUse("discard", owner);
     owner.techsDiscarded += 1;
     owner.removeCard(this);
     this.state.discardTechCard(this);

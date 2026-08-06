@@ -33,6 +33,26 @@ test("headless SimpleAI games terminate and replay deterministically", () => {
   assert.ok(left.steps < 10_000);
 });
 
+test("simulations record compact tech, region, seat, and turn-estimate telemetry", () => {
+  const result = simulateGame({
+    strategies: [simpleStrategy("left"), simpleStrategy("right")],
+    seed: 101,
+  });
+
+  assert.equal(result.completed, true);
+  assert.equal(result.players.length, 2);
+  assert.deepEqual(result.players.map((player) => player.seat), [1, 2]);
+  assert.ok(result.players.every((player) => player.startingTech));
+  assert.ok(result.players.every((player) => player.everOwnedTech.includes(player.startingTech)));
+  assert.ok(result.players.every((player) => player.regions.length === 8));
+  assert.ok(result.turnEstimateSamples.length > 1);
+  assert.equal(result.turnEstimateSamples[0].playerTurn, 0);
+  assert.ok(result.turnEstimateSamples.every((sample) =>
+    sample.actualPlayerTurnsRemaining > 0
+    && sample.actualRoundsRemaining > 0
+    && sample.coloniesLeft.length === 2));
+});
+
 test("tournaments rotate entrants through seats and aggregate search metrics", () => {
   const entrants = [
     simpleStrategy("simple"),
