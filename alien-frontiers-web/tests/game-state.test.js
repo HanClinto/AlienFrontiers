@@ -262,6 +262,10 @@ test("builds, shuffles, deals, and displays the exact 22-card tech deck", () => 
   assert.deepEqual(actualCounts, expectedCounts);
   assert.deepEqual(state.allTech.map((card) => card.cardID), Array.from({ length: 22 }, (_, index) => index));
   assert.deepEqual(state.players.map((player) => player.cards.length), [1, 1, 1, 1]);
+  assert.deepEqual(
+    state.players.map((player) => player.selectedCard),
+    state.players.map((player) => player.cards[0]),
+  );
   assert.equal(state.techDisplayDeck.length, 3);
   assert.equal(state.techDrawDeck.length, 15);
   assert.equal(new Set([
@@ -284,7 +288,21 @@ test("tech cards can be selected and highlighted on their owning opponent", () =
 
   assert.equal(state.selectTechCard(card), true);
   assert.equal(opponent.selectedCard, card);
-  assert.equal(state.currentPlayer.selectedCard, null);
+  assert.equal(state.currentPlayer.selectedCard, state.currentPlayer.cards[0]);
+});
+
+test("gaining a tech card selects it only when no card is already selected", () => {
+  const state = new GameState(2, [AIType.human, AIType.human]);
+  const player = state.currentPlayer;
+  const firstCard = state.techDisplayDeck[0];
+  const secondCard = state.techDisplayDeck.find((card) => card.type !== firstCard.type);
+  player.cards = [];
+  player.selectedCard = null;
+
+  assert.equal(player.addCard(firstCard), true);
+  assert.equal(player.selectedCard, firstCard);
+  assert.equal(player.addCard(secondCard), true);
+  assert.equal(player.selectedCard, firstCard);
 });
 
 test("game log entries notify the HUD immediately", () => {
