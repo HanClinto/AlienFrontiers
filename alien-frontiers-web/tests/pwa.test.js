@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   DeploymentUpdates,
   registerServiceWorker,
+  showLoadFailure,
   watchForDeploymentUpdates,
 } from "../js/pwa.js";
 
@@ -26,6 +27,43 @@ test("service worker registration inherits the deployment version", async () => 
 
 test("unsupported browsers skip service worker registration", async () => {
   assert.equal(await registerServiceWorker({}, "https://example.com/js/pwa.js"), null);
+});
+
+test("load failure offers a one-tap reload for standalone apps", () => {
+  let clickHandler = null;
+  let reloads = 0;
+  const createdElements = [];
+  const ownerDocument = {
+    createElement(tagName) {
+      const element = {
+        tagName,
+        addEventListener(name, callback) {
+          assert.equal(name, "click");
+          clickHandler = callback;
+        },
+      };
+      createdElements.push(element);
+      return element;
+    },
+  };
+  const container = {
+    ownerDocument,
+    replaceChildren(...children) {
+      this.children = children;
+    },
+  };
+
+  showLoadFailure(container, { reload: () => { reloads += 1; } });
+
+  const [message, reloadButton] = container.children;
+  assert.equal(message.textContent, "Unable to load Alien Frontiers.");
+  assert.equal(reloadButton.type, "button");
+  assert.equal(reloadButton.textContent, "Reload");
+  clickHandler();
+  assert.equal(reloads, 1);
+  assert.equal(reloadButton.disabled, true);
+  assert.equal(reloadButton.textContent, "Reloading...");
+  assert.equal(createdElements.length, 2);
 });
 
 test("deployment checks reload a stale resumed app and share concurrent requests", async () => {

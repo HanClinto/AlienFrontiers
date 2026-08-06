@@ -14,6 +14,27 @@ export async function registerServiceWorker(
   return navigatorRef.serviceWorker.register(workerUrl, { updateViaCache: "none" });
 }
 
+export function showLoadFailure(
+  container,
+  locationRef = typeof location === "undefined" ? null : location,
+) {
+  if (!container) {
+    return;
+  }
+
+  const message = container.ownerDocument.createElement("span");
+  message.textContent = "Unable to load Alien Frontiers.";
+  const reloadButton = container.ownerDocument.createElement("button");
+  reloadButton.type = "button";
+  reloadButton.textContent = "Reload";
+  reloadButton.addEventListener("click", () => {
+    reloadButton.disabled = true;
+    reloadButton.textContent = "Reloading...";
+    locationRef?.reload();
+  });
+  container.replaceChildren(message, reloadButton);
+}
+
 export class DeploymentUpdates {
   constructor(
     version,

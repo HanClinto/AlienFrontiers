@@ -50,6 +50,10 @@ body {
   -webkit-user-select: none;
 }
 
+#game-canvas[hidden] {
+  display: none;
+}
+
 #report-bug-link {
   display: block;
   position: fixed;
@@ -61,7 +65,34 @@ body {
 }
 
 #loading {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
   margin: 0;
   color: #ffae41;
   font-size: 18px;
+}
+
+#loading[hidden] {
+  display: none;
+}
+
+#loading button {
+  min-width: 112px;
+  min-height: 44px;
+  border: 1px solid #ffae41;
+  border-radius: 4px;
+  background: #151936;
+  color: #fff;
+  font: 16px "DIN-Black", sans-serif;
+  cursor: pointer;
+}
+
+#loading button:active {
+  background: #292f5c;
+}
+
+#loading button:disabled {
+  cursor: wait;
+  opacity: 0.7;
 }

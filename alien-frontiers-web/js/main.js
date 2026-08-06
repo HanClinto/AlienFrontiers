@@ -4,6 +4,7 @@ import { CCSpriteFrameCache } from "./cocos/sprite-frame-cache.js";
 import {
   DeploymentUpdates,
   registerServiceWorker,
+  showLoadFailure,
   watchForDeploymentUpdates,
 } from "./pwa.js";
 import { MainMenuScene } from "./scenes/main-menu.js";
@@ -190,6 +191,5 @@ start().then(() => registerServiceWorker().catch((error) => {
   console.warn("Unable to enable offline play", error);
 })).catch((error) => {
   console.error(error);
-  const loading = document.querySelector("#loading");
-  loading.textContent = "Unable to load Alien Frontiers.";
+  showLoadFailure(document.querySelector("#loading"));
 });
