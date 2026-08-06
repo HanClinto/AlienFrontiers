@@ -12,7 +12,11 @@ test("deployment stamping produces a versioned offline precache manifest", async
   const directory = await mkdtemp(join(tmpdir(), "alien-frontiers-version-"));
   try {
     await mkdir(join(directory, "js"));
+    await mkdir(join(directory, "assets", "startup"), { recursive: true });
     await writeFile(join(directory, "index.html"), '<script src="./js/main.js"></script>');
+    await writeFile(join(directory, "styles.css"), 'body { background: url("./assets/startup/startup-1536x2048.jpg"); }');
+    await writeFile(join(directory, "assets", "startup", "startup-1170x2532.jpg"), "apple image");
+    await writeFile(join(directory, "assets", "startup", "startup-1536x2048.jpg"), "fallback image");
     await writeFile(join(directory, "js", "main.js"), 'import "./game.js";');
     await writeFile(join(directory, "js", "game.js"), "export {};");
     await mkdir(join(directory, "tests"));
@@ -32,13 +36,17 @@ test("deployment stamping produces a versioned offline precache manifest", async
     assert.equal(versionMetadata.version, "release-1");
     assert.equal(Number.isNaN(Date.parse(versionMetadata.deployedAt)), false);
     assert.deepEqual(manifest.files, [
+      "./assets/startup/startup-1536x2048.jpg?v=release-1",
       "./index.html?v=release-1",
       "./js/game.js?v=release-1",
       "./js/main.js?v=release-1",
+      "./styles.css?v=release-1",
     ]);
     assert.doesNotMatch(manifest.files.join("\n"), /service-worker/);
     assert.doesNotMatch(manifest.files.join("\n"), /tests|package\.json/);
+    assert.doesNotMatch(manifest.files.join("\n"), /startup-1170x2532/);
     assert.match(await readFile(join(directory, "index.html"), "utf8"), /main\.js\?v=release-1/);
+    assert.match(await readFile(join(directory, "styles.css"), "utf8"), /startup-1536x2048\.jpg\?v=release-1/);
   } finally {
     await rm(directory, { recursive: true, force: true });
   }

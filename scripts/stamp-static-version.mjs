@@ -59,8 +59,11 @@ for (const filePath of files) {
 const precacheFiles = files
   .filter((filePath) => {
     const relativePath = relative(rootDirectory, filePath);
+    const startupDirectory = `assets${sep}startup${sep}`;
     return relativePath !== "service-worker.js"
       && relativePath !== "package.json"
+      && (!relativePath.startsWith(startupDirectory)
+        || relativePath === `${startupDirectory}startup-1536x2048.jpg`)
       && !relativePath.startsWith(`tests${sep}`);
   })
   .map((filePath) => `./${relative(rootDirectory, filePath).split(sep).join("/")}?v=${version}`)
