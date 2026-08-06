@@ -9,9 +9,10 @@
 ## Executive Summary
 
 - All 8,040 games completed with no did-not-finish results.
-- Spacer led the four-player mixed tournament at 38.6%, followed by Pirate at 34.7%, Admiral
-    at 23.9%, and Simple at 2.9%. These are comparative results under matched participation and
-    cyclic seat rotation.
+- Spacer descriptively led the four-player mixed tournament at 38.6%, followed by Pirate at
+    34.7%, Admiral at 23.9%, and Simple at 2.9%. The paired seed-block Spacer-Pirate difference
+    was +3.9 percentage points (95% interval -2.1 to +9.8), so Spacer and Pirate are an unresolved
+    top tier. Both clearly outperformed Admiral under matched participation and cyclic rotation.
 - In four-player mirror games, Holographic Decoy (35.5%) and Resource Cache (32.8%) were the
     strongest starting-tech predictors. Plasma Cannon was lowest at 12.1%. Starting cards are
     randomly dealt, making this stronger evidence than final ownership associations.
@@ -40,6 +41,11 @@ pie showData
 | Pirate | 279 | 804 | 34.7% (31.5-38.1%) |
 | Admiral | 192 | 804 | 23.9% (21.1-26.9%) |
 | Simple | 23 | 804 | 2.9% (1.9-4.3%) |
+
+Spacer's apparent lead is specific to this four-player field. Pirate beat Spacer 60.0% to
+40.0% in their direct two-player matchup. In the three-player matchup containing Spacer,
+Admiral, and Pirate, Spacer led 37.3% to Pirate's 33.2%, but that paired difference was also
+unresolved (95% interval -2.3 to +10.4 percentage points).
 
 ## Starting Tech
 

@@ -91,8 +91,10 @@ pie showData
 
 In the August 5, 2026 analysis, each production AI received 804 equal-exposure games in the
 four-player mixed tournament. Spacer won 38.6%, Pirate 34.7%, Admiral 23.9%, and Simple 2.9%.
-The complete versioned report covers two-to-four-player balance, starting tech, turn order,
-tech use, region control, game length, and turns-remaining accuracy, with all raw CSV results:
+The paired seed-block interval does not distinguish Spacer from Pirate, so they form the
+four-player top tier rather than establishing Spacer as the stronger AI. The complete versioned
+report covers two-to-four-player balance, starting tech, turn order, tech use, region control,
+game length, and turns-remaining accuracy, with all raw CSV results:
 [AI Analysis for game version 97e5f099](ai-analysis/reports/2026-08-05-97e5f09/REPORT.md).
 
 Run seeded headless AI tournaments with:
