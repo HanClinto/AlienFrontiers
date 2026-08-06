@@ -168,6 +168,10 @@ export class MainMenuScene extends AFLayer {
     this.addChild(this.optionsOverlay, 20);
   }
 
+  get isHomeScreenVisible() {
+    return !this.optionsOverlay.visible;
+  }
+
   async initCredits() {
     try {
       const [recentChangesText, creditsText] = await Promise.all([

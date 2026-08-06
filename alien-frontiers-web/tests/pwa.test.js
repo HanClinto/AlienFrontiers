@@ -56,7 +56,28 @@ test("deployment checks reload a stale resumed app and share concurrent requests
   assert.equal(replacement.href, "https://example.com/game/?seat=1&build=release-2");
 });
 
-test("visible main-menu resumes check for deployments", () => {
+test("deployment checks stay silent when the current version is deployed", async () => {
+  let replacement = null;
+  const updates = new DeploymentUpdates(
+    "release-1",
+    async () => ({
+      ok: true,
+      json: async () => ({ version: "release-1", deployedAt: "2026-08-05T12:00:00.000Z" }),
+    }),
+    {
+      href: "https://example.com/game/",
+      replace: (url) => { replacement = url; },
+    },
+    "https://example.com/game/js/pwa.js?v=release-1",
+  );
+
+  const result = await updates.check();
+
+  assert.equal(result.current, true);
+  assert.equal(replacement, null);
+});
+
+test("only the visible unobscured home menu resumes deployment checks", () => {
   const listeners = new Map();
   const documentRef = {
     visibilityState: "hidden",
@@ -65,11 +86,11 @@ test("visible main-menu resumes check for deployments", () => {
   const windowRef = {
     addEventListener: (name, callback) => listeners.set(`window:${name}`, callback),
   };
-  let mainMenu = true;
+  let homeScreenVisible = true;
   let checks = 0;
   watchForDeploymentUpdates(
     { check: () => { checks += 1; } },
-    () => mainMenu,
+    () => homeScreenVisible,
     documentRef,
     windowRef,
   );
@@ -77,10 +98,10 @@ test("visible main-menu resumes check for deployments", () => {
   listeners.get("document:visibilitychange")();
   assert.equal(checks, 0);
   documentRef.visibilityState = "visible";
-  mainMenu = false;
+  homeScreenVisible = false;
   listeners.get("window:pageshow")();
   assert.equal(checks, 0);
-  mainMenu = true;
+  homeScreenVisible = true;
   listeners.get("document:visibilitychange")();
   listeners.get("window:pageshow")();
   assert.equal(checks, 2);

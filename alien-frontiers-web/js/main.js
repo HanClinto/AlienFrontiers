@@ -182,7 +182,7 @@ async function start() {
   director.deploymentUpdates = deploymentUpdates;
   watchForDeploymentUpdates(
     deploymentUpdates,
-    () => director.scene instanceof MainMenuScene,
+    () => director.scene instanceof MainMenuScene && director.scene.isHomeScreenVisible,
   );
 }
 
